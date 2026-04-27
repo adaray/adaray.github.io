@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Edexcel IGCSE Biology Paper 1B (May 2019) | Interactive</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -15,7 +15,7 @@
             color: #1e2a3e;
         }
         .exam-container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 28px;
@@ -47,8 +47,6 @@
             gap: 12px;
             align-items: center;
         }
-        .save-load-bar { display: flex; gap: 12px; background: #ffffffcc; padding: 5px 12px; border-radius: 40px; }
-        .save-load-bar button { background: #2c7da0; padding: 6px 14px; font-size: 0.8rem; }
         .question-nav {
             display: flex;
             flex-wrap: wrap;
@@ -68,6 +66,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.1s;
+            font-size: 0.9rem;
         }
         .nav-btn.active { background: #2c7da0; color: white; }
         .nav-btn.answered { background: #61a5c2; color: white; }
@@ -137,8 +136,8 @@
         }
         button.small {
             background: #4a6f8a;
-            padding: 6px 14px;
-            font-size: 0.75rem;
+            padding: 5px 12px;
+            font-size: 0.7rem;
             border: none;
             border-radius: 30px;
             color: white;
@@ -156,17 +155,24 @@
         button.warning { background: #b23c1c; }
         .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
         .hidden { display: none; }
-        .score-badge { font-size: 1.6rem; font-weight: bold; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e2a3e; }
         .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
         .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        .feedback-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .feedback-table th, .feedback-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; text-align: left; }
+        .feedback-table th { background: #2c7da0; color: white; }
+        .feedback-table tr:nth-child(even) { background: #f9f9f9; }
+        .correct-highlight { background: #d4edda; }
+        .incorrect-highlight { background: #f8d7da; }
+        details summary { cursor: pointer; font-weight: 600; margin: 15px 0; }
         footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
-        .toast-msg {
+        .status-toast {
             position: fixed; bottom: 20px; right: 20px;
-            background: #2c7da0; color: white; padding: 10px 18px;
-            border-radius: 30px; font-size: 0.8rem; z-index: 1000;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+            background: #2c7da0; color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.8rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
         }
-        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } .feedback-table { font-size: 0.8rem; } }
     </style>
 </head>
 <body>
@@ -183,30 +189,25 @@
     </div>
     <div class="info-bar">
         <span>⏱️ 2 hours | 📝 Total marks: 110</span>
-        <span id="answeredCounter">✅ Attempted: 0 / 55 questions</span>
-        <div class="save-load-bar">
-            <button id="saveResponsesBtn">💾 Manual Save</button>
-            <button id="loadResponsesBtn" class="secondary">📂 Load Saved</button>
-            <button id="clearDatabaseBtn" style="background:#b23c1c;">🗑 Clear DB</button>
-        </div>
+        <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
     </div>
     <div id="navContainer" class="question-nav"></div>
     <div id="questionsContainer"></div>
     <div class="action-buttons">
         <button id="prevBtn" class="secondary">◀ Previous</button>
         <button id="nextBtn">Next ▶</button>
-        <button id="submitBtn" class="warning">✔ Submit & Mark</button>
+        <button id="submitBtn" class="warning">✔ Submit Exam & Get Detailed Feedback</button>
     </div>
     <div id="reviewPanel" class="review-section hidden"></div>
+    <div id="statusToast" class="status-toast"></div>
 </div>
-<div id="toastMsg" class="toast-msg"></div>
 
 <script>
     // EmailJS Configuration (replace with your actual keys for production)
     // Get free keys from https://www.emailjs.com/
-    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
-    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
-    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const EMAILJS_PUBLIC_KEY = "#PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "#service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "#template_mld7q9t"; // Replace with your template ID
     const RECIPIENT_EMAIL = "ibn.daray@gmail.com";
     
     // Initialize EmailJS if keys are provided
@@ -332,8 +333,9 @@
             return false;
         }
     }
-    
-    // ========== Question Bank (55 items, 110 marks) ==========
+
+
+    // Full Question Bank - 55 items, 110 marks total
     const questionsData = [
         { id:"q1a", type:"written", text:"1(a) Name the structures labelled A, B, C, and D (plant cell diagram).", correctKeywords:["vacuole","nucleus","cell wall","cell membrane"], marks:4, requiredKeywords:4, topic:"Cell Biology/Plant cells", msText:"A vacuole (1); B nucleus (1); C cell wall (1); D cell membrane (1)" },
         { id:"q1bi", type:"mcq", text:"1(b)(i) Give the letter of another structure shown in the diagram but not found in animal cells.", options:["A","B","C","D"], correct:"C", marks:1, topic:"Cell Biology/Plant cells", msText:"C / AC" },
@@ -377,31 +379,61 @@
         { id:"q10b", type:"written", text:"10(b) Suggest why some biologists do not consider auxin to be a hormone.", correctKeywords:["auxin transported in xylem/phloem not blood","auxin produced in tips not from endocrine glands","auxin has different effect on roots and shoots"], marks:2, requiredKeywords:2, topic:"Plant hormones", msText:"auxin transported in xylem / phloem / auxin not transported in blood / plasma (1); auxin produced in tips / eq auxin not from endocrine / glands / organs (1); auxin has different effect on roots and shoots / eq (1)" },
         { id:"q10c", type:"written", text:"10(c) Describe an investigation to find the best concentration of plant growth substance to stimulate root growth.", correctKeywords:["different concentrations","same species/type/age/size","repeat","count number/length of roots","stated time period","same temperature/oxygen/light","same compost/water"], marks:6, requiredKeywords:6, topic:"Practical/Plant hormones", msText:"C change / different concentrations of growth substances (1); O same species / same plant / same type of plant/ named plant / same age / same size (1); R repeat (1); M1 count number of roots / length of roots / measure roots with ruler (1); M2 stated time period of one day plus (1); S1 same (control) temperature / oxygen / light / carbon dioxide (1); S2 same compost / water / humidity / soil / mineral ions / named mineral ion / same volume of plant growth substance (1)" }
     ];
-
+    
     let userAnswers = new Array(questionsData.length).fill("");
     let userManualMarks = new Array(questionsData.length).fill(null);
     let currentQIndex = 0;
     let examSubmitted = false;
     let timerInterval;
     let timeSeconds = 120 * 60;
-    let autoSaveInterval = null;
-
-    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-    function updateTimerDisplay() { document.getElementById("timerDisplay").innerHTML = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
-    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
+    let autoSaveTimer = null;
     
+    // Silent auto-save to localStorage
+    function autoSaveToLocal() {
+        if(examSubmitted) return;
+        const saveData = {
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now()
+        };
+        localStorage.setItem("igcse_bio_exam_autosave", JSON.stringify(saveData));
+    }
+    
+    function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if(saved) {
+            try {
+                const data = JSON.parse(saved);
+                if(data.answers && data.answers.length === userAnswers.length) {
+                    userAnswers = data.answers;
+                    if(data.manualMarks) userManualMarks = data.manualMarks;
+                    if(data.timeRemaining && data.timeRemaining > 0 && data.timeRemaining < 7200) {
+                        timeSeconds = data.timeRemaining;
+                        updateTimerDisplay();
+                    }
+                    return true;
+                }
+            } catch(e) { console.log("Load error:", e); }
+        }
+        return false;
+    }
+    
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
     function startTimer() { 
-        if(timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(()=>{ 
             if(!examSubmitted && timeSeconds > 0){ 
                 timeSeconds--; 
                 updateTimerDisplay(); 
+                if(timeSeconds % 30 === 0) autoSaveToLocal();
             } else if(timeSeconds <= 0 && !examSubmitted) {
                 autoSubmit();
             }
         }, 1000);
     }
-
+    
     function renderNavigation() {
         const navDiv = document.getElementById("navContainer");
         navDiv.innerHTML = "";
@@ -414,45 +446,16 @@
             btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
             navDiv.appendChild(btn);
         });
-        updateAnsweredCounter();
-    }
-    
-    function updateAnsweredCounter() {
         let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
-        document.getElementById("answeredCounter").innerHTML = `✅ Attempted: ${answered} / ${questionsData.length} questions`;
+        document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
     }
     
-    function goToQuestion(idx) {
-        if(examSubmitted) return;
-        document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question"));
-        currentQIndex = idx;
-        const target = document.getElementById(`qcard-${idx}`);
-        if(target) target.classList.add("active-question");
-        renderNavigation();
-    }
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
     
-    function saveAnswer(idx, value) {
-        if(examSubmitted) return;
-        userAnswers[idx] = value;
-        updateAnsweredCounter();
-        renderNavigation();
-    }
+    function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
+    function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
+    function toggleMarkScheme(idx) { let panel = document.getElementById(`ms-panel-${idx}`); if(panel) panel.classList.toggle("visible"); }
     
-    function setManualMark(idx, markValue) {
-        if(examSubmitted) return;
-        let num = parseInt(markValue);
-        if(isNaN(num)) num = 0;
-        let maxMarks = questionsData[idx].marks;
-        if(num > maxMarks) num = maxMarks;
-        if(num < 0) num = 0;
-        userManualMarks[idx] = num;
-    }
-    
-    function toggleMarkScheme(idx) {
-        let panel = document.getElementById(`ms-panel-${idx}`);
-        if(panel) panel.classList.toggle("visible");
-    }
-
     function buildQuestionsHTML() {
         const container = document.getElementById("questionsContainer");
         container.innerHTML = "";
@@ -462,7 +465,6 @@
             if(idx === 0) card.classList.add("active-question");
             card.id = `qcard-${idx}`;
             let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
-            
             if(q.type === "mcq") {
                 inner += `<div class="subquestion">`;
                 q.options.forEach(opt => {
@@ -477,46 +479,31 @@
                 let val = userAnswers[idx] || "";
                 inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
-            
             if(q.type !== "mcq") {
-                inner += `<div style="margin-top: 12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show / Hide Mark Scheme</button>`;
-                inner += `<div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>`;
-                let selectedVal = (userManualMarks[idx] !== null) ? userManualMarks[idx] : "";
-                inner += `<div class="marks-earned-row"><span>✍️ Self-assess marks earned (0 to ${q.marks}): </span>
-                          <select onchange="setManualMark(${idx}, this.value)">
-                            <option value="">-- select --</option>`;
+                inner += `<div style="margin-top:12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>
+                          <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
+                          <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
                 for(let m=0; m<=q.marks; m++) {
-                    let sel = (selectedVal === m) ? "selected" : "";
+                    let sel = (userManualMarks[idx] === m) ? "selected" : "";
                     inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
                 }
                 inner += `</select></div></div>`;
             } else {
-                inner += `<div style="margin-top: 8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                inner += `<div style="margin-top:8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
                           <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
             }
-            
-            if(q.text.includes("diagram") || q.text.includes("graph") || q.text.includes("Diagram")) {
-                inner += `<div class="placeholder-img">📊 [Figure/Graph/Diagram placeholder - refer to original paper]</div>`;
-            }
+            if(q.text.includes("diagram") || q.text.includes("graph")) inner += `<div class="placeholder-img">📊 [Diagram/Graph placeholder - refer to original paper]</div>`;
             card.innerHTML = inner;
             container.appendChild(card);
         });
     }
-
+    
     function getFinalMark(q, idx, answer) {
-        if(q.type === "mcq") {
-            if(!answer) return 0;
-            return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0;
-        }
-        if(q.type === "calc") {
-            if(!answer) return 0;
-            let num = parseFloat(answer);
-            if(isNaN(num)) return 0;
-            return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0;
-        }
-        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) {
-            return Math.min(userManualMarks[idx], q.marks);
-        }
+        if(q.type === "mcq") { if(!answer) return 0; return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0; }
+        if(q.type === "calc") { if(!answer) return 0; let num = parseFloat(answer); if(isNaN(num)) return 0; return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0; }
+        if(q.type === "pair") { if(!answer) return 0; let a = answer.toLowerCase(); let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase())); return matched ? q.marks : 0; }
+        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) return Math.min(userManualMarks[idx], q.marks);
         if(!answer) return 0;
         let a = answer.toLowerCase();
         let kw = q.correctKeywords || [];
@@ -524,28 +511,28 @@
         let count = kw.filter(k => a.includes(k.toLowerCase())).length;
         return Math.min(count, q.marks);
     }
-
+    
     function getGrade(percent) {
-        if(percent >= 85) return "9 (excellent)";
-        if(percent >= 78) return "8 (strong)";
-        if(percent >= 70) return "7 (good)";
-        if(percent >= 62) return "6 (high merit)";
-        if(percent >= 54) return "5 (merit)";
-        if(percent >= 45) return "4 (standard pass)";
+        if(percent >= 85) return "9 (Excellent)";
+        if(percent >= 78) return "8 (Strong)";
+        if(percent >= 70) return "7 (Good)";
+        if(percent >= 62) return "6 (High Merit)";
+        if(percent >= 54) return "5 (Merit)";
+        if(percent >= 45) return "4 (Standard Pass)";
         if(percent >= 35) return "3";
         if(percent >= 25) return "2";
         return "1";
     }
-
-    async function submitExam() {
+    
+    function submitExam() {
         if(examSubmitted) return;
         clearInterval(timerInterval);
-        if(autoSaveInterval) clearInterval(autoSaveInterval);
+        if(autoSaveTimer) clearInterval(autoSaveTimer);
         examSubmitted = true;
         
         let totalEarned = 0, totalPossible = 0;
         let topicScores = {};
-        let details = [];
+        let questionFeedback = [];
         
         for(let i=0; i<questionsData.length; i++) {
             let q = questionsData[i];
@@ -553,15 +540,26 @@
             let earned = getFinalMark(q, i, ans);
             totalEarned += earned;
             totalPossible += q.marks;
-            let topic = q.topic || "General";
-            if(!topicScores[topic]) topicScores[topic] = { earned:0, total:0 };
+            let topic = q.topic;
+            if(!topicScores[topic]) topicScores[topic] = { earned: 0, total: 0 };
             topicScores[topic].earned += earned;
             topicScores[topic].total += q.marks;
-            details.push({ qNum: i+1, topic: topic, answer: ans.substring(0,60), earned: earned, max: q.marks, scheme: q.msText });
+            
+            let status = (earned === q.marks) ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
+            questionFeedback.push({
+                number: i+1,
+                topic: topic,
+                question: q.text.length > 80 ? q.text.substring(0, 80) + "..." : q.text,
+                studentAnswer: ans.length > 100 ? ans.substring(0, 100) + "..." : (ans || "(blank)"),
+                marksEarned: earned,
+                marksTotal: q.marks,
+                status: status,
+                expectedAnswer: q.msText
+            });
         }
         
-        let percent = (totalEarned/totalPossible)*100;
-        let grade = getGrade(percent);
+        let percent = (totalEarned / totalPossible) * 100;
+        let gradeDisplay = getGrade(percent);
         
         let weakTopics = [];
         for(let [topic, data] of Object.entries(topicScores)) {
@@ -570,147 +568,75 @@
         }
         weakTopics.sort();
         
-        const resultData = {
-            score: totalEarned,
-            totalMarks: totalPossible,
-            percent: percent,
-            grade: grade,
-            weakTopics: weakTopics,
-            topicScores: topicScores,
-            details: details
-        };
-        
-        await saveResultToDB(resultData);
-        await sendResultsEmail(resultData);
         
         const reviewDiv = document.getElementById("reviewPanel");
         reviewDiv.classList.remove("hidden");
-        let html = `<h2>📊 Exam Results — Final Mark</h2><div class="score-badge">Score: ${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
-        <div class="grade-box"><strong>Edexcel IGCSE 9–1 grade: ${grade}</strong> (Boundaries: 9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
+        
+        let html = `<h2>📊 Exam Results with Detailed Feedback</h2>
+                    <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+                    <div class="grade-box"><strong>Edexcel IGCSE Grade: ${gradeDisplay}</strong> (9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
         
         if(weakTopics.length > 0) {
-            html += `<div class="weakness-box"><h3>⚠️ Weaker areas (below 55%)</h3><ul>`;
-            weakTopics.forEach(w => { 
+            html += `<div class="weakness-box">
+                        <h3>⚠️ Weak Areas - Focus Your Revision Here (Below 55%)</h3>
+                        <ul>`;
+            for(let w of weakTopics) {
                 let data = topicScores[w];
-                html += `<li><strong>${w}</strong>: ${data.earned}/${data.total} marks (${((data.earned/data.total)*100).toFixed(1)}%) — review this topic.</li>`;
-            });
-            html += `</ul></div>`;
+                html += `<li><strong>${w}</strong>: ${data.earned}/${data.total} marks (${((data.earned/data.total)*100).toFixed(1)}%)</li>`;
+            }
+            html += `</ul><p>💡 Use the "Show Mark Scheme" buttons above to see expected answers and improve these topics.</p></div>`;
         } else {
-            html += `<div class="weakness-box"><h3>✅ No weak areas identified (all ≥55%). Great work!</h3></div>`;
+            html += `<div class="weakness-box" style="background:#e0f2e9; border-left-color:#2f6b47;">
+                        <h3>✅ Excellent Performance!</h3>
+                        <p>All topics scored above 55%. Keep up the great work!</p>
+                     </div>`;
         }
         
-        html += `<p><strong>Detailed breakdown (first 15 questions):</strong></p><ul>`;
-        details.slice(0, 15).forEach((d,i) => { 
-            html += `<li><strong>Q${d.qNum} (${d.topic})</strong> [${d.max} marks]: earned ${d.earned}<br>Your answer: "${d.answer || 'blank'}"<br>📖 MS: ${d.scheme.substring(0, 100)}...</li>`;
-        });
-        if(details.length > 15) html += `<li><em>... and ${details.length-15} more questions (see console or database for full details)</em></li>`;
-        html += `</ul><p>✅ Results saved to database and attempted to email. Progress cleared from database.</p>`;
+        html += `<details open><summary style="cursor:pointer; font-weight:700; font-size:1.1rem;">📋 Question-by-Question Feedback </summary>
+                 <table class="feedback-table">
+                    <thead>
+                        <tr><th>Q#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Expected Answer (Mark Scheme)</th></tr>
+                    </thead>
+                    <tbody>`;
+        for(let fb of questionFeedback) {
+            let rowClass = "";
+            if(fb.marksEarned === fb.marksTotal) rowClass = "correct-highlight";
+            else if(fb.marksEarned === 0) rowClass = "incorrect-highlight";
+            html += `<tr class="${rowClass}">
+                        <td>${fb.number}</td>
+                        <td>${fb.topic}</td>
+                        <td>${fb.question}</td>
+                        <td style="max-width:250px;">"${fb.studentAnswer}"</td>
+                        <td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>
+                        <td style="max-width:300px;">${fb.expectedAnswer.substring(0, 150)}${fb.expectedAnswer.length > 150 ? "..." : ""}</td>
+                      </tr>`;
+        }
+        html += `</tbody></table></details>`;
+        
+        html += `<p style="margin-top:20px;"><small>✅ Exam completed. Results are shown above. Progress has been cleared from local storage.</small></p>`;
         reviewDiv.innerHTML = html;
         
-        document.querySelectorAll("input, textarea, button.nav-btn, #prevBtn, #nextBtn, select").forEach(el => { 
-            if(el.id !== "submitBtn") el.disabled = true; 
+        document.querySelectorAll("input, textarea, button, select").forEach(el => {
+            if(el.id !== "submitBtn") el.disabled = true;
         });
         document.getElementById("submitBtn").disabled = true;
-        
-        await clearProgressFromDB();
-        showToast("✅ Exam submitted! Results saved to database.", false);
-    }
-
-    async function saveProgress() {
-        await saveProgressToDB(userAnswers, userManualMarks, timeSeconds);
-        showToast("✅ Progress saved to database!", false);
+        localStorage.removeItem("igcse_bio_exam_autosave");
     }
     
-    async function loadProgress() {
-        if(examSubmitted) { showToast("Exam already submitted.", true); return; }
-        try {
-            const saved = await loadProgressFromDB();
-            if(saved && saved.answers && saved.answers.length === userAnswers.length) {
-                userAnswers = saved.answers;
-                if(saved.manualMarks) userManualMarks = saved.manualMarks;
-                if(saved.timeRemaining && saved.timeRemaining > 0 && saved.timeRemaining < 7200) {
-                    timeSeconds = saved.timeRemaining;
-                    updateTimerDisplay();
-                }
-                rebuildInputsFromAnswers();
-                renderNavigation();
-                showToast("✅ Progress loaded from database!", false);
-            } else {
-                showToast("No saved progress found in database.", true);
-            }
-        } catch(e) {
-            showToast("Error loading progress.", true);
-        }
-    }
-    
-    async function clearDatabase() {
-        if(confirm("Clear ALL saved progress from database? This cannot be undone.")) {
-            await clearProgressFromDB();
-            showToast("✅ Database progress cleared.", false);
-        }
-    }
-    
-    function rebuildInputsFromAnswers() {
-        buildQuestionsHTML();
-        for(let i=0; i<userAnswers.length; i++) {
-            let val = userAnswers[i];
-            if(val && val !== "") {
-                let radios = document.querySelectorAll(`input[name="q${i}"]`);
-                if(radios.length) {
-                    radios.forEach(r => { if(r.value === val) r.checked = true; });
-                } else {
-                    let inputField = document.querySelector(`#qcard-${i} textarea, #qcard-${i} input[type="text"]`);
-                    if(inputField) inputField.value = val;
-                }
-            }
-            if(userManualMarks[i] !== null && userManualMarks[i] !== undefined) {
-                let selectEl = document.querySelector(`#qcard-${i} select`);
-                if(selectEl) selectEl.value = userManualMarks[i];
-            }
-        }
-        renderNavigation();
-    }
-    
-    async function autoSaveToDB() {
-        if(!examSubmitted) {
-            await saveProgressToDB(userAnswers, userManualMarks, timeSeconds);
-        }
-    }
-
     window.saveAnswer = saveAnswer;
     window.setManualMark = setManualMark;
     window.toggleMarkScheme = toggleMarkScheme;
     window.goToQuestion = goToQuestion;
     
-    window.onload = async () => {
-        await initDatabase();
-        
-        // Try to load existing progress
-        try {
-            const saved = await loadProgressFromDB();
-            if(saved && saved.answers && saved.answers.length === userAnswers.length) {
-                userAnswers = saved.answers;
-                if(saved.manualMarks) userManualMarks = saved.manualMarks;
-                if(saved.timeRemaining && saved.timeRemaining > 0 && saved.timeRemaining < 7200) {
-                    timeSeconds = saved.timeRemaining;
-                }
-                showToast("📀 Previous session restored from database", false);
-            }
-        } catch(e) { console.log("No existing progress"); }
-        
+    window.onload = () => {
+        loadAutoSave();
         buildQuestionsHTML();
         renderNavigation();
         startTimer();
-        
-        // Auto-save every 30 seconds to database
-        autoSaveInterval = setInterval(autoSaveToDB, 30000);
-        
+        autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Results will be saved to database and emailed.")) submitExam(); };
-        document.getElementById("saveResponsesBtn").onclick = saveProgress;
-        document.getElementById("loadResponsesBtn").onclick = loadProgress;
-        document.getElementById("clearDatabaseBtn").onclick = clearDatabase;
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? You will receive detailed feedback comparing your answers to the mark scheme.")) submitExam(); };
     };
 </script>
 </body>
