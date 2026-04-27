@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Edexcel IGCSE Biology Paper 1B (May 2019) | Interactive Self-Marking Exam</title>
+    <title>Edexcel IGCSE Biology Paper 1B (May 2019) | Interactive</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -138,6 +139,10 @@
             background: #4a6f8a;
             padding: 6px 14px;
             font-size: 0.75rem;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
         }
         .action-buttons {
             display: flex;
@@ -155,6 +160,12 @@
         .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
         .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
         footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        .toast-msg {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2c7da0; color: white; padding: 10px 18px;
+            border-radius: 30px; font-size: 0.8rem; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
         @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } }
     </style>
 </head>
@@ -163,7 +174,7 @@
     <div class="header">
         <div class="title">
             <h1>Pearson Edexcel International GCSE (4BI1)</h1>
-            <p>Biology Paper 1B | May 2020</p>
+            <p>Biology Paper 1B | May 2019</p>
         </div>
         <div class="timer-area">
             <div>Time Remaining</div>
@@ -174,8 +185,9 @@
         <span>⏱️ 2 hours | 📝 Total marks: 110</span>
         <span id="answeredCounter">✅ Attempted: 0 / 55 questions</span>
         <div class="save-load-bar">
-            <button id="saveResponsesBtn">💾 Save Progress</button>
+            <button id="saveResponsesBtn">💾 Manual Save</button>
             <button id="loadResponsesBtn" class="secondary">📂 Load Saved</button>
+            <button id="clearDatabaseBtn" style="background:#b23c1c;">🗑 Clear DB</button>
         </div>
     </div>
     <div id="navContainer" class="question-nav"></div>
@@ -186,12 +198,143 @@
         <button id="submitBtn" class="warning">✔ Submit & Mark</button>
     </div>
     <div id="reviewPanel" class="review-section hidden"></div>
-    <footer>For written questions: click "Show Mark Scheme" to see official criteria, then select marks earned (0 to max). Final score combines auto-keyword & manual marks.</footer>
 </div>
+<div id="toastMsg" class="toast-msg"></div>
 
 <script>
-    // Question bank (55 items, total 110 marks). For written questions we store mark scheme text.
-   const questionsData = [
+    // EmailJS Configuration (replace with your actual keys for production)
+    // Get free keys from https://www.emailjs.com/
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const RECIPIENT_EMAIL = "ibn.daray@gmail.com";
+    
+    // Initialize May 2019JS if keys are provided
+    if(May 2019JS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        May 2019js.init(May 2019JS_PUBLIC_KEY);
+    }
+    
+    // ========== IndexedDB Setup ==========
+    const DB_NAME = "IGCSE_Biology_Exam_DB";
+    const DB_VERSION = 2;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) {
+                    dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                }
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) {
+                    dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+                }
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const record = {
+                id: "current_progress",
+                answers: answers,
+                manualMarks: manualMarks,
+                timeRemaining: timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            const request = store.put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readonly");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.get("current_progress");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([RESULTS_STORE], "readwrite");
+            const store = transaction.objectStore(RESULTS_STORE);
+            const record = {
+                timestamp: new Date().toISOString(),
+                ...resultData
+            };
+            const request = store.add(record);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.delete("current_progress");
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+    
+    // ========== May 2019 Function ==========
+    async function sendResultsMay 2019(resultData, studentName = "Student") {
+        if (May 2019JS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+            console.log("May 2019JS not configured. Results:", resultData);
+            showToast("May 2019 not sent - configure May 2019JS keys", false);
+            return false;
+        }
+        try {
+            const May 2019Params = {
+                to_May 2019: RECIPIENT_May 2019,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", ") || "None",
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.slice(0, 15).map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await May 2019js.send(May 2019JS_SERVICE_ID, May 2019JS_TEMPLATE_ID, May 2019Params);
+            showToast("✅ Results May 2019ed successfully!", false);
+            return true;
+        } catch(e) {
+            console.error("May 2019 error:", e);
+            showToast("⚠️ May 2019 failed - check May 2019JS configuration", true);
+            return false;
+        }
+    }
+    
+    // ========== Question Bank (55 items, 110 marks) ==========
+  const questionsData = [
         { id:"q1a", type:"written", text:"1(a) Name the structures labelled A, B, C, and D (plant cell diagram).", correctKeywords:["vacuole","nucleus","cell wall","cell membrane"], marks:4, requiredKeywords:4, topic:"Cell Biology/Plant cells", msText:"A vacuole (1); B nucleus (1); C cell wall (1); D cell membrane (1)" },
         { id:"q1bi", type:"mcq", text:"1(b)(i) Give the letter of another structure shown in the diagram but not found in animal cells.", options:["A","B","C","D"], correct:"C", marks:1, topic:"Cell Biology/Plant cells", msText:"C / AC" },
         { id:"q1bii", type:"written", text:"1(b)(ii) Explain why some plant cells contain many chloroplasts, some contain few and some contain no chloroplasts.", correctKeywords:["photosynthesis","(sun)light","many in palisade","few in spongy/guard cells","none in upper epidermis/root cells"], marks:3, requiredKeywords:3, topic:"Cell Biology/Photosynthesis", msText:"photosynthesis (1); (sun)light (1); many in palisade (1); few in spongy / few in guard (cells) (1); none in upper epidermis / root (cells) (1)" },
@@ -235,18 +378,29 @@
         { id:"q10c", type:"written", text:"10(c) Describe an investigation to find the best concentration of plant growth substance to stimulate root growth.", correctKeywords:["different concentrations","same species/type/age/size","repeat","count number/length of roots","stated time period","same temperature/oxygen/light","same compost/water"], marks:6, requiredKeywords:6, topic:"Practical/Plant hormones", msText:"C change / different concentrations of growth substances (1); O same species / same plant / same type of plant/ named plant / same age / same size (1); R repeat (1); M1 count number of roots / length of roots / measure roots with ruler (1); M2 stated time period of one day plus (1); S1 same (control) temperature / oxygen / light / carbon dioxide (1); S2 same compost / water / humidity / soil / mineral ions / named mineral ion / same volume of plant growth substance (1)" }
     ];
 
-    // For each question store user answer + manual mark (if written) 
     let userAnswers = new Array(questionsData.length).fill("");
-    let userManualMarks = new Array(questionsData.length).fill(null); // null = not set, else numeric
+    let userManualMarks = new Array(questionsData.length).fill(null);
     let currentQIndex = 0;
     let examSubmitted = false;
     let timerInterval;
     let timeSeconds = 120 * 60;
+    let autoSaveInterval = null;
 
     function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerHTML = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
     function autoSubmit() { clearInterval(timerInterval); submitExam(); }
-    function startTimer() { timerInterval = setInterval(()=>{ if(!examSubmitted){ timeSeconds--; updateTimerDisplay(); if(timeSeconds<=0) autoSubmit(); } },1000); }
+    
+    function startTimer() { 
+        if(timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(()=>{ 
+            if(!examSubmitted && timeSeconds > 0){ 
+                timeSeconds--; 
+                updateTimerDisplay(); 
+            } else if(timeSeconds <= 0 && !examSubmitted) {
+                autoSubmit();
+            }
+        }, 1000);
+    }
 
     function renderNavigation() {
         const navDiv = document.getElementById("navContainer");
@@ -262,10 +416,12 @@
         });
         updateAnsweredCounter();
     }
+    
     function updateAnsweredCounter() {
         let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
         document.getElementById("answeredCounter").innerHTML = `✅ Attempted: ${answered} / ${questionsData.length} questions`;
     }
+    
     function goToQuestion(idx) {
         if(examSubmitted) return;
         document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question"));
@@ -274,12 +430,14 @@
         if(target) target.classList.add("active-question");
         renderNavigation();
     }
+    
     function saveAnswer(idx, value) {
         if(examSubmitted) return;
         userAnswers[idx] = value;
         updateAnsweredCounter();
         renderNavigation();
     }
+    
     function setManualMark(idx, markValue) {
         if(examSubmitted) return;
         let num = parseInt(markValue);
@@ -289,6 +447,7 @@
         if(num < 0) num = 0;
         userManualMarks[idx] = num;
     }
+    
     function toggleMarkScheme(idx) {
         let panel = document.getElementById(`ms-panel-${idx}`);
         if(panel) panel.classList.toggle("visible");
@@ -304,7 +463,6 @@
             card.id = `qcard-${idx}`;
             let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
             
-            // Answer input based on type
             if(q.type === "mcq") {
                 inner += `<div class="subquestion">`;
                 q.options.forEach(opt => {
@@ -316,16 +474,13 @@
                 let val = userAnswers[idx] || "";
                 inner += `<div class="subquestion"><input type="text" placeholder="Your numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
             } else {
-                // written / pair / short
                 let val = userAnswers[idx] || "";
                 inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
             
-            // Mark scheme button + manual marks selector for non-MCQ
             if(q.type !== "mcq") {
                 inner += `<div style="margin-top: 12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show / Hide Mark Scheme</button>`;
                 inner += `<div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>`;
-                // Manual marks dropdown
                 let selectedVal = (userManualMarks[idx] !== null) ? userManualMarks[idx] : "";
                 inner += `<div class="marks-earned-row"><span>✍️ Self-assess marks earned (0 to ${q.marks}): </span>
                           <select onchange="setManualMark(${idx}, this.value)">
@@ -336,7 +491,6 @@
                 }
                 inner += `</select></div></div>`;
             } else {
-                // MCQ simple mark scheme hint
                 inner += `<div style="margin-top: 8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
                           <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
             }
@@ -349,7 +503,6 @@
         });
     }
 
-    // Final marking: For written, if manual mark set use that, else fallback to keyword auto-mark.
     function getFinalMark(q, idx, answer) {
         if(q.type === "mcq") {
             if(!answer) return 0;
@@ -361,17 +514,9 @@
             if(isNaN(num)) return 0;
             return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0;
         }
-        if(q.type === "pair") {
-            if(!answer) return 0;
-            let a = answer.toLowerCase();
-            let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase()));
-            return matched ? q.marks : 0;
-        }
-        // written & short: prefer manual mark if set
         if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) {
             return Math.min(userManualMarks[idx], q.marks);
         }
-        // fallback to keyword marking
         if(!answer) return 0;
         let a = answer.toLowerCase();
         let kw = q.correctKeywords || [];
@@ -392,77 +537,119 @@
         return "1";
     }
 
-    function computeWeakTopics(scoresByTopic) {
-        let weak = [];
-        for(let [topic, data] of Object.entries(scoresByTopic)) {
-            let percentage = (data.earned / data.total) * 100;
-            if(percentage < 55) weak.push({ topic, percentage, earned: data.earned, total: data.total });
-        }
-        weak.sort((a,b)=> a.percentage - b.percentage);
-        return weak;
-    }
-
-    function submitExam() {
+    async function submitExam() {
         if(examSubmitted) return;
         clearInterval(timerInterval);
+        if(autoSaveInterval) clearInterval(autoSaveInterval);
         examSubmitted = true;
+        
         let totalEarned = 0, totalPossible = 0;
         let topicScores = {};
         let details = [];
-        questionsData.forEach((q, idx) => {
-            let ans = userAnswers[idx] || "";
-            let earned = getFinalMark(q, idx, ans);
+        
+        for(let i=0; i<questionsData.length; i++) {
+            let q = questionsData[i];
+            let ans = userAnswers[i] || "";
+            let earned = getFinalMark(q, i, ans);
             totalEarned += earned;
             totalPossible += q.marks;
             let topic = q.topic || "General";
             if(!topicScores[topic]) topicScores[topic] = { earned:0, total:0 };
             topicScores[topic].earned += earned;
             topicScores[topic].total += q.marks;
-            let markingMethod = (q.type !== "mcq" && userManualMarks[idx] !== null) ? "manual" : "auto-keyword";
-            details.push({ text: q.text.substring(0,70), answer: ans.substring(0,60), earned, max: q.marks, topic, method: markingMethod, scheme: q.msText });
-        });
+            details.push({ qNum: i+1, topic: topic, answer: ans.substring(0,60), earned: earned, max: q.marks, scheme: q.msText });
+        }
+        
         let percent = (totalEarned/totalPossible)*100;
         let grade = getGrade(percent);
-        let weakTopics = computeWeakTopics(topicScores);
+        
+        let weakTopics = [];
+        for(let [topic, data] of Object.entries(topicScores)) {
+            let topicPercent = (data.earned / data.total) * 100;
+            if(topicPercent < 55) weakTopics.push(topic);
+        }
+        weakTopics.sort();
+        
+        const resultData = {
+            score: totalEarned,
+            totalMarks: totalPossible,
+            percent: percent,
+            grade: grade,
+            weakTopics: weakTopics,
+            topicScores: topicScores,
+            details: details
+        };
+        
+        await saveResultToDB(resultData);
+        await sendResultsMay 2019(resultData);
+        
         const reviewDiv = document.getElementById("reviewPanel");
         reviewDiv.classList.remove("hidden");
         let html = `<h2>📊 Exam Results — Final Mark</h2><div class="score-badge">Score: ${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
         <div class="grade-box"><strong>Edexcel IGCSE 9–1 grade: ${grade}</strong> (Boundaries: 9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
+        
         if(weakTopics.length > 0) {
             html += `<div class="weakness-box"><h3>⚠️ Weaker areas (below 55%)</h3><ul>`;
-            weakTopics.forEach(w => { html += `<li><strong>${w.topic}</strong>: ${w.earned}/${w.total} marks (${w.percentage.toFixed(1)}%) — review this topic.</li>`; });
+            weakTopics.forEach(w => { 
+                let data = topicScores[w];
+                html += `<li><strong>${w}</strong>: ${data.earned}/${data.total} marks (${((data.earned/data.total)*100).toFixed(1)}%) — review this topic.</li>`;
+            });
             html += `</ul></div>`;
         } else {
             html += `<div class="weakness-box"><h3>✅ No weak areas identified (all ≥55%). Great work!</h3></div>`;
         }
-        html += `<p><strong>Detailed breakdown:</strong></p><ul>`;
-        details.forEach((d,i) => { html += `<li><strong>Q${i+1} (${d.topic})</strong> [${d.max} marks]: earned ${d.earned} (${d.method})<br>Your answer: "${d.answer || 'blank'}"<br>📖 MS: ${d.scheme}</li>`; });
-        html += `</ul><p>✔️ For written questions you could manually assign marks using the dropdown; otherwise auto-keyword marking applied.</p>`;
+        
+        html += `<p><strong>Detailed breakdown (first 15 questions):</strong></p><ul>`;
+        details.slice(0, 15).forEach((d,i) => { 
+            html += `<li><strong>Q${d.qNum} (${d.topic})</strong> [${d.max} marks]: earned ${d.earned}<br>Your answer: "${d.answer || 'blank'}"<br>📖 MS: ${d.scheme.substring(0, 100)}...</li>`;
+        });
+        if(details.length > 15) html += `<li><em>... and ${details.length-15} more questions (see console or database for full details)</em></li>`;
+        html += `</ul><p>✅ Results saved to database and attempted to May 2019. Progress cleared from database.</p>`;
         reviewDiv.innerHTML = html;
-        document.querySelectorAll("input, textarea, button.nav-btn, #prevBtn, #nextBtn, select").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
+        
+        document.querySelectorAll("input, textarea, button.nav-btn, #prevBtn, #nextBtn, select").forEach(el => { 
+            if(el.id !== "submitBtn") el.disabled = true; 
+        });
         document.getElementById("submitBtn").disabled = true;
+        
+        await clearProgressFromDB();
+        showToast("✅ Exam submitted! Results saved to database.", false);
     }
 
-    function saveProgress() {
-        const data = { answers: userAnswers, manualMarks: userManualMarks, timestamp: new Date().toISOString() };
-        localStorage.setItem("igcse_bio_paper1b_save_full", JSON.stringify(data));
-        alert("Progress saved (including manual marks)! Use 'Load Saved' to resume.");
+    async function saveProgress() {
+        await saveProgressToDB(userAnswers, userManualMarks, timeSeconds);
+        showToast("✅ Progress saved to database!", false);
     }
-    function loadProgress() {
-        if(examSubmitted) { alert("Exam already submitted."); return; }
-        const raw = localStorage.getItem("igcse_bio_paper1b_save_full");
-        if(!raw) { alert("No saved data found."); return; }
+    
+    async function loadProgress() {
+        if(examSubmitted) { showToast("Exam already submitted.", true); return; }
         try {
-            const saved = JSON.parse(raw);
-            if(saved.answers && saved.answers.length === userAnswers.length) {
+            const saved = await loadProgressFromDB();
+            if(saved && saved.answers && saved.answers.length === userAnswers.length) {
                 userAnswers = saved.answers;
                 if(saved.manualMarks) userManualMarks = saved.manualMarks;
+                if(saved.timeRemaining && saved.timeRemaining > 0 && saved.timeRemaining < 7200) {
+                    timeSeconds = saved.timeRemaining;
+                    updateTimerDisplay();
+                }
                 rebuildInputsFromAnswers();
                 renderNavigation();
-                alert("Progress loaded.");
-            } else { alert("Data mismatch."); }
-        } catch(e) { alert("Error loading."); }
+                showToast("✅ Progress loaded from database!", false);
+            } else {
+                showToast("No saved progress found in database.", true);
+            }
+        } catch(e) {
+            showToast("Error loading progress.", true);
+        }
     }
+    
+    async function clearDatabase() {
+        if(confirm("Clear ALL saved progress from database? This cannot be undone.")) {
+            await clearProgressFromDB();
+            showToast("✅ Database progress cleared.", false);
+        }
+    }
+    
     function rebuildInputsFromAnswers() {
         buildQuestionsHTML();
         for(let i=0; i<userAnswers.length; i++) {
@@ -483,20 +670,47 @@
         }
         renderNavigation();
     }
+    
+    async function autoSaveToDB() {
+        if(!examSubmitted) {
+            await saveProgressToDB(userAnswers, userManualMarks, timeSeconds);
+        }
+    }
 
     window.saveAnswer = saveAnswer;
     window.setManualMark = setManualMark;
     window.toggleMarkScheme = toggleMarkScheme;
     window.goToQuestion = goToQuestion;
-    window.onload = () => {
+    
+    window.onload = async () => {
+        await initDatabase();
+        
+        // Try to load existing progress
+        try {
+            const saved = await loadProgressFromDB();
+            if(saved && saved.answers && saved.answers.length === userAnswers.length) {
+                userAnswers = saved.answers;
+                if(saved.manualMarks) userManualMarks = saved.manualMarks;
+                if(saved.timeRemaining && saved.timeRemaining > 0 && saved.timeRemaining < 7200) {
+                    timeSeconds = saved.timeRemaining;
+                }
+                showToast("📀 Previous session restored from database", false);
+            }
+        } catch(e) { console.log("No existing progress"); }
+        
         buildQuestionsHTML();
         renderNavigation();
         startTimer();
+        
+        // Auto-save every 30 seconds to database
+        autoSaveInterval = setInterval(autoSaveToDB, 30000);
+        
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam and see final grade & weak topics?")) submitExam(); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Results will be saved to database and emailed.")) submitExam(); };
         document.getElementById("saveResponsesBtn").onclick = saveProgress;
         document.getElementById("loadResponsesBtn").onclick = loadProgress;
+        document.getElementById("clearDatabaseBtn").onclick = clearDatabase;
     };
 </script>
 </body>
