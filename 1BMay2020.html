@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Edexcel IGCSE Biology Paper 1B (May 2019) | Interactive</title>
+     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .exam-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px 30px 40px;
+        }
+        .header {
+            border-bottom: 3px solid #2c7da0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .title h1 { margin: 0; font-size: 1.7rem; color: #0b3b4f; }
+        .title p { margin: 5px 0 0; color: #2c7da0; font-weight: 500; }
+        .timer-area { background: #1e2a3e; padding: 8px 18px; border-radius: 60px; color: white; text-align: center; font-weight: bold; }
+        .timer { font-size: 2rem; font-family: monospace; letter-spacing: 2px; }
+        .info-bar {
+            background: #e9f0f5;
+            padding: 10px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .nav-btn {
+            background: #eef2f6;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 42px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.9rem;
+        }
+        .nav-btn.active { background: #2c7da0; color: white; }
+        .nav-btn.answered { background: #61a5c2; color: white; }
+        .question-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .question-card.active-question { display: block; }
+        .q-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: #f0f6fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .marks { font-size: 0.8rem; background: #cbd5e1; border-radius: 20px; padding: 2px 10px; margin-left: 12px; }
+        .subquestion { margin: 20px 0 20px 12px; border-left: 3px solid #cbd5e1; padding-left: 18px; }
+        .placeholder-img {
+            background: #eef2f9;
+            border: 1px dashed #8ba0bc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e66;
+        }
+        .mcq-option { margin: 10px 0; }
+        input[type="text"], input[type="number"], textarea {
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #b9c7d9;
+            width: 100%;
+            max-width: 550px;
+            font-family: inherit;
+        }
+        textarea { max-width: 100%; }
+        .mark-scheme-panel {
+            background: #f8f9fc;
+            border-left: 5px solid #2c7da0;
+            padding: 12px 16px;
+            margin-top: 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .mark-scheme-panel.visible { display: block; }
+        .marks-earned-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .marks-earned-row select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid #b9c7d9;
+            font-weight: bold;
+        }
+        button.small {
+            background: #4a6f8a;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #b23c1c; }
+        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e2a3e; }
+        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
+        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        .feedback-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .feedback-table th, .feedback-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; text-align: left; }
+        .feedback-table th { background: #2c7da0; color: white; }
+        .feedback-table tr:nth-child(even) { background: #f9f9f9; }
+        .correct-highlight { background: #d4edda; }
+        .incorrect-highlight { background: #f8d7da; }
+        details summary { cursor: pointer; font-weight: 600; margin: 15px 0; }
+        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        .status-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2c7da0; color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.8rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+        }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } .feedback-table { font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+<div class="exam-container" id="examApp">
+    <div class="header">
+        <div class="title">
+            <h1>Pearson Edexcel International GCSE (4BI1)</h1>
+            <p>Biology Paper 1B | May 2019</p>
+        </div>
+        <div class="timer-area">
+            <div>Time Remaining</div>
+            <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+    </div>
+    <div class="info-bar">
+        <span>⏱️ 2 hours | 📝 Total marks: 110</span>
+        <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
+    </div>
+    <div id="navContainer" class="question-nav"></div>
+    <div id="questionsContainer"></div>
+    <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">✔ Submit Exam & Get Detailed Feedback</button>
+    </div>
+    <div id="reviewPanel" class="review-section hidden"></div>
+    <div id="statusToast" class="status-toast"></div>
+</div>
+
+<script>
+    // EmailJS Configuration (replace with your actual keys for production)
+    // Get free keys from https://www.emailjs.com/
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+    
+    // Initialize EmailJS if keys are provided
+    if(EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+    
+    // ========== IndexedDB Setup ==========
+    const DB_NAME = "IGCSE_Biology_Exam_DB";
+    const DB_VERSION = 2;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) {
+                    dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                }
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) {
+                    dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+                }
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const record = {
+                id: "current_progress",
+                answers: answers,
+                manualMarks: manualMarks,
+                timeRemaining: timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            const request = store.put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readonly");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.get("current_progress");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([RESULTS_STORE], "readwrite");
+            const store = transaction.objectStore(RESULTS_STORE);
+            const record = {
+                timestamp: new Date().toISOString(),
+                ...resultData
+            };
+            const request = store.add(record);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.delete("current_progress");
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+    
+    // ========== Email Function ==========
+    async function sendResultsEmail(resultData, studentName = "Student") {
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+            console.log("EmailJS not configured. Results:", resultData);
+            showToast("Email not sent - configure EmailJS keys", false);
+            return false;
+        }
+        try {
+            const emailParams = {
+                to_email: RECIPIENT_EMAIL,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", ") || "None",
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.slice(0, 15).map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+            showToast("✅ Results emailed successfully!", false);
+            return true;
+        } catch(e) {
+            console.error("Email error:", e);
+            showToast("⚠️ Email failed - check EmailJS configuration", true);
+            return false;
+        }
+    }
+
+
+    // Full Question Bank - 55 items, 110 marks total
+const questionsData = [
+        { id:"q1ai", type:"mcq", text:"1(a)(i) Which of these is found in this bacterium?", options:["A cellulose","B chitin","C cytoplasm","D nucleus"], correct:"C cytoplasm", marks:1, topic:"Cell Biology/Bacteria", msText:"C cytoplasm" },
+        { id:"q1aii", type:"mcq", text:"1(a)(ii) The bacterium has evolved to release an enzyme called urease. The action of the bacterium neutralises the acid in the stomach. What is the pH changed to?", options:["A 1","B 2","C 7","D 12"], correct:"C 7", marks:1, topic:"Enzymes/pH", msText:"C 7" },
+        { id:"q1aiii", type:"written", text:"1(a)(iii) Explain how H. pylori may have evolved to neutralise the acid in the stomach.", correctKeywords:["mutation","variation","survive","reproduce","breed","offspring","pass on allele","pass on gene"], marks:4, requiredKeywords:4, topic:"Evolution/Natural selection", msText:"mutation (1); variation (1); survive (1); reproduce / breed / offspring (1); pass on allele / gene (1)" },
+        { id:"q1b", type:"written", text:"1(b) Give two conclusions from these results (probiotics and cranberry juice).", correctKeywords:["probiotic","cranberry","both","treatments better than control","reduce bacteria","more reduction if taken together","cranberry reduces more than probiotic"], marks:2, requiredKeywords:2, topic:"Data analysis", msText:"probiotic / cranberry / both / treatments (better than control) reduce (bacteria) / eq(1); more reduction if taken together / eq (1); cranberry (alone) reduces more than probiotic (alone) / eq(1)" },
+        { id:"q2", type:"written", text:"2 Complete the passage about reproduction in flowering plants.", correctKeywords:["sexual","pollen","anther","stigma","bees","moths","flies","large","big","scented","sweet smelling","style","fertilisation"], marks:8, requiredKeywords:8, topic:"Plant reproduction", msText:"sexual (1); pollen (1); anther (1); stigma (1); bees / moths / flies (1); large / big / scented / (sweet) smelling (1); style (1); fertilisation (1)" },
+        { id:"q3a", type:"written", text:"3(a) Name the organelle shown in the drawing of a cheek cell.", correctKeywords:["nucleus"], marks:1, topic:"Cell Biology", msText:"nucleus" },
+        { id:"q3b", type:"calc", text:"3(b) Calculate the magnification of the mitochondrion drawing (actual length 6μm).", correctValue:10000, tolerance:500, marks:2, topic:"Microscopy/Maths", msText:"convert length into μm (60 mm = 60 000 μm) (1); division (60 000 ÷ 6 = ×10 000) (1)" },
+        { id:"q3ci", type:"mcq", text:"3(c)(i) What is the mean number of mitochondria per μm³ in a heart muscle cell?", options:["A 0.33","B 3","C 10000","D 7500000"], correct:"A 0.33", marks:1, topic:"Cell Biology", msText:"A 0.33" },
+        { id:"q3cii", type:"written", text:"3(c)(ii) Comment on the differences in the data for the sperm and for the egg.", correctKeywords:["sperm smaller","fewer total mitochondria","more mitochondria per volume","uses energy to swim","fertilise egg"], marks:3, requiredKeywords:3, topic:"Cell Biology/Reproduction", msText:"sperm smaller / sperm is small cell / eq (1); fewer (total) mitochondria (per cell) (1); more mitochondria per volume / per μm³ (1); uses energy to swim / move / get to /eq (1); fertilise egg (1)" },
+        { id:"q4ai", type:"mcq", text:"4(a)(i) Which term describes the trophic level of the krill?", options:["A predator","B prey","C primary consumer","D secondary consumer"], correct:"C primary consumer", marks:1, topic:"Ecology", msText:"C primary consumer" },
+        { id:"q4aii", type:"written", text:"4(a)(ii) Draw a labelled pyramid of biomass to represent this food chain.", correctKeywords:["pyramid shape","labels: microscopic plants, krill, whale"], marks:2, topic:"Ecology", msText:"(Pyramid drawing with appropriate layers and labels)" },
+        { id:"q4b", type:"calc", text:"4(b) Calculate the time taken for the krill to remove microscopic plants from one square metre of ice (rate 1.6cm² per second). Give answer in minutes.", correctValue:104.167, tolerance:1, marks:3, topic:"Maths", msText:"1 m² = 10,000 cm² (1); 10,000 ÷ 1.6 = 6250 seconds (1); 6250 ÷ 60 = 104.2 minutes (1)" },
+        { id:"q4c", type:"written", text:"4(c) Suggest how the student could investigate the rate that krill feeding removes microscopic plants in a laboratory.", correctKeywords:["container of sea water","add same number of plants","add stated number of krill","leave for same time","remeasure number of plants","repeat"], marks:4, requiredKeywords:4, topic:"Practical/Investigation", msText:"use container of sea water (1); add same / stated number/ amount/ count number / mass of microscopic plants (1); add stated number / mass of krill (1); leave for same / stated time / measure time taken to (1); (re)measure number / amount/mass / percentage change in plants(1); repeat /eq (1)" },
+        { id:"q4d", type:"written", text:"4(d) Explain how global warming could affect the whale population in the Antarctic ocean.", correctKeywords:["fewer whales","ice melts","less surface for microscopic plants","fewer microscopic plants","fewer krill","carbon dioxide causes acidification","affects krill eggs"], marks:4, requiredKeywords:4, topic:"Environment/Global warming", msText:"fewer whales / whales die / migrate (1); ice melts (1); no / less surface for microscopic plants (1); so fewer microscopic plants (available) (1); fewer krill / krill die / migrate (1); carbon dioxide causes acidification (1); could affect krill (eggs) (1)" },
+        { id:"q5a", type:"written", text:"5(a) Describe how the plasmid is modified to contain recombinant DNA.", correctKeywords:["restriction enzyme","cut","plasmid","vector","target gene","ligase enzyme","join","sticky ends"], marks:3, requiredKeywords:3, topic:"Genetic modification", msText:"(same) restriction enzyme to cut / remove / open /eq (1); plasmid / vector and target gene / gene for making poison / eq (1); ligase enzyme to join / stick / insert /eq (1); complementary shapes / sticky ends /eq (1)" },
+        { id:"q5b", type:"written", text:"5(b) Discuss the decision made by the farmer to grow GM plants rather than using pesticides.", correctKeywords:["GM plants specific","reduce need for pesticide","pesticide needs reapplication","insects resistant to pesticide","bioaccumulation","health problems","pesticides quick to kill","cross pollination","GM pollen may kill pollinators","insects may develop resistance","customers may not buy","patents"], marks:6, requiredKeywords:6, topic:"Genetic modification/Agriculture", msText:"Good decision: specific / kill specific insects (1); reduce need for pesticide (1); pesticide needs reapplication (1); insects can become resistant to pesticide (1); bioaccumulation (1); health problems (1). Poor decision: pesticides are quick to kill (1); cross pollination (1); GM pollen may kill insect pollinators (1); insects may develop resistance (1); customers may not buy (1); patents (1)" },
+        { id:"q6a", type:"mcq", text:"6(a) Which of these is the balanced chemical symbol equation for aerobic respiration?", options:["A 6CO2 + 6H2O → C6H12O6 + 6O2","B C6H12O6 → 2C2H5OH + 2CO2","C C6H12O6 → 2C3H6O3","D C6H12O6 + 6O2 → 6CO2 + 6H2O"], correct:"D C6H12O6 + 6O2 → 6CO2 + 6H2O", marks:1, topic:"Respiration", msText:"D C6H12O6 + 6O2 → 6CO2 + 6H2O" },
+        { id:"q6bi", type:"written", text:"6(b)(i) Explain why the coloured water drop moves during the investigation.", correctKeywords:["moves left","towards locust","carbon dioxide absorbed by KOH","oxygen used by insect","in respiration"], marks:2, requiredKeywords:2, topic:"Respiration/Practical", msText:"moves left / towards locust (1); carbon dioxide produced by insect absorbed by KOH / filter paper (1); oxygen (used by insect) (1); in respiration (1)" },
+        { id:"q6bii", type:"written", text:"6(b)(ii) State three variables the student should control in this investigation.", correctKeywords:["size","mass","temperature","time","duration","volume of KOH","concentration of KOH","size of flask"], marks:6, requiredKeywords:3, topic:"Practical/Variables", msText:"size / mass / (of locusts) / eq (1); temperature (1); time / duration (1); volume / concentration of KOH / size of filter paper (1)" },
+        { id:"q6ci", type:"calc", text:"6(c)(i) Complete the table by giving the missing mean value.", correctValue:5.267, tolerance:0.01, marks:1, topic:"Maths/Mean", msText:"5.3 or 5.27 or 5.267 or 5.26 recurring" },
+        { id:"q6cii", type:"written", text:"6(c)(ii) Comment on the reliability of the data in the table.", correctKeywords:["not reliable","repeat","male 3 result is anomalous","more variation within sex than between sexes"], marks:3, requiredKeywords:2, topic:"Data analysis", msText:"not reliable / reliability can be increased /eq (1); repeat not / results is anomalous / male 3 result is anomalous (1); more variation within sex than between sexes / eq (1)" },
+        { id:"q7a", type:"written", text:"7(a) Describe how you would test a sample of cow's milk and a sample of human milk to show they contain different masses of protein.", correctKeywords:["biuret","deepest/darker purple contains most protein","same volume of milk/biuret"], marks:2, requiredKeywords:2, topic:"Food tests", msText:"biuret (1); deepest / darker / intensity purple contains most protein (1); reference to same volume of milk / biuret (1)" },
+        { id:"q7b", type:"written", text:"7(b) Explain why antibodies in milk are useful for babies.", correctKeywords:["prevent infection","destroy virus/bacteria/pathogen","provides immunity"], marks:2, requiredKeywords:2, topic:"Immunity", msText:"prevent infection / disease (1); (by destroying / due to) virus / bacteria / pathogen (1); provides immunity / eq (1)" },
+        { id:"q7c", type:"written", text:"7(c) State two uses of lipids in the body.", correctKeywords:["source of energy","store of energy","insulation","myelin sheath","protection fat around organs"], marks:2, requiredKeywords:2, topic:"Diet", msText:"use as a source of / for energy / respiration (1); use as store of energy (1); insulation / myelin sheath / protection fat around organs/ eq(1)" },
+        { id:"q7di", type:"written", text:"7(d)(i) Name the carbohydrate in milk used to make yoghurt.", correctKeywords:["lactose"], marks:1, topic:"Biochemistry", msText:"lactose" },
+        { id:"q7dii", type:"written", text:"7(d)(ii) Name the bacteria added to milk to make yoghurt.", correctKeywords:["Lactobacillus","Streptococcus"], marks:1, topic:"Microbiology/Food", msText:"Lactobacillus / Streptococcus" },
+        { id:"q7diii", type:"written", text:"7(d)(iii) Explain why milk needs to be heated to a high temperature at the start of the process for making yoghurt.", correctKeywords:["sterilise milk","pasteurise","kill bacteria/pathogens","prevent competition"], marks:2, requiredKeywords:2, topic:"Food production", msText:"sterilise milk / pasteurise (1); kill bacteria / pathogen / microorganisms (1); prevent competition (for carbohydrate / sugar) (1)" },
+        { id:"q8ai", type:"mcq", text:"8(a)(i) Where are cells dividing by meiosis found in a human?", options:["A kidney","B penis","C skin","D testis"], correct:"D testis", marks:1, topic:"Cell division", msText:"D testis" },
+        { id:"q8aii", type:"mcq", text:"8(a)(ii) Which part of a flowering plant is usually used to demonstrate cells dividing by mitosis?", options:["A anther","B cotyledon","C root tip","D xylem"], correct:"C root tip", marks:1, topic:"Cell division", msText:"C root tip" },
+        { id:"q8b", type:"table", text:"8(b) Complete the table comparing meiosis and mitosis.", subfields:["number of daughter cells","number of chromosomes in each daughter cell","ploidy level","genetic differences","type of cell produced"], correct:["4","23","haploid","present","gamete/sperm/egg/sex cell"], marks:6, topic:"Cell division", msText:"Meiosis: 4, 23, haploid, present, gamete/sperm/egg/sex cell. Mitosis: 2, 46, diploid, absent/none/identical, body cell" },
+        { id:"q8ci", type:"written", text:"8(c)(i) Describe other causes of variation in offspring.", correctKeywords:["random mating","random fertilisation","environment","mutation"], marks:3, requiredKeywords:3, topic:"Genetics/Variation", msText:"random mating (1); random fertilisation / gametes received/ eq (1); environment (1); mutation (1)" },
+        { id:"q8cii", type:"written", text:"8(c)(ii) Suggest the advantages of using rats that are homozygous for many genes.", correctKeywords:["little genetic variation","same genotype","no genotype environment interaction","respond to drugs in same way"], marks:2, requiredKeywords:2, topic:"Genetics/Practical", msText:"little / no genetic variation / have same genotype / alleles (1); no genotype environment interaction / respond to drugs in same way / eq (1)" },
+        { id:"q9ai", type:"graph", text:"9(a)(i) Plot a line graph to show changes in wheat and barley production.", correctKeywords:["linear scale","axes labelled","points accurately plotted","units","key/label"], marks:5, topic:"Graph skills", msText:"S scale linear and at least half axis (1); L straight lines through points (1); A axis labelled with crop production and year and correct way round (1); P points accurately plotted (1); U units thousand tonnes (and years) (1); K labelled or key to show barley and wheat (1)" },
+        { id:"q9aii", type:"written", text:"9(a)(ii) Describe the trends shown in the graph.", correctKeywords:["wheat decreases to 2013 then increases","barley constant then increases then fluctuates"], marks:2, topic:"Data analysis", msText:"wheat decreases to 2013/ eq and then increases (1); barley constant and then increases to 2013 / eq (then fluctuates) (1)" },
+        { id:"q9aiii", type:"calc", text:"9(a)(iii) Determine which crop had the greatest percentage change from 2011 to 2015. Show working.", correctValue:["barley","32.73"], tolerance:["exact",1], marks:3, topic:"Maths/Percentages", msText:"wheat: (16100-15300)/15300*100 = 5.23% (1); barley: (7300-5500)/5500*100 = 32.73% (1); barley greater (1)" },
+        { id:"q9b", type:"calc", text:"9(b) Calculate mean mass of carbohydrate produced each day by a square metre (field 100m x 100m, 25000kg/year).", correctValue:6.85, tolerance:0.1, marks:2, topic:"Maths", msText:"25000 ÷ 10000 = 2.5 kg/m²/year (1); 2500 g ÷ 365 = 6.85 g (1)" },
+        { id:"q10ai", type:"written", text:"10(a)(i) Give the names of these neurones (A, B, C).", correctKeywords:["sensory","afferent","relay","association","motor","efferent"], marks:3, requiredKeywords:3, topic:"Nervous system", msText:"A sensory / afferent (1); B relay / association (1); C motor / efferent (1)" },
+        { id:"q10aii", type:"written", text:"10(a)(ii) Explain the role of these neurones in the withdrawal reflex of a finger from a hot object.", correctKeywords:["A from receptor to CNS","B from sensory to motor","C from CNS to effector"], marks:3, requiredKeywords:3, topic:"Nervous system/Reflex arc", msText:"neurone A / sensory / afferent (+ impulse) (from receptor) to CNS / spinal cord / relay neurone / neurone B (1); (synapses with) neurone B / relay / association / (+ impulse) (from receptor neurone A) to motor / efferent / neurone C; neurone C / motor / efferent (+ impulse) to effector / muscle" },
+        { id:"q10bi", type:"written", text:"10(b)(i) Explain what other measurements the teacher would need to make to calculate the speed of a nerve impulse.", correctKeywords:["measure the distance","from hand to spinal cord","from brain to other hand","measure time taken","divide distance by time"], marks:2, requiredKeywords:2, topic:"Practical/Nervous system", msText:"measure the distance (from hand to spinal cord and or brain to other hand) (1); measure time taken (for student A to feel hand being squeezed / eq) (1); divide distance by time (1)" },
+        { id:"q10bii", type:"written", text:"10(b)(ii) Describe whether the teacher's method is likely to give an accurate estimate of the speed of a nerve impulse.", correctKeywords:["underestimate","too slow","method adds time","not a reflex","role of brain","reaction time","delay at each synapse"], marks:2, requiredKeywords:2, topic:"Evaluation/Nervous system", msText:"may be underestimate / too slow / method adds time / delay / eq (1); not a reflex so need to allow decision making / role of brain / reaction time /eq (1); as delay occurs at each synapse (1)" },
+        { id:"q11", type:"written", text:"11 Design an investigation to find out if argan oil shampoo does increase the strength of human hair.", correctKeywords:["shampoo with oil and without oil","hair from same person","same hair length","test many different hairs","repeat","add weights/masses","measure force that causes hair to break","same volume/concentration of shampoo","same time/temperature"], marks:6, requiredKeywords:6, topic:"Practical/Investigation", msText:"C shampoo with oil and without oil (1); O hair from same person / same hair length / width / age / sex (1); R test many different hairs / repeat (1); M1 add weights / masses to hairs (1); M2 measure mass / g / pressure / weight / force /N that causes hair to break (1); S1 same volume / concentration of shampoo (1); S2 wash for same time / frequency / same temperature of water (1)" }
+    ];
+    
+    let userAnswers = new Array(questionsData.length).fill("");
+    let userManualMarks = new Array(questionsData.length).fill(null);
+    let currentQIndex = 0;
+    let examSubmitted = false;
+    let timerInterval;
+    let timeSeconds = 120 * 60;
+    let autoSaveTimer = null;
+    
+    // Silent auto-save to localStorage
+    function autoSaveToLocal() {
+        if(examSubmitted) return;
+        const saveData = {
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now()
+        };
+        localStorage.setItem("igcse_bio_exam_autosave", JSON.stringify(saveData));
+    }
+    
+    function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if(saved) {
+            try {
+                const data = JSON.parse(saved);
+                if(data.answers && data.answers.length === userAnswers.length) {
+                    userAnswers = data.answers;
+                    if(data.manualMarks) userManualMarks = data.manualMarks;
+                    if(data.timeRemaining && data.timeRemaining > 0 && data.timeRemaining < 7200) {
+                        timeSeconds = data.timeRemaining;
+                        updateTimerDisplay();
+                    }
+                    return true;
+                }
+            } catch(e) { console.log("Load error:", e); }
+        }
+        return false;
+    }
+    
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
+    function startTimer() { 
+        timerInterval = setInterval(()=>{ 
+            if(!examSubmitted && timeSeconds > 0){ 
+                timeSeconds--; 
+                updateTimerDisplay(); 
+                if(timeSeconds % 30 === 0) autoSaveToLocal();
+            } else if(timeSeconds <= 0 && !examSubmitted) {
+                autoSubmit();
+            }
+        }, 1000);
+    }
+    
+    function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = idx+1;
+            btn.classList.add("nav-btn");
+            if(userAnswers[idx] && userAnswers[idx].toString().trim() !== "") btn.classList.add("answered");
+            if(idx === currentQIndex) btn.classList.add("active");
+            btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
+            navDiv.appendChild(btn);
+        });
+        let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
+        document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
+    }
+    
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
+    
+    function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
+    function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
+    function toggleMarkScheme(idx) { let panel = document.getElementById(`ms-panel-${idx}`); if(panel) panel.classList.toggle("visible"); }
+    
+    function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            if(idx === 0) card.classList.add("active-question");
+            card.id = `qcard-${idx}`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
+            if(q.type === "mcq") {
+                inner += `<div class="subquestion">`;
+                q.options.forEach(opt => {
+                    let checked = (userAnswers[idx] === opt) ? "checked" : "";
+                    inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+                });
+                inner += `</div>`;
+            } else if(q.type === "calc") {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><input type="text" placeholder="Your numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+            } else {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+            }
+            if(q.type !== "mcq") {
+                inner += `<div style="margin-top:12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>
+                          <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
+                          <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
+                for(let m=0; m<=q.marks; m++) {
+                    let sel = (userManualMarks[idx] === m) ? "selected" : "";
+                    inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+                }
+                inner += `</select></div></div>`;
+            } else {
+                inner += `<div style="margin-top:8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
+            }
+            if(q.text.includes("diagram") || q.text.includes("graph")) inner += `<div class="placeholder-img">📊 [Diagram/Graph placeholder - refer to original paper]</div>`;
+            card.innerHTML = inner;
+            container.appendChild(card);
+        });
+    }
+    
+    function getFinalMark(q, idx, answer) {
+        if(q.type === "mcq") { if(!answer) return 0; return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0; }
+        if(q.type === "calc") { if(!answer) return 0; let num = parseFloat(answer); if(isNaN(num)) return 0; return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0; }
+        if(q.type === "pair") { if(!answer) return 0; let a = answer.toLowerCase(); let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase())); return matched ? q.marks : 0; }
+        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) return Math.min(userManualMarks[idx], q.marks);
+        if(!answer) return 0;
+        let a = answer.toLowerCase();
+        let kw = q.correctKeywords || [];
+        let required = q.requiredKeywords || 1;
+        let count = kw.filter(k => a.includes(k.toLowerCase())).length;
+        return Math.min(count, q.marks);
+    }
+    
+    function getGrade(percent) {
+        if(percent >= 85) return "9 (Excellent)";
+        if(percent >= 78) return "8 (Strong)";
+        if(percent >= 70) return "7 (Good)";
+        if(percent >= 62) return "6 (High Merit)";
+        if(percent >= 54) return "5 (Merit)";
+        if(percent >= 45) return "4 (Standard Pass)";
+        if(percent >= 35) return "3";
+        if(percent >= 25) return "2";
+        return "1";
+    }
+    
+    function submitExam() {
+        if(examSubmitted) return;
+        clearInterval(timerInterval);
+        if(autoSaveTimer) clearInterval(autoSaveTimer);
+        examSubmitted = true;
+        
+        let totalEarned = 0, totalPossible = 0;
+        let topicScores = {};
+        let questionFeedback = [];
+        
+        for(let i=0; i<questionsData.length; i++) {
+            let q = questionsData[i];
+            let ans = userAnswers[i] || "";
+            let earned = getFinalMark(q, i, ans);
+            totalEarned += earned;
+            totalPossible += q.marks;
+            let topic = q.topic;
+            if(!topicScores[topic]) topicScores[topic] = { earned: 0, total: 0 };
+            topicScores[topic].earned += earned;
+            topicScores[topic].total += q.marks;
+            
+            let status = (earned === q.marks) ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
+            questionFeedback.push({
+                number: i+1,
+                topic: topic,
+                question: q.text,//.length > 80 ? q.text.substring(0, 80) + "..." : q.text,
+                studentAnswer: ans || "blank",//.length > 100 ? ans.substring(0, 100) + "..." : (ans || "(blank)"),
+                marksEarned: earned,
+                marksTotal: q.marks,
+                status: status,
+                expectedAnswer: q.msText
+            });
+        }
+        
+        let percent = (totalEarned / totalPossible) * 100;
+        let gradeDisplay = getGrade(percent);
+        
+        let weakTopics = [];
+        for(let [topic, data] of Object.entries(topicScores)) {
+            let topicPercent = (data.earned / data.total) * 100;
+            if(topicPercent < 55) weakTopics.push(topic);
+        }
+        weakTopics.sort();
+        
+        
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        
+        let html = `<h2>📊 Exam Results with Detailed Feedback</h2>
+                    <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+                    <div class="grade-box"><strong>Edexcel IGCSE Grade: ${gradeDisplay}</strong> (9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
+        
+        if(weakTopics.length > 0) {
+            html += `<div class="weakness-box">
+                        <h3>⚠️ Weak Areas - Focus Your Revision Here (Below 55%)</h3>
+                        <ul>`;
+            for(let w of weakTopics) {
+                let data = topicScores[w];
+                html += `<li><strong>${w}</strong>: ${data.earned}/${data.total} marks (${((data.earned/data.total)*100).toFixed(1)}%)</li>`;
+            }
+            html += `</ul><p>💡 Use the "Show Mark Scheme" buttons above to see expected answers and improve these topics.</p></div>`;
+        } else {
+            html += `<div class="weakness-box" style="background:#e0f2e9; border-left-color:#2f6b47;">
+                        <h3>✅ Excellent Performance!</h3>
+                        <p>All topics scored above 55%. Keep up the great work!</p>
+                     </div>`;
+        }
+        
+        html += `<details open><summary style="cursor:pointer; font-weight:700; font-size:1.1rem;">📋 Question-by-Question Feedback </summary>
+                 <table class="feedback-table">
+                    <thead>
+                        <tr><th>Q#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Expected Answer (Mark Scheme)</th></tr>
+                    </thead>
+                    <tbody>`;
+        for(let fb of questionFeedback) {
+            let rowClass = "";
+            if(fb.marksEarned === fb.marksTotal) rowClass = "correct-highlight";
+            else if(fb.marksEarned === 0) rowClass = "incorrect-highlight";
+            html += `<tr class="${rowClass}">
+                        <td>${fb.number}</td>
+                        <td>${fb.topic}</td>
+                        <td>${fb.question}</td>
+                        <td style="max-width:250px;">"${fb.studentAnswer}"</td>
+                        <td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>
+                        <td style="max-width:400px; word-wrap:break-word;">${fb.expectedAnswer}</td>
+                      </tr>`;
+        }
+        html += `</tbody></table></details>`;
+        
+        html += `<p style="margin-top:20px;"><small>✅ Exam completed. Results are shown above. Progress has been cleared from local storage.</small></p>`;
+        reviewDiv.innerHTML = html;
+        
+        document.querySelectorAll("input, textarea, button, select").forEach(el => {
+            if(el.id !== "submitBtn") el.disabled = true;
+        });
+        document.getElementById("submitBtn").disabled = true;
+        localStorage.removeItem("igcse_bio_exam_autosave");
+    }
+    
+    window.saveAnswer = saveAnswer;
+    window.setManualMark = setManualMark;
+    window.toggleMarkScheme = toggleMarkScheme;
+    window.goToQuestion = goToQuestion;
+    
+    window.onload = () => {
+        loadAutoSave();
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
+        document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
+        document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? You will receive detailed feedback comparing your answers to the mark scheme.")) submitExam(); };
+    };
+</script>
+</body>
+</html>
