@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Edexcel IGCSE Biology Paper 1B (Jan 2020) | Interactive</title>
+     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .exam-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px 30px 40px;
+        }
+        .header {
+            border-bottom: 3px solid #2c7da0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .title h1 { margin: 0; font-size: 1.7rem; color: #0b3b4f; }
+        .title p { margin: 5px 0 0; color: #2c7da0; font-weight: 500; }
+        .timer-area { background: #1e2a3e; padding: 8px 18px; border-radius: 60px; color: white; text-align: center; font-weight: bold; }
+        .timer { font-size: 2rem; font-family: monospace; letter-spacing: 2px; }
+        .info-bar {
+            background: #e9f0f5;
+            padding: 10px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .nav-btn {
+            background: #eef2f6;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 42px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.9rem;
+        }
+        .nav-btn.active { background: #2c7da0; color: white; }
+        .nav-btn.answered { background: #61a5c2; color: white; }
+        .question-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .question-card.active-question { display: block; }
+        .q-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: #f0f6fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .marks { font-size: 0.8rem; background: #cbd5e1; border-radius: 20px; padding: 2px 10px; margin-left: 12px; }
+        .subquestion { margin: 20px 0 20px 12px; border-left: 3px solid #cbd5e1; padding-left: 18px; }
+        .placeholder-img {
+            background: #eef2f9;
+            border: 1px dashed #8ba0bc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e66;
+        }
+        .mcq-option { margin: 10px 0; }
+        input[type="text"], input[type="number"], textarea {
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #b9c7d9;
+            width: 100%;
+            max-width: 550px;
+            font-family: inherit;
+        }
+        textarea { max-width: 100%; }
+        .mark-scheme-panel {
+            background: #f8f9fc;
+            border-left: 5px solid #2c7da0;
+            padding: 12px 16px;
+            margin-top: 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .mark-scheme-panel.visible { display: block; }
+        .marks-earned-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .marks-earned-row select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid #b9c7d9;
+            font-weight: bold;
+        }
+        button.small {
+            background: #4a6f8a;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #b23c1c; }
+        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e2a3e; }
+        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
+        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        .feedback-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .feedback-table th, .feedback-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; text-align: left; }
+        .feedback-table th { background: #2c7da0; color: white; }
+        .feedback-table tr:nth-child(even) { background: #f9f9f9; }
+        .correct-highlight { background: #d4edda; }
+        .incorrect-highlight { background: #f8d7da; }
+        details summary { cursor: pointer; font-weight: 600; margin: 15px 0; }
+        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        .status-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2c7da0; color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.8rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+        }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } .feedback-table { font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+<div class="exam-container" id="examApp">
+    <div class="header">
+        <div class="title">
+            <h1>Pearson Edexcel International GCSE (4BI1)</h1>
+            <p>Biology Paper 1B | Jan 2020</p>
+        </div>
+        <div class="timer-area">
+            <div>Time Remaining</div>
+            <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+    </div>
+    <div class="info-bar">
+        <span>⏱️ 2 hours | 📝 Total marks: 110</span>
+        <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
+    </div>
+    <div id="navContainer" class="question-nav"></div>
+    <div id="questionsContainer"></div>
+    <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">✔ Submit Exam & Get Detailed Feedback</button>
+    </div>
+    <div id="reviewPanel" class="review-section hidden"></div>
+    <div id="statusToast" class="status-toast"></div>
+</div>
+
+<script>
+    // EmailJS Configuration (replace with your actual keys for production)
+    // Get free keys from https://www.emailjs.com/
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+    
+    // Initialize EmailJS if keys are provided
+    if(EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+    
+    // ========== IndexedDB Setup ==========
+    const DB_NAME = "IGCSE_Biology_Exam_DB";
+    const DB_VERSION = 2;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) {
+                    dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                }
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) {
+                    dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+                }
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const record = {
+                id: "current_progress",
+                answers: answers,
+                manualMarks: manualMarks,
+                timeRemaining: timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            const request = store.put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readonly");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.get("current_progress");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([RESULTS_STORE], "readwrite");
+            const store = transaction.objectStore(RESULTS_STORE);
+            const record = {
+                timestamp: new Date().toISOString(),
+                ...resultData
+            };
+            const request = store.add(record);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.delete("current_progress");
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+    
+    // ========== Email Function ==========
+    async function sendResultsEmail(resultData, studentName = "Student") {
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+            console.log("EmailJS not configured. Results:", resultData);
+            showToast("Email not sent - configure EmailJS keys", false);
+            return false;
+        }
+        try {
+            const emailParams = {
+                to_email: RECIPIENT_EMAIL,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", ") || "None",
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.slice(0, 15).map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+            showToast("✅ Results emailed successfully!", false);
+            return true;
+        } catch(e) {
+            console.error("Email error:", e);
+            showToast("⚠️ Email failed - check EmailJS configuration", true);
+            return false;
+        }
+    }
+
+
+    // Full Question Bank - 55 items, 110 marks total
+    const questionsData = [
+        { id:"q1ai", type:"mcq", text:"1(a)(i) How many producers are shown in this food web?", options:["A one","B three","C four","D nine"], correct:"B three", marks:1, topic:"Ecology/Producers", msText:"B (three)" },
+        { id:"q1aii", type:"mcq", text:"1(a)(ii) How many secondary consumers are shown?", options:["A one","B three","C four","D seven"], correct:"C four", marks:1, topic:"Ecology/Consumers", msText:"C (four)" },
+        { id:"q1bi", type:"written", text:"1(b)(i) Name the sense that uses receptor cells in the retina.", correctKeywords:["sight","vision","seeing","visual","optic"], marks:1, topic:"Nervous system", msText:"sight / vision / seeing (1 mark)" },
+        { id:"q1bii", type:"calc", text:"1(b)(ii) Coyote runs 530m in 30.0 seconds. Speed (m/s).", correctValue:17.667, tolerance:0.05, marks:2, topic:"Maths/Speed", msText:"530 ÷ 30.0 = 17.7 m/s (2 marks)" },
+        { id:"q1c", type:"written", text:"1(c) Explain why lactic acid builds up in muscles when running.", correctKeywords:["anaerobic","without oxygen","energy","ATP","lack of oxygen"], marks:2, requiredKeywords:2, topic:"Respiration", msText:"Anaerobic respiration / provide energy / without oxygen (2 marks)" },
+        { id:"q2a", type:"written", text:"2(a) State three differences between eukaryotic and prokaryotic organisms.", correctKeywords:["nucleus","organelles","mitochondria","chloroplasts","chromosomes","lack plasmids"], marks:3, requiredKeywords:3, topic:"Cell biology", msText:"Any three: have nucleus / organelles / chromosomes / lack plasmids (3 marks)" },
+        { id:"q2b", type:"pair", text:"2(b) Example of disease caused by a protist (name protist + disease).", correctPairs:[["plasmodium","malaria"],["amoeba","dysentery"],["trypanosoma","sleeping sickness"]], marks:2, topic:"Disease", msText:"Plasmodium → malaria; or Amoeba → dysentery (2 marks)" },
+        { id:"q3a", type:"written", text:"3(a) Describe a method to show that the nut contains fat.", correctKeywords:["crush","grind","ethanol","Sudan III","add water","emulsion","red layer"], marks:3, requiredKeywords:3, topic:"Food tests", msText:"Crush/grind nut + ethanol/Sudan III + add water → white/emulsion/red layer (3 marks)" },
+        { id:"q3bi", type:"written", text:"3(b)(i) Explain the role of fibre in the squirrel's diet.", correctKeywords:["peristalsis","move food","constipation","bowel movement","undigested","cellulose"], marks:2, topic:"Diet", msText:"Peristalsis / move food along intestine / prevent constipation (2 marks)" },
+        { id:"q3bii", type:"written", text:"3(b)(ii) Which nut is better at helping the squirrel make red blood cells? Explain.", correctKeywords:["nut A","iron","haemoglobin","more iron"], marks:2, topic:"Nutrition/Blood", msText:"Nut A has more iron; iron for haemoglobin (2 marks)" },
+        { id:"q3biii", type:"calc", text:"3(b)(iii) Nut A mass 28.0g, carbohydrate 167mg per g. Total carbohydrate (grams).", correctValue:4.676, tolerance:0.02, marks:2, topic:"Maths", msText:"167mg = 0.167g; 0.167 × 28.0 = 4.68g (2 marks)" },
+        { id:"q3c", type:"written", text:"3(c) Discuss reasons for decrease in squirrels 2010-2018 (use graphs).", correctKeywords:["foxes","predation","fewer trees","disease","migration","human impact","food","competition"], marks:5, requiredKeywords:4, topic:"Ecology", msText:"More foxes/predation, fewer trees, disease, migration, human impact (5 marks)" },
+        { id:"q4ai", type:"mcq", text:"4(a)(i) State what is meant by catalyst.", options:["Speeds up reactions","Slows reactions","Uses energy","None"], correct:"Speeds up reactions", marks:1, topic:"Enzymes", msText:"Speeds up chemical reactions (1 mark)" },
+        { id:"q4aii", type:"written", text:"4(a)(ii) State meaning of 'metabolic' reactions.", correctKeywords:["reactions in cells","chemical processes","chemical reactions"], marks:1, topic:"Metabolism", msText:"Chemical reactions / processes in cells / body (1 mark)" },
+        { id:"q4graph", type:"written", text:"4(b)(i) Describe how you plotted the line graph (scale, axes, points).", correctKeywords:["linear scale","axes labelled","points plotted","oxygen production","enzyme concentration"], marks:5, requiredKeywords:3, topic:"Graph skills", msText:"Linear scale, axes labelled (enzyme conc and cm³/min), points correctly plotted, straight lines (5 marks)" },
+        { id:"q4bii", type:"written", text:"4(b)(ii) Explain effect of increasing enzyme concentration on rate of oxygen production.", correctKeywords:["increases","up to 8 discs","levels off","more enzyme","substrate limiting"], marks:3, requiredKeywords:2, topic:"Enzymes", msText:"Rate increases up to 8 discs then levels off; more enzyme until substrate limiting (3 marks)" },
+        { id:"q4biii", type:"written", text:"4(b)(iii) Apparatus to measure volume of oxygen.", correctKeywords:["syringe","measuring cylinder","gas syringe"], marks:1, topic:"Practical", msText:"Gas syringe / inverted measuring cylinder (1 mark)" },
+        { id:"q4biv", type:"written", text:"4(b)(iv) Why keep hydrogen peroxide volume constant?", correctKeywords:["control variable","fair test","affects rate"], marks:2, topic:"Variables", msText:"Only one variable changed / fair test / these also affect rate (2 marks)" },
+        { id:"q4bv", type:"written", text:"4(b)(v) Another variable to keep constant.", correctKeywords:["temperature","pH","type of potato"], marks:1, topic:"Variables", msText:"Temperature / pH / type of potato (1 mark)" },
+        { id:"q5ai", type:"written", text:"5(a)(i) How increasing temperature increases crop yield?", correctKeywords:["photosynthesis","kinetic energy","enzyme optimum","rate"], marks:2, topic:"Photosynthesis", msText:"Increased kinetic energy / optimum temperature for enzymes / more glucose (2 marks)" },
+        { id:"q5aii", type:"written", text:"5(a)(ii) Why gas heater improves yield (CO₂ release).", correctKeywords:["releases CO2","CO2 needed for photosynthesis"], marks:2, topic:"Photosynthesis/CO2", msText:"Releases CO₂; CO₂ is a reactant / needed for photosynthesis (2 marks)" },
+        { id:"q5bi", type:"written", text:"5(b)(i) Mineral in fertiliser and role (nitrate/magnesium).", correctKeywords:["nitrate","proteins","magnesium","chlorophyll"], marks:2, topic:"Plant nutrition", msText:"Nitrate for amino acids/proteins; or magnesium for chlorophyll (2 marks)" },
+        { id:"q5bii", type:"written", text:"5(b)(ii) Discuss why farmers limit chemical fertilisers.", correctKeywords:["eutrophication","algal bloom","water pollution","cost","leaching","runoff"], marks:5, requiredKeywords:3, topic:"Pollution", msText:"Eutrophication / algal bloom / water pollution / leaching / cost (5 marks)" },
+        { id:"q6a", type:"written", text:"6(a) Explain the role of bile in digestion.", correctKeywords:["neutralise acid","emulsify fat","increase surface area","optimum pH","bile salts"], marks:4, requiredKeywords:3, topic:"Digestion", msText:"Neutralises acid, emulsifies fat, increases surface area, optimum pH for enzymes (4 marks)" },
+        { id:"q6b", type:"mcq", text:"6(b) How many vessels transport deoxygenated blood from liver?", options:["A 0","B 1","C 2","D 3"], correct:"B 1", marks:1, topic:"Circulation", msText:"B (1)" },
+        { id:"q6ci", type:"written", text:"6(c)(i) Explain higher glucose in hepatic portal vein after meal.", correctKeywords:["glucose absorbed","insulin","glycogen","lowers glucose"], marks:3, topic:"Homeostasis", msText:"Glucose absorbed / insulin converts glucose to glycogen / lowers glucose in hepatic vein (3 marks)" },
+        { id:"q6cii", type:"written", text:"6(c)(ii) Explain after 5 hours glucose difference.", correctKeywords:["less absorption","glycogen to glucose","glucagon","no insulin"], marks:2, topic:"Homeostasis", msText:"Less glucose from gut / no insulin / glycogen to glucose / glucagon released (2 marks)" },
+        { id:"q7a", type:"mcq", text:"7(a) Genotypes of parent fruit flies?", options:["A both heterozygous","B both homozygous","C both long wings","D one heterozygous one homozygous"], correct:"A both heterozygous", marks:1, topic:"Genetics", msText:"A both heterozygous" },
+        { id:"q7bi", type:"written", text:"7(b)(i) Complete genetic diagram for sex inheritance (XX/XY).", correctKeywords:["X from female","X and Y from male","female gamete X","offspring XX XY"], marks:2, topic:"Sex determination", msText:"Female gametes X; male gametes X and Y; offspring XX (female) and XY (male) (2 marks)" },
+        { id:"q7bii", type:"written", text:"7(b)(ii) Why not exactly equal male/female offspring?", correctKeywords:["random","chance","fertilisation","fewer Y sperm"], marks:2, topic:"Probability", msText:"Random / chance / fertilisation / fewer Y sperm (2 marks)" },
+        { id:"q7c", type:"written", text:"7(c) Design investigation: apples vs bananas attraction.", correctKeywords:["control","repetition","same species","count flies","time","container","independent variable"], marks:6, requiredKeywords:4, topic:"Experimental design", msText:"Use same species/age, repeat, count flies after set time, control temperature/distance (6 marks)" },
+        { id:"q8ai", type:"mcq", text:"8(a)(i) Which part transports amino acids?", options:["A R","B S","C T","D U"], correct:"B S", marks:1, topic:"Plant transport", msText:"B (S)" },
+        { id:"q8aii", type:"mcq", text:"8(a)(ii) Which part absorbs most sunlight?", options:["A P","B Q","C R","D S"], correct:"C R", marks:1, topic:"Leaf structure", msText:"C (R)" },
+        { id:"q8aiii", type:"mcq", text:"8(a)(iii) Which part transports products of photosynthesis?", options:["A Q","B R","C S","D T"], correct:"C S", marks:1, topic:"Phloem", msText:"C (S)" },
+        { id:"q8aiv", type:"mcq", text:"8(a)(iv) Which part reduces water loss?", options:["A P","B Q","C R","D S"], correct:"A P", marks:1, topic:"Leaf adaptations", msText:"A (P)" },
+        { id:"q8b", type:"written", text:"8(b) Explain structure of R (palisade) and T (spongy) help photosynthesis.", correctKeywords:["palisade","chloroplasts","top surface","air spaces","gas exchange","dense"], marks:4, topic:"Photosynthesis", msText:"Palisade near top for light, many chloroplasts; spongy has air spaces for gas exchange (4 marks)" },
+        { id:"q8c", type:"calc", text:"8(c) Leaf section magnified 100x, measured 29mm. Actual thickness (mm).", correctValue:0.29, tolerance:0.04, marks:2, topic:"Microscopy", msText:"29 ÷ 100 = 0.29 mm (2 marks)" },
+        { id:"q8d", type:"written", text:"8(d) Why water lily stomata only on upper surface?", correctKeywords:["lower surface in water","gas exchange","CO2 absorption","transpiration"], marks:2, topic:"Adaptations", msText:"Lower surface in water; upper surface in air for gas exchange/CO2 absorption (2 marks)" },
+        { id:"q9a", type:"written", text:"9(a) Role of lymphocytes in immune response.", correctKeywords:["antibodies","specific","antigens","destroy pathogens","memory cells"], marks:3, topic:"Immunity", msText:"Produce antibodies, specific to antigens, destroy pathogens / make memory cells (3 marks)" },
+        { id:"q9b", type:"written", text:"9(b) What happens to bacteria after ingestion by phagocytes?", correctKeywords:["destroyed","digested","enzymes","absorbed","phagosome"], marks:3, topic:"Phagocytosis", msText:"Bacteria killed/destroyed, digested by enzymes, products absorbed (3 marks)" },
+        { id:"q9ci", type:"mcq", text:"9(c)(i) Rate of ingestion in control (graph)?", options:["A 85 per hour","B 140 per hour","C 170 per hour","D 280 per hour"], correct:"C 170 per hour", marks:1, topic:"Data", msText:"C 170 per hour" },
+        { id:"q9cii", type:"written", text:"9(c)(ii) Independent variable.", correctKeywords:["concentration of vitamin C","vitamin C concentration"], marks:1, topic:"Variables", msText:"Concentration of vitamin C (1 mark)" },
+        { id:"q9ciii", type:"written", text:"9(c)(iii) Two variables to control.", correctKeywords:["number of phagocytes","concentration of bacteria","species","temperature"], marks:2, topic:"Variables", msText:"Number of phagocytes, concentration of bacteria, species, temperature (2 marks)" },
+        { id:"q9civ", type:"written", text:"9(c)(iv) Comment on conclusion: vitamin C protects from pathogens.", correctKeywords:["in vitro","not repeated","not all pathogens","body temperature","not in humans"], marks:4, requiredKeywords:3, topic:"Evaluation", msText:"Only in vitro, not repeated, not all pathogens are bacteria, not at body temp (4 marks)" },
+        { id:"q10ai", type:"written", text:"10(a)(i) Name parts A, B, C (stigma, style, ovary).", correctKeywords:["stigma","style","ovary"], marks:3, requiredKeywords:3, topic:"Plant reproduction", msText:"A = stigma, B = style, C = ovary (3 marks)" },
+        { id:"q10aii", type:"written", text:"10(a)(ii) Pollen tube path description.", correctKeywords:["tube down style","micropyle","enters ovule"], marks:2, topic:"Fertilisation", msText:"Pollen tube grows down style and enters ovule via micropyle (2 marks)" },
+        { id:"q10aiii", type:"written", text:"10(a)(iii) What happens to ovary & ovule after fertilisation?", correctKeywords:["ovule becomes seed","ovary becomes fruit","seed coat"], marks:2, topic:"Seed formation", msText:"Ovule becomes seed, ovary becomes fruit (2 marks)" },
+        { id:"q10bi", type:"calc", text:"10(b)(i) % increase wet&cold (476) vs wet&warm (432).", correctValue:10.185, tolerance:0.2, marks:2, topic:"Maths", msText:"(476-432)÷432×100 = 10.2% (2 marks)" },
+        { id:"q10bii", type:"written", text:"10(b)(ii) Suggest why wet and cold conditions better for storage.", correctKeywords:["fungi","bacteria","disease","germinate early","microbes"], marks:2, topic:"Germination", msText:"Fewer fungi/bacteria in cold, seeds don't germinate early / less disease (2 marks)" },
+        { id:"q10biii", type:"written", text:"10(b)(iii) Observation that shows seed germinated.", correctKeywords:["radicle","root","plumule","split testa","shoot"], marks:1, topic:"Germination", msText:"Radicle/root visible / plumule/shoot seen (1 mark)" }
+    ];
+    
+    let userAnswers = new Array(questionsData.length).fill("");
+    let userManualMarks = new Array(questionsData.length).fill(null);
+    let currentQIndex = 0;
+    let examSubmitted = false;
+    let timerInterval;
+    let timeSeconds = 120 * 60;
+    let autoSaveTimer = null;
+    
+    // Silent auto-save to localStorage
+    function autoSaveToLocal() {
+        if(examSubmitted) return;
+        const saveData = {
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now()
+        };
+        localStorage.setItem("igcse_bio_exam_autosave", JSON.stringify(saveData));
+    }
+    
+    function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if(saved) {
+            try {
+                const data = JSON.parse(saved);
+                if(data.answers && data.answers.length === userAnswers.length) {
+                    userAnswers = data.answers;
+                    if(data.manualMarks) userManualMarks = data.manualMarks;
+                    if(data.timeRemaining && data.timeRemaining > 0 && data.timeRemaining < 7200) {
+                        timeSeconds = data.timeRemaining;
+                        updateTimerDisplay();
+                    }
+                    return true;
+                }
+            } catch(e) { console.log("Load error:", e); }
+        }
+        return false;
+    }
+    
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
+    function startTimer() { 
+        timerInterval = setInterval(()=>{ 
+            if(!examSubmitted && timeSeconds > 0){ 
+                timeSeconds--; 
+                updateTimerDisplay(); 
+                if(timeSeconds % 30 === 0) autoSaveToLocal();
+            } else if(timeSeconds <= 0 && !examSubmitted) {
+                autoSubmit();
+            }
+        }, 1000);
+    }
+    
+    function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = idx+1;
+            btn.classList.add("nav-btn");
+            if(userAnswers[idx] && userAnswers[idx].toString().trim() !== "") btn.classList.add("answered");
+            if(idx === currentQIndex) btn.classList.add("active");
+            btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
+            navDiv.appendChild(btn);
+        });
+        let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
+        document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
+    }
+    
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
+    
+    function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
+    function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
+    function toggleMarkScheme(idx) { let panel = document.getElementById(`ms-panel-${idx}`); if(panel) panel.classList.toggle("visible"); }
+    
+    function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            if(idx === 0) card.classList.add("active-question");
+            card.id = `qcard-${idx}`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
+            if(q.type === "mcq") {
+                inner += `<div class="subquestion">`;
+                q.options.forEach(opt => {
+                    let checked = (userAnswers[idx] === opt) ? "checked" : "";
+                    inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+                });
+                inner += `</div>`;
+            } else if(q.type === "calc") {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><input type="text" placeholder="Your numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+            } else {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+            }
+            if(q.type !== "mcq") {
+                inner += `<div style="margin-top:12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>
+                          <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
+                          <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
+                for(let m=0; m<=q.marks; m++) {
+                    let sel = (userManualMarks[idx] === m) ? "selected" : "";
+                    inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+                }
+                inner += `</select></div></div>`;
+            } else {
+                inner += `<div style="margin-top:8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
+            }
+            if(q.text.includes("diagram") || q.text.includes("graph")) inner += `<div class="placeholder-img">📊 [Diagram/Graph placeholder - refer to original paper]</div>`;
+            card.innerHTML = inner;
+            container.appendChild(card);
+        });
+    }
+    
+    function getFinalMark(q, idx, answer) {
+        if(q.type === "mcq") { if(!answer) return 0; return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0; }
+        if(q.type === "calc") { if(!answer) return 0; let num = parseFloat(answer); if(isNaN(num)) return 0; return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0; }
+        if(q.type === "pair") { if(!answer) return 0; let a = answer.toLowerCase(); let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase())); return matched ? q.marks : 0; }
+        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) return Math.min(userManualMarks[idx], q.marks);
+        if(!answer) return 0;
+        let a = answer.toLowerCase();
+        let kw = q.correctKeywords || [];
+        let required = q.requiredKeywords || 1;
+        let count = kw.filter(k => a.includes(k.toLowerCase())).length;
+        return Math.min(count, q.marks);
+    }
+    
+    function getGrade(percent) {
+        if(percent >= 85) return "9 (Excellent)";
+        if(percent >= 78) return "8 (Strong)";
+        if(percent >= 70) return "7 (Good)";
+        if(percent >= 62) return "6 (High Merit)";
+        if(percent >= 54) return "5 (Merit)";
+        if(percent >= 45) return "4 (Standard Pass)";
+        if(percent >= 35) return "3";
+        if(percent >= 25) return "2";
+        return "1";
+    }
+    
+    function submitExam() {
+        if(examSubmitted) return;
+        clearInterval(timerInterval);
+        if(autoSaveTimer) clearInterval(autoSaveTimer);
+        examSubmitted = true;
+        
+        let totalEarned = 0, totalPossible = 0;
+        let topicScores = {};
+        let questionFeedback = [];
+        
+        for(let i=0; i<questionsData.length; i++) {
+            let q = questionsData[i];
+            let ans = userAnswers[i] || "";
+            let earned = getFinalMark(q, i, ans);
+            totalEarned += earned;
+            totalPossible += q.marks;
+            let topic = q.topic;
+            if(!topicScores[topic]) topicScores[topic] = { earned: 0, total: 0 };
+            topicScores[topic].earned += earned;
+            topicScores[topic].total += q.marks;
+            
+            let status = (earned === q.marks) ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
+            questionFeedback.push({
+                number: i+1,
+                topic: topic,
+                question: q.text,//.length > 80 ? q.text.substring(0, 80) + "..." : q.text,
+                studentAnswer: ans || "blank",//.length > 100 ? ans.substring(0, 100) + "..." : (ans || "(blank)"),
+                marksEarned: earned,
+                marksTotal: q.marks,
+                status: status,
+                expectedAnswer: q.msText
+            });
+        }
+        
+        let percent = (totalEarned / totalPossible) * 100;
+        let gradeDisplay = getGrade(percent);
+        
+        let weakTopics = [];
+        for(let [topic, data] of Object.entries(topicScores)) {
+            let topicPercent = (data.earned / data.total) * 100;
+            if(topicPercent < 55) weakTopics.push(topic);
+        }
+        weakTopics.sort();
+        
+        
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        
+        let html = `<h2>📊 Exam Results with Detailed Feedback</h2>
+                    <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+                    <div class="grade-box"><strong>Edexcel IGCSE Grade: ${gradeDisplay}</strong> (9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
+        
+        if(weakTopics.length > 0) {
+            html += `<div class="weakness-box">
+                        <h3>⚠️ Weak Areas - Focus Your Revision Here (Below 55%)</h3>
+                        <ul>`;
+            for(let w of weakTopics) {
+                let data = topicScores[w];
+                html += `<li><strong>${w}</strong>: ${data.earned}/${data.total} marks (${((data.earned/data.total)*100).toFixed(1)}%)</li>`;
+            }
+            html += `</ul><p>💡 Use the "Show Mark Scheme" buttons above to see expected answers and improve these topics.</p></div>`;
+        } else {
+            html += `<div class="weakness-box" style="background:#e0f2e9; border-left-color:#2f6b47;">
+                        <h3>✅ Excellent Performance!</h3>
+                        <p>All topics scored above 55%. Keep up the great work!</p>
+                     </div>`;
+        }
+        
+        html += `<details open><summary style="cursor:pointer; font-weight:700; font-size:1.1rem;">📋 Question-by-Question Feedback </summary>
+                 <table class="feedback-table">
+                    <thead>
+                        <tr><th>Q#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Expected Answer (Mark Scheme)</th></tr>
+                    </thead>
+                    <tbody>`;
+        for(let fb of questionFeedback) {
+            let rowClass = "";
+            if(fb.marksEarned === fb.marksTotal) rowClass = "correct-highlight";
+            else if(fb.marksEarned === 0) rowClass = "incorrect-highlight";
+            html += `<tr class="${rowClass}">
+                        <td>${fb.number}</td>
+                        <td>${fb.topic}</td>
+                        <td>${fb.question}</td>
+                        <td style="max-width:250px;">"${fb.studentAnswer}"</td>
+                        <td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>
+                        <td style="max-width:400px; word-wrap:break-word;">${fb.expectedAnswer}</td>
+                      </tr>`;
+        }
+        html += `</tbody></table></details>`;
+        
+        html += `<p style="margin-top:20px;"><small>✅ Exam completed. Results are shown above. Progress has been cleared from local storage.</small></p>`;
+        reviewDiv.innerHTML = html;
+        
+        document.querySelectorAll("input, textarea, button, select").forEach(el => {
+            if(el.id !== "submitBtn") el.disabled = true;
+        });
+        document.getElementById("submitBtn").disabled = true;
+        localStorage.removeItem("igcse_bio_exam_autosave");
+    }
+    
+    window.saveAnswer = saveAnswer;
+    window.setManualMark = setManualMark;
+    window.toggleMarkScheme = toggleMarkScheme;
+    window.goToQuestion = goToQuestion;
+    
+    window.onload = () => {
+        loadAutoSave();
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
+        document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
+        document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? You will receive detailed feedback comparing your answers to the mark scheme.")) submitExam(); };
+    };
+</script>
+</body>
+</html>

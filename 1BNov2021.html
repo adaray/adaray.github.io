@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Edexcel IGCSE Biology Paper 1B (Nov 2021) | Interactive Self-Marking Exam</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .exam-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px 30px 40px;
+        }
+        .header {
+            border-bottom: 3px solid #2c7da0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .title h1 { margin: 0; font-size: 1.7rem; color: #0b3b4f; }
+        .title p { margin: 5px 0 0; color: #2c7da0; font-weight: 500; }
+        .timer-area { background: #1e2a3e; padding: 8px 18px; border-radius: 60px; color: white; text-align: center; font-weight: bold; }
+        .timer { font-size: 2rem; font-family: monospace; letter-spacing: 2px; }
+        .info-bar {
+            background: #e9f0f5;
+            padding: 10px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .save-load-bar { display: flex; gap: 12px; background: #ffffffcc; padding: 5px 12px; border-radius: 40px; }
+        .save-load-bar button { background: #2c7da0; padding: 6px 14px; font-size: 0.8rem; }
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .nav-btn {
+            background: #eef2f6;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 42px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .nav-btn.active { background: #2c7da0; color: white; }
+        .nav-btn.answered { background: #61a5c2; color: white; }
+        .question-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .question-card.active-question { display: block; }
+        .q-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: #f0f6fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .marks { font-size: 0.8rem; background: #cbd5e1; border-radius: 20px; padding: 2px 10px; margin-left: 12px; }
+        .subquestion { margin: 20px 0 20px 12px; border-left: 3px solid #cbd5e1; padding-left: 18px; }
+        .placeholder-img {
+            background: #eef2f9;
+            border: 1px dashed #8ba0bc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e66;
+        }
+        .mcq-option { margin: 10px 0; }
+        input[type="text"], input[type="number"], textarea {
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #b9c7d9;
+            width: 100%;
+            max-width: 550px;
+            font-family: inherit;
+        }
+        textarea { max-width: 100%; }
+        .mark-scheme-panel {
+            background: #f8f9fc;
+            border-left: 5px solid #2c7da0;
+            padding: 12px 16px;
+            margin-top: 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .mark-scheme-panel.visible { display: block; }
+        .marks-earned-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .marks-earned-row select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid #b9c7d9;
+            font-weight: bold;
+        }
+        button.small {
+            background: #4a6f8a;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #b23c1c; }
+        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 1.6rem; font-weight: bold; }
+        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
+        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } }
+    </style>
+</head>
+<body>
+<div class="exam-container" id="examApp">
+    <div class="header">
+        <div class="title">
+            <h1>Pearson Edexcel International GCSE (4BI1)</h1>
+            <p>Biology Paper 1B | Nov 2021</p>
+        </div>
+        <div class="timer-area">
+            <div>Time Remaining</div>
+            <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+    </div>
+    <div class="info-bar">
+        <span>⏱️ 2 hours | 📝 Total marks: 110</span>
+        <span id="answeredCounter">✅ Attempted: 0 / 55 questions</span>
+        <div class="save-load-bar">
+            <button id="saveResponsesBtn">💾 Save Progress</button>
+            <button id="loadResponsesBtn" class="secondary">📂 Load Saved</button>
+        </div>
+    </div>
+    <div id="navContainer" class="question-nav"></div>
+    <div id="questionsContainer"></div>
+    <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">✔ Submit & Mark</button>
+    </div>
+    <div id="reviewPanel" class="review-section hidden"></div>
+    <footer>For written questions: click "Show Mark Scheme" to see official criteria, then select marks earned (0 to max). Final score combines auto-keyword & manual marks.</footer>
+</div>
+
+<script>
+    // Question bank (55 items, total 110 marks). For written questions we store mark scheme text.
+const questionsData = [
+        { id:"q1a", type:"written", text:"1(a) Describe how you would test a piece of bread to show it contains starch.", correctKeywords:["iodine","blue black / blue / black"], marks:2, requiredKeywords:2, topic:"Food tests", msText:"iodine (1); blue black / blue / black (1)" },
+        { id:"q1bi", type:"mcq", text:"1(b)(i) Which type of organism is shown growing on the bread (mycelium)?", options:["A bacterium","B fungus","C protist","D virus"], correct:"B fungus", marks:1, topic:"Classification", msText:"B fungus" },
+        { id:"q1bii", type:"mcq", text:"1(b)(ii) Which enzyme is released by the organism to digest starch?", options:["A amylase","B ligase","C lipase","D protease"], correct:"A amylase", marks:1, topic:"Digestion/Enzymes", msText:"A amylase" },
+        { id:"q2ai", type:"calc", text:"2(a)(i) Complete the table to give the number of white blood cells per mm³ in standard form (6000).", correctValue:"6.0 × 10³", marks:1, topic:"Maths/Standard form", msText:"6.0 × 10³" },
+        { id:"q2aii", type:"mcq", text:"2(a)(ii) What is the number of red blood cells in 1000cm³ of blood (5.0×10⁶ per mm³)?", options:["A 5.0×10⁶","B 5.0×10⁹","C 5.0×10¹¹","D 5.0×10¹²"], correct:"D 5.0×10¹²", marks:1, topic:"Maths/Standard form", msText:"D 5.0×10¹²" },
+        { id:"q2bi", type:"written", text:"2(b)(i) Explain why a person with anaemia (low red blood cell count) is often tired.", correctKeywords:["(less) oxygen (transported)","(less) respiration","(less) energy / less ATP"], marks:2, requiredKeywords:2, topic:"Disease/Circulation", msText:"(less) oxygen (transported) (1); (less) respiration (1); (less) energy / less ATP (1)" },
+        { id:"q2bii", type:"written", text:"2(b)(ii) Explain why a person with leukopenia (low white blood cell count) is likely to get infections.", correctKeywords:["(fewer) phagocytes / (fewer) lymphocytes","(so less) ingestion / phagocytosis / digestion / engulfing","(so fewer) antibodies"], marks:2, requiredKeywords:2, topic:"Disease/Immunity", msText:"(fewer) phagocytes / (fewer) lymphocytes (1); (so less) ingestion / phagocytosis / digestion / engulfing (1); (so fewer) antibodies (1)" },
+        { id:"q3a", type:"written", text:"3(a) Name the parts labelled P and Q (cow digestive system).", correctKeywords:["P is the ileum / small intestine","Q is the oesophagus"], marks:2, requiredKeywords:2, topic:"Digestion", msText:"P is the ileum / small intestine (1); Q is the oesophagus (1)" },
+        { id:"q3b", type:"written", text:"3(b) Suggest why microorganisms that digest plant cell walls are useful to a cow.", correctKeywords:["cellulose","(produces / release) glucose / energy","respiration"], marks:2, requiredKeywords:2, topic:"Digestion/Nutrition", msText:"cellulose (1); (produces / release) glucose / energy (1); respiration (1)" },
+        { id:"q3c", type:"written", text:"3(c) Comment on the claim that injecting growth hormone (GH) into cows (to increase milk production, need fewer cows) would reduce climate change (methane from digestion).", correctKeywords:["fewer cows means less methane","greenhouse gas","(less) heat trapped / (less) radiation reflected","(less) global warming","farmers may choose to keep same number / more cows","some cows kept for beef","other sources of greenhouse gas"], marks:4, requiredKeywords:4, topic:"Environment/Agriculture", msText:"fewer cows means less methane (into atmosphere) (1); greenhouse gas (1); (less) heat trapped / (less) radiation reflected (1); (less) global warming (1); farmers may choose to keep same number / more cows (1); some cows kept for beef (1); other sources of greenhouse gas / cars / fossil fuels (1)" },
+        { id:"q4a", type:"table", text:"4(a) Complete the table by stating the correct vitamins (improves vision, helps bone growth).", subfields:["improves vision","helps bone growth"], correct:["(vitamin) A","(vitamin) D"], marks:2, topic:"Diet/Nutrition", msText:"(vitamin) A (1); (vitamin) D (1)" },
+        { id:"q4bi", type:"calc", text:"4(b)(i) Calculate the mean rate of yeast growth without vitamin C (dry mass from 0.50g to 6.50g in 30 hours).", correctValue:0.20, tolerance:0.01, marks:2, topic:"Maths/Rate", msText:"6.5 - 0.5 = 6.0; ÷ 30 = 0.20 (2)" },
+        { id:"q4bii", type:"written", text:"4(b)(ii) Suggest how to find the dry mass of yeast in each flask.", correctKeywords:["pour contents onto filter paper (in funnel)","heat / warm in oven","weigh the residue (using balance)"], marks:2, requiredKeywords:2, topic:"Practical/Mass measurement", msText:"pour contents onto filter paper (in funnel) (1); heat / warm in oven (1); weigh the residue (using balance) (1)" },
+        { id:"q4biii", type:"written", text:"4(b)(iii) State the dependent variable in this investigation.", correctKeywords:["(dry) mass of yeast"], marks:1, topic:"Practical/Variables", msText:"(dry) mass of yeast" },
+        { id:"q4biv", type:"written", text:"4(b)(iv) Justify two other variables the student should control.", correctKeywords:["temperature (affects enzymes)","pH (affects/denatures enzymes)","oxygen/aerobic/anaerobic conditions (affects respiration)","species/strain/type of yeast (different growth rates)","concentration of glucose solution (used in respiration)"], marks:4, requiredKeywords:2, topic:"Practical/Variables", msText:"temperature - because it affects enzymes / enzymes have optimum temperature (1); pH - because it affects / denatures enzymes (1); oxygen / aerobic / anaerobic conditions - because it affects respiration (1); species / strain / type of yeast - because they may grow at different rates (1); concentration of glucose solution - used in respiration by yeast (1)" },
+        { id:"q5a", type:"written", text:"5(a) Describe the role of a named vector in the process of genetic modification.", correctKeywords:["plasmid / virus / bacteriophage / gene gun","transfer (recombinant) DNA / gene into organism"], marks:2, requiredKeywords:2, topic:"Genetic modification", msText:"plasmid / virus / bacteriophage / phage / gene gun (1); transfer (recombinant) / DNA / gene / into organism (1)" },
+        { id:"q5bi", type:"written", text:"5(b)(i) Name the mineral ion used to make chlorophyll.", correctKeywords:["Magnesium / Mg","Mg²⁺"], marks:1, topic:"Plant nutrition", msText:"Magnesium / Mg / Mg²⁺" },
+        { id:"q5bii", type:"written", text:"5(b)(ii) Design an investigation to find out which method (hand pulling vs chemical spraying) produces the highest crop yield.", correctKeywords:["C use pulling method A and weedicide method B","O uses same species of crop / same plant","R repeat investigation / uses more than one field","M1 measure crop mass / weigh","M2 use quadrats / per m² / per unit area","S1 after stated time period / one growing season","S2 control temperature / light / CO2 / soil / water / minerals"], marks:6, requiredKeywords:6, topic:"Practical/Investigation design", msText:"C use pulling / method A and weedicide / method B (1); O uses same species of crop / same crop / plant (1); R repeat investigation / uses more than one field (1); M1 measure crop mass / weigh (1); M2 use quadrats / use sampling / per m² / per unit area (1); S1 after stated time period / one growing season (1); S2 (control) temperature / light / carbon dioxide / soil / water / fertiliser / minerals (1)" },
+        { id:"q6a", type:"written", text:"6(a) State the role of the cell membrane.", correctKeywords:["control the movement (of substances) in/out of cell","only allows certain substances to enter cell"], marks:1, topic:"Cell Biology", msText:"control the movement (of substances) in /out of cell / eq" },
+        { id:"q6b", type:"calc", text:"6(b) Calculate the area available for blood flow after fatty deposit (original diameter 4.0mm, deposit covers 45% of original area).", correctValue:6.91, tolerance:0.1, marks:2, topic:"Maths/Area/Percentages", msText:"original area = 3.14 × 4 = 12.56; 0.55 × 12.56 = 6.9 / 6.91 / 6.908 mm² (2)" },
+        { id:"q6ci", type:"graph", text:"6(c)(i) Plot a suitable graph on the grid to show these results (cholesterol concentration ranges vs number of men).", correctKeywords:["S y axis linear and half the grid","L labelled bars drawn for each range","A1 axes labelled 'number (of men)'","A2 axes labelled 'cholesterol concentration in mg/cm³'","P bar heights correct"], marks:5, topic:"Graph skills", msText:"S y axis linear and half the grid (1); L labelled bars drawn for each range (1); A1 axes labelled number (of men) (1); A2 axes labelled 'cholesterol concentration in mg/cm³' (1); P bar heights correct (within half small square) (1)" },
+        { id:"q6cii", type:"mcq", text:"6(c)(ii) Which range of blood cholesterol levels is the mode for this sample?", options:["A 80 to 119","B 80 to 379","C 160 to 199","D 360 to 399"], correct:"C 160 to 199", marks:1, topic:"Data analysis", msText:"C 160 to 199" },
+        { id:"q6ciii", type:"calc", text:"6(c)(iii) Calculate the percentage of men at higher risk of heart disease (>239mg per 100cm³).", correctValue:15.3, tolerance:0.5, marks:2, topic:"Maths/Percentages", msText:"115 + 34 + 9 + 5 = 163; total men = 1067; 163 ÷ 1067 × 100 = 15.276 / 15.28 /15.3 / 15 (2)" },
+        { id:"q6d", type:"written", text:"6(d) Discuss the conclusion that statins reduce the risk of heart attacks (2.2% vs 3.8% over 4 years).", correctKeywords:["statin shows less percentage of / fewer heart attacks","only one statin tested","only tested for four years","difference could be due to chance","groups may have small size","some may have pre-existing conditions","groups may not have same diet/exercise/smoking","groups may be different ages/masses/genetics"], marks:4, requiredKeywords:4, topic:"Evaluation/Data analysis", msText:"statin shows less percentage of / fewer heart attacks (1); only one statin tested (1); only tested for four years (1); difference could be due to chance (1); groups may have small size (1); some may have pre-existing heart condition / blood pressure (1); groups may not have same diet / exercise / stress / smoking (1); groups may be different ages / masses / obesity / genes / family history / sex / ethnicity (1)" },
+        { id:"q7ai", type:"written", text:"7(a)(i) State what is meant by the term gene.", correctKeywords:["section / length / part (of a molecule) of DNA","codes for a specific protein / polypeptide"], marks:1, topic:"Genetics", msText:"a gene is a section / length / part (of a molecule) of DNA that codes for a specific protein / polypeptide (1)" },
+        { id:"q7aii", type:"written", text:"7(a)(ii) State the phenotype coded for by the dominant allele (from first cross: white × grey = all grey offspring).", correctKeywords:["grey hair / grey"], marks:1, topic:"Genetics", msText:"grey hair / grey" },
+        { id:"q7b", type:"genetics", text:"7(b) Use a genetic diagram to show the second cross (grey × grey from F1 gives some white offspring).", correctKeywords:["Gg and Gg","gametes G or g","offspring GG Gg Gg gg","ratio 3 grey : 1 white"], marks:4, topic:"Genetics/Monohybrid cross", msText:"Gg and Gg (1); G or g G or g (1); GG Gg Gg gg (1); 3 grey : 1 white (1)" },
+        { id:"q7c", type:"written", text:"7(c) Explain how the scientist could use a cross to determine the genotype of a mouse with grey hair (GG or Gg).", correctKeywords:["cross with mouse with white hair / gg / homozygous recessive / test cross","if all offspring grey - parent is homozygous / GG","if some / any / half offspring white - parent is heterozygous / Gg"], marks:2, requiredKeywords:2, topic:"Genetics/Test cross", msText:"cross with mouse with white hair / gg / homozygous recessive / do back cross / test cross (1); if all offspring grey - parent is homozygous / GG (1); if some / any / half offspring white - parent is heterozygous / Gg (1)" },
+        { id:"q7d", type:"written", text:"7(d) Describe how the genetic control of most phenotypic features differs from this example (one gene having many effects - pleiotropy).", correctKeywords:["most polygenic","many genes / more than one gene","each of small effect","show continuous variation","most single genes only affect one phenotype"], marks:3, requiredKeywords:3, topic:"Genetics/Polygenic inheritance", msText:"most polygenic (1); many genes / more than one gene (1); each of small effect (1); show continuous variation / example height / mass (1); most single genes / monohybrid inheritance only affect one phenotype / characteristic (1)" },
+        { id:"q8a", type:"written", text:"8(a) Describe how asexual reproduction differs from sexual reproduction.", correctKeywords:["no gametes formed / no meiosis","no fertilisation / fusion of gametes","no genetic variation / offspring are clones","only one parent cell required"], marks:3, requiredKeywords:3, topic:"Reproduction", msText:"no gametes formed / no meiosis (1); no fertilisation / fusion of gametes / zygote formed (1); no genetic variation / offspring are clones / have same alleles as parents (1); only one parent cell required (1)" },
+        { id:"q8bi", type:"mcq", text:"8(b)(i) What is the site of fertilisation?", options:["A oviduct","B ovary","C uterus","D cervix"], correct:"A oviduct", marks:1, topic:"Reproduction", msText:"A (the oviduct)" },
+        { id:"q8bii", type:"mcq", text:"8(b)(ii) Where does the fetus usually develop?", options:["A ovary","B oviduct","C uterus","D cervix"], correct:"C uterus", marks:1, topic:"Reproduction", msText:"C (uterus / womb)" },
+        { id:"q8biii", type:"written", text:"8(b)(iii) Describe the role of the hormones produced by structure B (ovary - oestrogen and progesterone).", correctKeywords:["oestrogen - thickens uterus lining / development of secondary sexual characteristics / stimulates LH / inhibits FSH","progesterone - maintains uterus lining / inhibits LH / stimulates FSH"], marks:4, requiredKeywords:4, topic:"Reproduction/Hormones", msText:"oestrogen - thickens uterus lining (1); development of secondary sexual characteristics (1); stimulates LH / inhibits FSH (1); progesterone - maintains uterus lining (1); inhibits LH / stimulates FSH (1)" },
+        { id:"q8ci", type:"calc", text:"8(c)(i) Calculate the mean number of sperm released from men aged 40-43 (mean semen volume 3.22 cm³, mean concentration 62.1 million/cm³).", correctValue:200, tolerance:1, marks:1, topic:"Maths", msText:"= 3.22 x 62.1 = 200 (million) (1)" },
+        { id:"q8cii", type:"written", text:"8(c)(ii) Explain why mean number of sperm released is a better measure of fertility than either mean semen volume or mean sperm concentration alone.", correctKeywords:["number depends upon both factors","high conc but low volume gives few sperm","high volume but low conc gives few sperm"], marks:2, requiredKeywords:2, topic:"Data analysis/Reproduction", msText:"number amount of sperm depends upon both factors (1); you could have a high conc but low volume (this would provide few sperm) (1); or a high volume but low conc (this would provide few sperm) (1)" },
+        { id:"q8ciii", type:"calc", text:"8(c)(iii) Calculate the percentage decrease in mean number of sperm between men aged 37-39 (202 million) and men aged 48-72 (142 million).", correctValue:29.7, tolerance:1, marks:2, topic:"Maths/Percentages", msText:"202 - 142 ÷ 202 × 100 = 29.7 % (2)" },
+        { id:"q9ai", type:"written", text:"9(a)(i) Name the producers in this food web.", correctKeywords:["algae","bladder wrack"], marks:2, requiredKeywords:2, topic:"Ecology/Food webs", msText:"algae (1); bladder wrack (1)" },
+        { id:"q9aii", type:"written", text:"9(a)(ii) Name two secondary consumers in this food web.", correctKeywords:["(common) seal","crab","lobster","(herring) gull"], marks:2, requiredKeywords:2, topic:"Ecology/Food webs", msText:"(common) seal (1); crab (1); lobster (1); (herring) gull (1)" },
+        { id:"q9aiii", type:"ordered", text:"9(a)(iii) Draw a food chain from this food web that contains four organisms and includes the herring gull.", correctOrder:["bladder wrack","winkle","crab","gull"], marks:2, topic:"Ecology/Food chains", msText:"bladder wrack → winkle → crab → gull (2)" },
+        { id:"q9bi", type:"graph", text:"9(b)(i) Sketch and label the pyramid of energy for the food chain: microscopic algae → limpet → lobster → common seal.", correctKeywords:["order correct (algae bottom, limpet, lobster, seal top)","shape correct (wide base, narrow top)"], marks:2, topic:"Ecology/Pyramids", msText:"order correct (1); shape correct (1)" },
+        { id:"q9bii", type:"written", text:"9(b)(ii) Explain why the amount of energy available to the organisms changes along this food chain.", correctKeywords:["energy lost (between each stage / level)","as heat / used in respiration / movement","excreted / urine","not eaten / not digested / egested / faeces","decompose / die"], marks:3, requiredKeywords:3, topic:"Ecology/Energy transfer", msText:"energy lost (between each stage / level) (1); as heat / used in respiration / movement (1); excreted / urine (1); not eaten / not digested / egested / faeces (1); decompose / die (1)" },
+        { id:"q10ai", type:"written", text:"10(a)(i) Describe how the student could remove all the starch from the leaf.", correctKeywords:["keep plant in dark","for 12 hours plus"], marks:2, requiredKeywords:2, topic:"Photosynthesis/Practical", msText:"keep plant in dark (1); for 12 hours plus (1)" },
+        { id:"q10aii", type:"written", text:"10(a)(ii) State why the student removes all the starch from the leaf before starting the experiment.", correctKeywords:["starch only made during experiment / produced in the light","prevent false positive"], marks:1, topic:"Photosynthesis/Practical", msText:"starch only made during experiment / produced in the light / prevent false positive (1)" },
+        { id:"q10b", type:"written", text:"10(b) Give a safety precaution the student needs to take when removing chlorophyll (using ethanol).", correctKeywords:["(heat ethanol) using water bath","extinguish Bunsen flame"], marks:1, topic:"Practical/Safety", msText:"(heat ethanol) using water bath (1); extinguish Bunsen flame (1)" },
+        { id:"q10c", type:"written", text:"10(c) Give a suitable control the student should use in this experiment (testing leaf for starch production in light).", correctKeywords:["keep leaf in dark / mask leaf / cover with foil"], marks:1, topic:"Practical/Controls", msText:"keep leaf in dark / mask leaf / cover with foil (1)" },
+        { id:"q10d", type:"written", text:"10(d) Describe how the structure of a leaf is adapted for photosynthesis.", correctKeywords:["leaf flat / wide / large SA for light absorption/gas exchange","leaf thin for short diffusion distance","upper epidermis transparent to allow light through","palisade cells contain many chloroplasts","spongy mesophyll has air spaces for gas exchange","stomata to absorb CO2","xylem brings water"], marks:5, requiredKeywords:5, topic:"Plant biology/Photosynthesis", msText:"leaf flat / wide / large SA for diffusion / gas exchange / light absorption (1); leaf thin so no cells far from surface / short diffusion distance (1); upper epidermis transparent to allow light through (1); palisade (mesophyll) cells contain many chloroplasts / much chlorophyll (near surface) to absorb light (1); spongy (mesophyll) / cells have air spaces / not tightly packed / for gas exchange / diffusion (1); (lower surface) has stomata to absorb carbon dioxide (1); xylem / vascular bundle bring water for photosynthesis (1)" },
+        { id:"q11ai", type:"written", text:"11(a)(i) Describe the role of structures A (lens), C (cornea) and D (ciliary muscles) in focusing light from a near object onto the retina.", correctKeywords:["cornea / C bends / refracts light","lens / A becomes (more) curved / rounder / convex / thicker","ciliary muscles / D contract","suspensory ligaments relax / become less taut"], marks:4, requiredKeywords:4, topic:"Nervous system/Eye", msText:"cornea / C bends / refracts light (1); lens / A becomes (more) curved / rounder / convex / thicker (1); as ciliary muscles / D contract (1); (ciliary muscles / D) cause suspensory ligaments to relax become less taut / slacken / loosen (1)" },
+        { id:"q11aii", type:"written", text:"11(a)(ii) Explain how a reflex involving structure B (iris) protects the retina from damage by bright light.", correctKeywords:["circular muscles contract","radial muscles relax","pupil constricts / becomes smaller","less light enters eye"], marks:3, requiredKeywords:3, topic:"Nervous system/Eye/Reflexes", msText:"circular muscles contract (1); radial muscles relax (1); pupil constricts / becomes smaller (1); less light enters eye (1)" },
+        { id:"q11bi", type:"written", text:"11(b)(i) Suggest why the liquid from tear glands contains lysozyme (enzyme that breaks down cell walls).", correctKeywords:["(breaks down / kills / prevents growth of) bacteria / fungi / pathogens","prevent infection / disease"], marks:2, requiredKeywords:2, topic:"Immunity/Defence", msText:"(breaks down / digests cell walls of / kill / prevent growth of / remove / protect from) bacteria / fungi / pathogens (1); prevent infection / disease (1)" },
+        { id:"q11bii", type:"written", text:"11(b)(ii) Suggest why the liquid is maintained at pH 7.", correctKeywords:["optimum pH (for lysozyme)","prevent enzyme being denatured / change in active site","break down cell walls / kill bacteria at fastest rate","(too) acidic / (too) alkaline may damage eye"], marks:2, requiredKeywords:2, topic:"Enzymes", msText:"optimum pH (for lysozyme) (1); prevent enzyme being denatured / change in active site (1); break down cell walls / kill bacteria / work at fastest / fast rate (1); (too) acidic / (too) alkaline may damage eye (1)" }
+    ];
+
+    // For each question store user answer + manual mark (if written) 
+    let userAnswers = new Array(questionsData.length).fill("");
+    let userManualMarks = new Array(questionsData.length).fill(null); // null = not set, else numeric
+    let currentQIndex = 0;
+    let examSubmitted = false;
+    let timerInterval;
+    let timeSeconds = 120 * 60;
+
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
+    function startTimer() { timerInterval = setInterval(()=>{ if(!examSubmitted){ timeSeconds--; updateTimerDisplay(); if(timeSeconds<=0) autoSubmit(); } },1000); }
+
+    function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = idx+1;
+            btn.classList.add("nav-btn");
+            if(userAnswers[idx] && userAnswers[idx].toString().trim() !== "") btn.classList.add("answered");
+            if(idx === currentQIndex) btn.classList.add("active");
+            btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
+            navDiv.appendChild(btn);
+        });
+        updateAnsweredCounter();
+    }
+    function updateAnsweredCounter() {
+        let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
+        document.getElementById("answeredCounter").innerHTML = `✅ Attempted: ${answered} / ${questionsData.length} questions`;
+    }
+    function goToQuestion(idx) {
+        if(examSubmitted) return;
+        document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question"));
+        currentQIndex = idx;
+        const target = document.getElementById(`qcard-${idx}`);
+        if(target) target.classList.add("active-question");
+        renderNavigation();
+    }
+    function saveAnswer(idx, value) {
+        if(examSubmitted) return;
+        userAnswers[idx] = value;
+        updateAnsweredCounter();
+        renderNavigation();
+    }
+    function setManualMark(idx, markValue) {
+        if(examSubmitted) return;
+        let num = parseInt(markValue);
+        if(isNaN(num)) num = 0;
+        let maxMarks = questionsData[idx].marks;
+        if(num > maxMarks) num = maxMarks;
+        if(num < 0) num = 0;
+        userManualMarks[idx] = num;
+    }
+    function toggleMarkScheme(idx) {
+        let panel = document.getElementById(`ms-panel-${idx}`);
+        if(panel) panel.classList.toggle("visible");
+    }
+
+    function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            if(idx === 0) card.classList.add("active-question");
+            card.id = `qcard-${idx}`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
+            
+            // Answer input based on type
+            if(q.type === "mcq") {
+                inner += `<div class="subquestion">`;
+                q.options.forEach(opt => {
+                    let checked = (userAnswers[idx] === opt) ? "checked" : "";
+                    inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+                });
+                inner += `</div>`;
+            } else if(q.type === "calc") {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><input type="text" placeholder="Your numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+            } else {
+                // written / pair / short
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+            }
+            
+            // Mark scheme button + manual marks selector for non-MCQ
+            if(q.type !== "mcq") {
+                inner += `<div style="margin-top: 12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show / Hide Mark Scheme</button>`;
+                inner += `<div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>`;
+                // Manual marks dropdown
+                let selectedVal = (userManualMarks[idx] !== null) ? userManualMarks[idx] : "";
+                inner += `<div class="marks-earned-row"><span>✍️ Self-assess marks earned (0 to ${q.marks}): </span>
+                          <select onchange="setManualMark(${idx}, this.value)">
+                            <option value="">-- select --</option>`;
+                for(let m=0; m<=q.marks; m++) {
+                    let sel = (selectedVal === m) ? "selected" : "";
+                    inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+                }
+                inner += `</select></div></div>`;
+            } else {
+                // MCQ simple mark scheme hint
+                inner += `<div style="margin-top: 8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
+                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
+            }
+            
+            if(q.text.includes("diagram") || q.text.includes("graph") || q.text.includes("Diagram")) {
+                inner += `<div class="placeholder-img">📊 [Figure/Graph/Diagram placeholder - refer to original paper]</div>`;
+            }
+            card.innerHTML = inner;
+            container.appendChild(card);
+        });
+    }
+
+    // Final marking: For written, if manual mark set use that, else fallback to keyword auto-mark.
+    function getFinalMark(q, idx, answer) {
+        if(q.type === "mcq") {
+            if(!answer) return 0;
+            return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0;
+        }
+        if(q.type === "calc") {
+            if(!answer) return 0;
+            let num = parseFloat(answer);
+            if(isNaN(num)) return 0;
+            return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0;
+        }
+        if(q.type === "pair") {
+            if(!answer) return 0;
+            let a = answer.toLowerCase();
+            let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase()));
+            return matched ? q.marks : 0;
+        }
+        // written & short: prefer manual mark if set
+        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) {
+            return Math.min(userManualMarks[idx], q.marks);
+        }
+        // fallback to keyword marking
+        if(!answer) return 0;
+        let a = answer.toLowerCase();
+        let kw = q.correctKeywords || [];
+        let required = q.requiredKeywords || 1;
+        let count = kw.filter(k => a.includes(k.toLowerCase())).length;
+        return Math.min(count, q.marks);
+    }
+
+    function getGrade(percent) {
+        if(percent >= 85) return "9 (excellent)";
+        if(percent >= 78) return "8 (strong)";
+        if(percent >= 70) return "7 (good)";
+        if(percent >= 62) return "6 (high merit)";
+        if(percent >= 54) return "5 (merit)";
+        if(percent >= 45) return "4 (standard pass)";
+        if(percent >= 35) return "3";
+        if(percent >= 25) return "2";
+        return "1";
+    }
+
+    function computeWeakTopics(scoresByTopic) {
+        let weak = [];
+        for(let [topic, data] of Object.entries(scoresByTopic)) {
+            let percentage = (data.earned / data.total) * 100;
+            if(percentage < 55) weak.push({ topic, percentage, earned: data.earned, total: data.total });
+        }
+        weak.sort((a,b)=> a.percentage - b.percentage);
+        return weak;
+    }
+
+    function submitExam() {
+        if(examSubmitted) return;
+        clearInterval(timerInterval);
+        examSubmitted = true;
+        let totalEarned = 0, totalPossible = 0;
+        let topicScores = {};
+        let details = [];
+        questionsData.forEach((q, idx) => {
+            let ans = userAnswers[idx] || "";
+            let earned = getFinalMark(q, idx, ans);
+            totalEarned += earned;
+            totalPossible += q.marks;
+            let topic = q.topic || "General";
+            if(!topicScores[topic]) topicScores[topic] = { earned:0, total:0 };
+            topicScores[topic].earned += earned;
+            topicScores[topic].total += q.marks;
+            let markingMethod = (q.type !== "mcq" && userManualMarks[idx] !== null) ? "manual" : "auto-keyword";
+            details.push({ text: q.text.substring(0,70), answer: ans.substring(0,60), earned, max: q.marks, topic, method: markingMethod, scheme: q.msText });
+        });
+        let percent = (totalEarned/totalPossible)*100;
+        let grade = getGrade(percent);
+        let weakTopics = computeWeakTopics(topicScores);
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        let html = `<h2>📊 Exam Results — Final Mark</h2><div class="score-badge">Score: ${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+        <div class="grade-box"><strong>Edexcel IGCSE 9–1 grade: ${grade}</strong> (Boundaries: 9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
+        if(weakTopics.length > 0) {
+            html += `<div class="weakness-box"><h3>⚠️ Weaker areas (below 55%)</h3><ul>`;
+            weakTopics.forEach(w => { html += `<li><strong>${w.topic}</strong>: ${w.earned}/${w.total} marks (${w.percentage.toFixed(1)}%) — review this topic.</li>`; });
+            html += `</ul></div>`;
+        } else {
+            html += `<div class="weakness-box"><h3>✅ No weak areas identified (all ≥55%). Great work!</h3></div>`;
+        }
+        html += `<p><strong>Detailed breakdown:</strong></p><ul>`;
+        details.forEach((d,i) => { html += `<li><strong>Q${i+1} (${d.topic})</strong> [${d.max} marks]: earned ${d.earned} (${d.method})<br>Your answer: "${d.answer || 'blank'}"<br>📖 MS: ${d.scheme}</li>`; });
+        html += `</ul><p>✔️ For written questions you could manually assign marks using the dropdown; otherwise auto-keyword marking applied.</p>`;
+        reviewDiv.innerHTML = html;
+        document.querySelectorAll("input, textarea, button.nav-btn, #prevBtn, #nextBtn, select").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
+        document.getElementById("submitBtn").disabled = true;
+    }
+
+    function saveProgress() {
+        const data = { answers: userAnswers, manualMarks: userManualMarks, timestamp: new Date().toISOString() };
+        localStorage.setItem("igcse_bio_paper1b_save_full", JSON.stringify(data));
+        alert("Progress saved (including manual marks)! Use 'Load Saved' to resume.");
+    }
+    function loadProgress() {
+        if(examSubmitted) { alert("Exam already submitted."); return; }
+        const raw = localStorage.getItem("igcse_bio_paper1b_save_full");
+        if(!raw) { alert("No saved data found."); return; }
+        try {
+            const saved = JSON.parse(raw);
+            if(saved.answers && saved.answers.length === userAnswers.length) {
+                userAnswers = saved.answers;
+                if(saved.manualMarks) userManualMarks = saved.manualMarks;
+                rebuildInputsFromAnswers();
+                renderNavigation();
+                alert("Progress loaded.");
+            } else { alert("Data mismatch."); }
+        } catch(e) { alert("Error loading."); }
+    }
+    function rebuildInputsFromAnswers() {
+        buildQuestionsHTML();
+        for(let i=0; i<userAnswers.length; i++) {
+            let val = userAnswers[i];
+            if(val && val !== "") {
+                let radios = document.querySelectorAll(`input[name="q${i}"]`);
+                if(radios.length) {
+                    radios.forEach(r => { if(r.value === val) r.checked = true; });
+                } else {
+                    let inputField = document.querySelector(`#qcard-${i} textarea, #qcard-${i} input[type="text"]`);
+                    if(inputField) inputField.value = val;
+                }
+            }
+            if(userManualMarks[i] !== null && userManualMarks[i] !== undefined) {
+                let selectEl = document.querySelector(`#qcard-${i} select`);
+                if(selectEl) selectEl.value = userManualMarks[i];
+            }
+        }
+        renderNavigation();
+    }
+
+    window.saveAnswer = saveAnswer;
+    window.setManualMark = setManualMark;
+    window.toggleMarkScheme = toggleMarkScheme;
+    window.goToQuestion = goToQuestion;
+    window.onload = () => {
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
+        document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam and see final grade & weak topics?")) submitExam(); };
+        document.getElementById("saveResponsesBtn").onclick = saveProgress;
+        document.getElementById("loadResponsesBtn").onclick = loadProgress;
+    };
+</script>
+</body>
+</html>
