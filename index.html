@@ -351,6 +351,29 @@
         setTimeout(() => { toast.style.opacity = "0"; }, 3000);
     }
     
+
+    function convertToCSV(resultData) {
+        let csvRows = [];
+        // Headers
+        csvRows.push(['#', 'Topic', 'Question', 'Your Answer', 'Score', 'Feedback', 'Mark Scheme'].join(','));
+        
+        // Data rows
+        for(let item of resultData.details) {
+            const row = [
+                item.number,
+                `"${item.topic.replace(/"/g, '""')}"`,
+                `"${item.question.replace(/"/g, '""').substring(0, 200)}"`,
+                `"${(item.studentAnswer || '').replace(/"/g, '""').substring(0, 150)}"`,
+                `${item.marksEarned}/${item.marksTotal}`,
+                `"${(item.aiFeedback || '').replace(/"/g, '""').substring(0, 200)}"`,
+                `"${(item.expectedAnswer || '').replace(/"/g, '""').substring(0, 200)}"`
+            ];
+            csvRows.push(row.join(','));
+        }
+        return csvRows.join('\n');
+    }
+
+
     async function sendResultsEmail(resultData, studentName = "Student") {
         if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
             console.log("EmailJS not configured. Results:", resultData);
@@ -367,8 +390,9 @@
                 grade: resultData.grade,
                 weak_topics: resultData.weakTopics.join(", ") || "None",
                 exam_date: new Date().toLocaleString(),
-                details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+                csv_attachment: csvData  // Send as CSV text
             };
+            
             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
             showToast("✅ Results emailed successfully!", false);
             return true;
@@ -720,11 +744,7 @@
                 percent: percent,
                 grade: grade,
                 weakTopics: weakTopics,
-                details: questionFeedback.map(fb => ({
-                    qNum: fb.number,
-                    earned: fb.marksEarned,
-                    max: fb.marksTotal
-                }))
+                details: questionFeedback
             };
             await sendResultsEmail(emailResultData, "Exam Candidate");
         } catch(emailError) {
