@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Pearson Edexcel International GCSE | Interactive </title>
+    <title>Pearson Edexcel International GCSE | Interactive with Auto Graph Detection</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>   
     <style>
         * { box-sizing: border-box; }
@@ -196,6 +196,15 @@
             color: white;
             cursor: pointer;
         }
+        .graph-badge {
+            background: #f4a261;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -203,7 +212,7 @@
     <div class="header">
         <div class="title">
             <h1>Edexcel IGCSE Biology (4BI1)</h1>
-            <p>Biology Paper 1B | May 2020 
+            <p>Biology Paper 1B | May 2019</p>
         </div>
         <div class="timer-area">
             <div>Time Remaining</div>
@@ -213,6 +222,7 @@
     <div class="info-bar">
         <span>⏱️ 2 hours | 📝 Total marks: 110</span>
         <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
+        <span id="graphCounter">📊 Graph/Practical questions: 0</span>
     </div>
     <div id="navContainer" class="question-nav"></div>
     <div id="questionsContainer"></div>
@@ -227,21 +237,27 @@
 
 <script>
     // ========== OPENAI CONFIGURATION ==========
-    // IMPORTANT: Replace with your actual OpenAI API key. For production, use a backend proxy.
     const OPENAI_API_KEY="OPENAI_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR OPENAI API KEY HERE
     const OPENAI_MODEL = "gpt-3.5-turbo";
-    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_PUBLIC_KEY = "#PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
     const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
     const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
     const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
     
-    // Initialize EmailJS if keys are provided
     if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
         try {
             emailjs.init(EMAILJS_PUBLIC_KEY);
         } catch(e) {
             console.log("EmailJS init error:", e);
         }
+    }
+    
+    // ========== AUTO DETECTION FUNCTION FOR GRAPH QUESTIONS ==========
+    // This function automatically detects if a question requires graph/drawing/plotting
+ // MODIFIED: Only detects when type is 'graph' OR 'practical'
+    function isGraphOrPracticalQuestion(question) {
+        // Only return true if type is exactly 'graph' OR 'practical'
+        return question.type === 'graph' || question.type === 'practical';
     }
     
     // ========== IndexedDB Setup ==========
@@ -327,7 +343,7 @@
     }
     
     function showToast(message, isError = false) {
-        const toast = document.getElementById("statusToast");  // Changed to match HTML id
+        const toast = document.getElementById("statusToast");
         if (!toast) return;
         toast.textContent = message;
         toast.style.background = isError ? "#b23c1c" : "#2c7da0";
@@ -335,7 +351,6 @@
         setTimeout(() => { toast.style.opacity = "0"; }, 3000);
     }
     
-    // // ========== Email Function ==========
     async function sendResultsEmail(resultData, studentName = "Student") {
         if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
             console.log("EmailJS not configured. Results:", resultData);
@@ -364,62 +379,76 @@
         }
     }
     
-    // ========== Full Question Bank (55 items) ==========
-    // For graphical questions (graph/plotting/diagram/drawing) we set isGraphical: true → show mark scheme button + self-assess
-    // For non-graphical: NO mark scheme button, fully AI marked.
-const questionsData = [
-        { id:"q1ai", type:"mcq", text:"1(a)(i) Which of these is found in this bacterium?", options:["A cellulose","B chitin","C cytoplasm","D nucleus"], correct:"C cytoplasm", marks:1, topic:"Cell Biology/Bacteria", msText:"C cytoplasm" },
-        { id:"q1aii", type:"mcq", text:"1(a)(ii) The bacterium has evolved to release an enzyme called urease. The action of the bacterium neutralises the acid in the stomach. What is the pH changed to?", options:["A 1","B 2","C 7","D 12"], correct:"C 7", marks:1, topic:"Enzymes/pH", msText:"C 7" },
-        { id:"q1aiii", type:"written", text:"1(a)(iii) Explain how H. pylori may have evolved to neutralise the acid in the stomach.", correctKeywords:["mutation","variation","survive","reproduce","breed","offspring","pass on allele","pass on gene"], marks:4, requiredKeywords:4, topic:"Evolution/Natural selection", msText:"mutation (1); variation (1); survive (1); reproduce / breed / offspring (1); pass on allele / gene (1)" },
-        { id:"q1b", type:"written", text:"1(b) Give two conclusions from these results (probiotics and cranberry juice).", correctKeywords:["probiotic","cranberry","both","treatments better than control","reduce bacteria","more reduction if taken together","cranberry reduces more than probiotic"], marks:2, requiredKeywords:2, topic:"Data analysis", msText:"probiotic / cranberry / both / treatments (better than control) reduce (bacteria) / eq(1); more reduction if taken together / eq (1); cranberry (alone) reduces more than probiotic (alone) / eq(1)" },
-        { id:"q2", type:"written", text:"2 Complete the passage about reproduction in flowering plants.", correctKeywords:["sexual","pollen","anther","stigma","bees","moths","flies","large","big","scented","sweet smelling","style","fertilisation"], marks:8, requiredKeywords:8, topic:"Plant reproduction", msText:"sexual (1); pollen (1); anther (1); stigma (1); bees / moths / flies (1); large / big / scented / (sweet) smelling (1); style (1); fertilisation (1)" },
-        { id:"q3a", type:"written", text:"3(a) Name the organelle shown in the drawing of a cheek cell.", correctKeywords:["nucleus"], marks:1, topic:"Cell Biology", msText:"nucleus" },
-        { id:"q3b", type:"calc", text:"3(b) Calculate the magnification of the mitochondrion drawing (actual length 6μm).", correctValue:10000, tolerance:500, marks:2, topic:"Microscopy/Maths", msText:"convert length into μm (60 mm = 60 000 μm) (1); division (60 000 ÷ 6 = ×10 000) (1)" },
-        { id:"q3ci", type:"mcq", text:"3(c)(i) What is the mean number of mitochondria per μm³ in a heart muscle cell?", options:["A 0.33","B 3","C 10000","D 7500000"], correct:"A 0.33", marks:1, topic:"Cell Biology", msText:"A 0.33" },
-        { id:"q3cii", type:"written", text:"3(c)(ii) Comment on the differences in the data for the sperm and for the egg.", correctKeywords:["sperm smaller","fewer total mitochondria","more mitochondria per volume","uses energy to swim","fertilise egg"], marks:3, requiredKeywords:3, topic:"Cell Biology/Reproduction", msText:"sperm smaller / sperm is small cell / eq (1); fewer (total) mitochondria (per cell) (1); more mitochondria per volume / per μm³ (1); uses energy to swim / move / get to /eq (1); fertilise egg (1)" },
-        { id:"q4ai", type:"mcq", text:"4(a)(i) Which term describes the trophic level of the krill?", options:["A predator","B prey","C primary consumer","D secondary consumer"], correct:"C primary consumer", marks:1, topic:"Ecology", msText:"C primary consumer" },
-        { id:"q4aii", type:"written", text:"4(a)(ii) Draw a labelled pyramid of biomass to represent this food chain.", correctKeywords:["pyramid shape","labels: microscopic plants, krill, whale"], marks:2, topic:"Ecology", msText:"(Pyramid drawing with appropriate layers and labels)" },
-        { id:"q4b", type:"calc", text:"4(b) Calculate the time taken for the krill to remove microscopic plants from one square metre of ice (rate 1.6cm² per second). Give answer in minutes.", correctValue:104.167, tolerance:1, marks:3, topic:"Maths", msText:"1 m² = 10,000 cm² (1); 10,000 ÷ 1.6 = 6250 seconds (1); 6250 ÷ 60 = 104.2 minutes (1)" },
-        { id:"q4c", type:"written", text:"4(c) Suggest how the student could investigate the rate that krill feeding removes microscopic plants in a laboratory.", correctKeywords:["container of sea water","add same number of plants","add stated number of krill","leave for same time","remeasure number of plants","repeat"], marks:4, requiredKeywords:4, topic:"Practical/Investigation", msText:"use container of sea water (1); add same / stated number/ amount/ count number / mass of microscopic plants (1); add stated number / mass of krill (1); leave for same / stated time / measure time taken to (1); (re)measure number / amount/mass / percentage change in plants(1); repeat /eq (1)" },
-        { id:"q4d", type:"written", text:"4(d) Explain how global warming could affect the whale population in the Antarctic ocean.", correctKeywords:["fewer whales","ice melts","less surface for microscopic plants","fewer microscopic plants","fewer krill","carbon dioxide causes acidification","affects krill eggs"], marks:4, requiredKeywords:4, topic:"Environment/Global warming", msText:"fewer whales / whales die / migrate (1); ice melts (1); no / less surface for microscopic plants (1); so fewer microscopic plants (available) (1); fewer krill / krill die / migrate (1); carbon dioxide causes acidification (1); could affect krill (eggs) (1)" },
-        { id:"q5a", type:"written", text:"5(a) Describe how the plasmid is modified to contain recombinant DNA.", correctKeywords:["restriction enzyme","cut","plasmid","vector","target gene","ligase enzyme","join","sticky ends"], marks:3, requiredKeywords:3, topic:"Genetic modification", msText:"(same) restriction enzyme to cut / remove / open /eq (1); plasmid / vector and target gene / gene for making poison / eq (1); ligase enzyme to join / stick / insert /eq (1); complementary shapes / sticky ends /eq (1)" },
-        { id:"q5b", type:"written", text:"5(b) Discuss the decision made by the farmer to grow GM plants rather than using pesticides.", correctKeywords:["GM plants specific","reduce need for pesticide","pesticide needs reapplication","insects resistant to pesticide","bioaccumulation","health problems","pesticides quick to kill","cross pollination","GM pollen may kill pollinators","insects may develop resistance","customers may not buy","patents"], marks:6, requiredKeywords:6, topic:"Genetic modification/Agriculture", msText:"Good decision: specific / kill specific insects (1); reduce need for pesticide (1); pesticide needs reapplication (1); insects can become resistant to pesticide (1); bioaccumulation (1); health problems (1). Poor decision: pesticides are quick to kill (1); cross pollination (1); GM pollen may kill insect pollinators (1); insects may develop resistance (1); customers may not buy (1); patents (1)" },
-        { id:"q6a", type:"mcq", text:"6(a) Which of these is the balanced chemical symbol equation for aerobic respiration?", options:["A 6CO2 + 6H2O → C6H12O6 + 6O2","B C6H12O6 → 2C2H5OH + 2CO2","C C6H12O6 → 2C3H6O3","D C6H12O6 + 6O2 → 6CO2 + 6H2O"], correct:"D C6H12O6 + 6O2 → 6CO2 + 6H2O", marks:1, topic:"Respiration", msText:"D C6H12O6 + 6O2 → 6CO2 + 6H2O" },
-        { id:"q6bi", type:"written", text:"6(b)(i) Explain why the coloured water drop moves during the investigation.", correctKeywords:["moves left","towards locust","carbon dioxide absorbed by KOH","oxygen used by insect","in respiration"], marks:2, requiredKeywords:2, topic:"Respiration/Practical", msText:"moves left / towards locust (1); carbon dioxide produced by insect absorbed by KOH / filter paper (1); oxygen (used by insect) (1); in respiration (1)" },
-        { id:"q6bii", type:"written", text:"6(b)(ii) State three variables the student should control in this investigation.", correctKeywords:["size","mass","temperature","time","duration","volume of KOH","concentration of KOH","size of flask"], marks:6, requiredKeywords:3, topic:"Practical/Variables", msText:"size / mass / (of locusts) / eq (1); temperature (1); time / duration (1); volume / concentration of KOH / size of filter paper (1)" },
-        { id:"q6ci", type:"calc", text:"6(c)(i) Complete the table by giving the missing mean value.", correctValue:5.267, tolerance:0.01, marks:1, topic:"Maths/Mean", msText:"5.3 or 5.27 or 5.267 or 5.26 recurring" },
-        { id:"q6cii", type:"written", text:"6(c)(ii) Comment on the reliability of the data in the table.", correctKeywords:["not reliable","repeat","male 3 result is anomalous","more variation within sex than between sexes"], marks:3, requiredKeywords:2, topic:"Data analysis", msText:"not reliable / reliability can be increased /eq (1); repeat not / results is anomalous / male 3 result is anomalous (1); more variation within sex than between sexes / eq (1)" },
-        { id:"q7a", type:"written", text:"7(a) Describe how you would test a sample of cow's milk and a sample of human milk to show they contain different masses of protein.", correctKeywords:["biuret","deepest/darker purple contains most protein","same volume of milk/biuret"], marks:2, requiredKeywords:2, topic:"Food tests", msText:"biuret (1); deepest / darker / intensity purple contains most protein (1); reference to same volume of milk / biuret (1)" },
-        { id:"q7b", type:"written", text:"7(b) Explain why antibodies in milk are useful for babies.", correctKeywords:["prevent infection","destroy virus/bacteria/pathogen","provides immunity"], marks:2, requiredKeywords:2, topic:"Immunity", msText:"prevent infection / disease (1); (by destroying / due to) virus / bacteria / pathogen (1); provides immunity / eq (1)" },
-        { id:"q7c", type:"written", text:"7(c) State two uses of lipids in the body.", correctKeywords:["source of energy","store of energy","insulation","myelin sheath","protection fat around organs"], marks:2, requiredKeywords:2, topic:"Diet", msText:"use as a source of / for energy / respiration (1); use as store of energy (1); insulation / myelin sheath / protection fat around organs/ eq(1)" },
-        { id:"q7di", type:"written", text:"7(d)(i) Name the carbohydrate in milk used to make yoghurt.", correctKeywords:["lactose"], marks:1, topic:"Biochemistry", msText:"lactose" },
-        { id:"q7dii", type:"written", text:"7(d)(ii) Name the bacteria added to milk to make yoghurt.", correctKeywords:["Lactobacillus","Streptococcus"], marks:1, topic:"Microbiology/Food", msText:"Lactobacillus / Streptococcus" },
-        { id:"q7diii", type:"written", text:"7(d)(iii) Explain why milk needs to be heated to a high temperature at the start of the process for making yoghurt.", correctKeywords:["sterilise milk","pasteurise","kill bacteria/pathogens","prevent competition"], marks:2, requiredKeywords:2, topic:"Food production", msText:"sterilise milk / pasteurise (1); kill bacteria / pathogen / microorganisms (1); prevent competition (for carbohydrate / sugar) (1)" },
-        { id:"q8ai", type:"mcq", text:"8(a)(i) Where are cells dividing by meiosis found in a human?", options:["A kidney","B penis","C skin","D testis"], correct:"D testis", marks:1, topic:"Cell division", msText:"D testis" },
-        { id:"q8aii", type:"mcq", text:"8(a)(ii) Which part of a flowering plant is usually used to demonstrate cells dividing by mitosis?", options:["A anther","B cotyledon","C root tip","D xylem"], correct:"C root tip", marks:1, topic:"Cell division", msText:"C root tip" },
-        { id:"q8b", type:"table", text:"8(b) Complete the table comparing meiosis and mitosis.", subfields:["number of daughter cells","number of chromosomes in each daughter cell","ploidy level","genetic differences","type of cell produced"], correct:["4","23","haploid","present","gamete/sperm/egg/sex cell"], marks:6, topic:"Cell division", msText:"Meiosis: 4, 23, haploid, present, gamete/sperm/egg/sex cell. Mitosis: 2, 46, diploid, absent/none/identical, body cell" },
-        { id:"q8ci", type:"written", text:"8(c)(i) Describe other causes of variation in offspring.", correctKeywords:["random mating","random fertilisation","environment","mutation"], marks:3, requiredKeywords:3, topic:"Genetics/Variation", msText:"random mating (1); random fertilisation / gametes received/ eq (1); environment (1); mutation (1)" },
-        { id:"q8cii", type:"written", text:"8(c)(ii) Suggest the advantages of using rats that are homozygous for many genes.", correctKeywords:["little genetic variation","same genotype","no genotype environment interaction","respond to drugs in same way"], marks:2, requiredKeywords:2, topic:"Genetics/Practical", msText:"little / no genetic variation / have same genotype / alleles (1); no genotype environment interaction / respond to drugs in same way / eq (1)" },
-        { id:"q9ai", type:"graph", text:"9(a)(i) Plot a line graph to show changes in wheat and barley production.", correctKeywords:["linear scale","axes labelled","points accurately plotted","units","key/label"], marks:5, topic:"Graph skills", msText:"S scale linear and at least half axis (1); L straight lines through points (1); A axis labelled with crop production and year and correct way round (1); P points accurately plotted (1); U units thousand tonnes (and years) (1); K labelled or key to show barley and wheat (1)" },
-        { id:"q9aii", type:"written", text:"9(a)(ii) Describe the trends shown in the graph.", correctKeywords:["wheat decreases to 2013 then increases","barley constant then increases then fluctuates"], marks:2, topic:"Data analysis", msText:"wheat decreases to 2013/ eq and then increases (1); barley constant and then increases to 2013 / eq (then fluctuates) (1)" },
-        { id:"q9aiii", type:"calc", text:"9(a)(iii) Determine which crop had the greatest percentage change from 2011 to 2015. Show working.", correctValue:["barley","32.73"], tolerance:["exact",1], marks:3, topic:"Maths/Percentages", msText:"wheat: (16100-15300)/15300*100 = 5.23% (1); barley: (7300-5500)/5500*100 = 32.73% (1); barley greater (1)" },
-        { id:"q9b", type:"calc", text:"9(b) Calculate mean mass of carbohydrate produced each day by a square metre (field 100m x 100m, 25000kg/year).", correctValue:6.85, tolerance:0.1, marks:2, topic:"Maths", msText:"25000 ÷ 10000 = 2.5 kg/m²/year (1); 2500 g ÷ 365 = 6.85 g (1)" },
-        { id:"q10ai", type:"written", text:"10(a)(i) Give the names of these neurones (A, B, C).", correctKeywords:["sensory","afferent","relay","association","motor","efferent"], marks:3, requiredKeywords:3, topic:"Nervous system", msText:"A sensory / afferent (1); B relay / association (1); C motor / efferent (1)" },
-        { id:"q10aii", type:"written", text:"10(a)(ii) Explain the role of these neurones in the withdrawal reflex of a finger from a hot object.", correctKeywords:["A from receptor to CNS","B from sensory to motor","C from CNS to effector"], marks:3, requiredKeywords:3, topic:"Nervous system/Reflex arc", msText:"neurone A / sensory / afferent (+ impulse) (from receptor) to CNS / spinal cord / relay neurone / neurone B (1); (synapses with) neurone B / relay / association / (+ impulse) (from receptor neurone A) to motor / efferent / neurone C; neurone C / motor / efferent (+ impulse) to effector / muscle" },
-        { id:"q10bi", type:"written", text:"10(b)(i) Explain what other measurements the teacher would need to make to calculate the speed of a nerve impulse.", correctKeywords:["measure the distance","from hand to spinal cord","from brain to other hand","measure time taken","divide distance by time"], marks:2, requiredKeywords:2, topic:"Practical/Nervous system", msText:"measure the distance (from hand to spinal cord and or brain to other hand) (1); measure time taken (for student A to feel hand being squeezed / eq) (1); divide distance by time (1)" },
-        { id:"q10bii", type:"written", text:"10(b)(ii) Describe whether the teacher's method is likely to give an accurate estimate of the speed of a nerve impulse.", correctKeywords:["underestimate","too slow","method adds time","not a reflex","role of brain","reaction time","delay at each synapse"], marks:2, requiredKeywords:2, topic:"Evaluation/Nervous system", msText:"may be underestimate / too slow / method adds time / delay / eq (1); not a reflex so need to allow decision making / role of brain / reaction time /eq (1); as delay occurs at each synapse (1)" },
-        { id:"q11", type:"written", text:"11 Design an investigation to find out if argan oil shampoo does increase the strength of human hair.", correctKeywords:["shampoo with oil and without oil","hair from same person","same hair length","test many different hairs","repeat","add weights/masses","measure force that causes hair to break","same volume/concentration of shampoo","same time/temperature"], marks:6, requiredKeywords:6, topic:"Practical/Investigation", msText:"C shampoo with oil and without oil (1); O hair from same person / same hair length / width / age / sex (1); R test many different hairs / repeat (1); M1 add weights / masses to hairs (1); M2 measure mass / g / pressure / weight / force /N that causes hair to break (1); S1 same volume / concentration of shampoo (1); S2 wash for same time / frequency / same temperature of water (1)" }
+    // ========== Question Bank (without isGraphical flag - will be auto-detected) ==========
+    const questionsDataRaw = [
+
+        { id:"q1a", type:"mcq", text:"1(a) What is the maximum number of X chromosomes found in the nucleus of a sperm cell?", options:["A 0","B 1","C 2","D 23"], correct:"B 1", marks:1, topic:"Reproduction/Genetics", msText:"B 1" },
+        { id:"q1b", type:"written", text:"1(b) Explain the function of the mitochondria in the middle piece of the sperm cell.", correctKeywords:["energy","ATP","respiration","movement","swimming","tail movement"], marks:2, requiredKeywords:2, topic:"Reproduction/Respiration", msText:"energy / ATP / respiration /eq (1); movement / swimming / tail movement/ eq (1)" },
+        { id:"q1c", type:"written", text:"1(c) Suggest the function of the acrosome (contains digestive enzymes).", correctKeywords:["digest","break down egg membrane","allow (nucleus) to enter","penetrate egg","fertilisation","fusion"], marks:2, requiredKeywords:2, topic:"Reproduction", msText:"digest / break down egg membrane / eq (1); allow (nucleus) to enter / penetrate egg (1); fertilisation / fusion (1)" },
+        { id:"q1d", type:"ordered", text:"1(d) Describe the route taken by a sperm cell from when it enters the woman's body to the site of fertilisation of the egg.", correctOrder:["vagina","uterus","oviduct/fallopian tube"], marks:2, topic:"Reproduction", msText:"vagina, uterus / womb / cervix, oviduct / fallopian tube (2 marks for all 3 in correct order, 1 mark for 2 structures in correct order)" },
+        { id:"q2a", type:"written", text:"2(a) Name the primary consumer in this food chain.", correctKeywords:["small fish"], marks:1, topic:"Ecology", msText:"small fish" },
+        { id:"q2bi", type:"written", text:"2(b)(i) Describe the process that converts light energy into chemical energy.", correctKeywords:["photosynthesis","chloroplasts","chlorophyll","absorbs/traps light","starch/glucose/carbohydrate"], marks:3, requiredKeywords:3, topic:"Photosynthesis", msText:"photosynthesis (1); chloroplasts / chlorophyll (1); absorbs / traps light /eq (energy) (1); starch / glucose / carbohydrate (1)" },
+        { id:"q2bii", type:"written", text:"2(b)(ii) Give two reasons why some of the energy in the microscopic plants is not transferred to the small fish.", correctKeywords:["respiration","heat loss","cannot digest/egested/not absorbed","uneaten/die/decomposition","excretion"], marks:2, requiredKeywords:2, topic:"Ecology/Energy transfer", msText:"respiration / heat loss (by plant) (1); cannot digest / egested / not absorbed /eq (1); uneaten / die / decomposition (1); excretion (1)" },
+        { id:"q2c", type:"written", text:"2(c) Suggest why crushing the fish in the gizzard helps the birds to digest the fish.", correctKeywords:["increase surface area","enzymes"], marks:2, requiredKeywords:2, topic:"Digestion", msText:"increase surface area (1); enzymes (1)" },
+        { id:"q3ai", type:"table", text:"3(a)(i) Complete the table by giving the letter of the blood vessel that matches each statement (carbon dioxide, glucose, oxygen, urea, pressure).", subfields:["contains the least carbon dioxide","contains the most glucose after a meal","contains the least oxygen","contains the least urea","contains blood at the highest pressure"], correct:["A","G","J","F","B"], marks:5, topic:"Circulation", msText:"A, G, J, F, B" },
+        { id:"q3aii", type:"written", text:"3(a)(ii) State two ways in which the structure of blood vessel A (vein/pulmonary vein?) differs from blood vessel J (artery?).", correctKeywords:["thin(ner) wall","less muscle","less elastic tissue","wide(r)/big(ger)/lumen"], marks:2, requiredKeywords:2, topic:"Circulation/Blood vessels", msText:"thin(ner) wall (1); less muscle (1); less elastic tissue (1); wide(r) / big(er) / lumen (1)" },
+        { id:"q3b", type:"written", text:"3(b) A scientist compares capillary density in leg muscles of sprinters and marathon runners. Explain how the higher capillary density in marathon runners affects performance.", correctKeywords:["more (capillaries to transport) oxygen/glucose","more (aerobic) respiration","more ATP/energy","more muscle contraction","less lactic acid","effective for long distance events","need to test more than one person"], marks:5, requiredKeywords:5, topic:"Circulation/Exercise", msText:"more (capillaries to transport) oxygen / glucose (1); more (aerobic) respiration / less anaerobic respiration (1); more ATP/ more energy (1); (more) muscle contraction (1); less lactic acid (1); effective for long distance events (1); need to test more than one person / not repeated (1)" },
+        { id:"q4a", type:"table", text:"4(a) Complete the table by giving the name of each process (growth of algae, pollination, absorption of nitrate ions).", subfields:["growth of algae in rivers polluted by fertiliser","pollen transferred from one plant to another by an insect","absorption of nitrate ions from soil using ATP"], correct:["eutrophication","insect pollination","active transport"], marks:3, topic:"Ecology/Plant biology", msText:"eutrophication (1); insect pollination (1); active transport (1)" },
+        { id:"q4bi", type:"written", text:"4(b)(i) Explain how natural selection could be responsible for the grass species results between 0 and 100 metres from the zinc mine.", correctKeywords:["(more) grass flourishes/grows well","less competition","mutation","reproduce","pass allele/gene/DNA to offspring"], marks:4, requiredKeywords:4, topic:"Evolution/Natural selection", msText:"(more) grass flourishes / grows well / survives / not killed by zinc / eq (near mine) (1); less competition (1); mutation (1); reproduce (1); pass allele / gene / DNA on to offspring (1)" },
+        { id:"q4bii", type:"written", text:"4(b)(ii) Describe a method the scientist could use to compare the population size of the grass species at 50 metres and 100 metres from the mine.", correctKeywords:["use tape measure","quadrat","repeat/several","count plants/estimate percentage cover"], marks:4, requiredKeywords:4, topic:"Ecology/Sampling", msText:"use tape measure (1); quadrat (1); repeat / several (1); count plants / estimate percentage cover described (1)" },
+        { id:"q5a", type:"written", text:"5(a) Give the dependent variable in this investigation (heat loss).", correctKeywords:["temperature","heat loss","temperature loss"], marks:1, topic:"Practical/Variables", msText:"Temperature (1)" },
+        { id:"q5b", type:"written", text:"5(b) Give one reason why the student uses the same volume of water in each beaker.", correctKeywords:["(to prevent) volume / surface area affecting heat loss","valid comparison / fair test"], marks:1, topic:"Practical/Variables", msText:"(to prevent) volume / surface area affecting heat loss / eq; valid comparison / fair test / eq" },
+        { id:"q5c", type:"calc", text:"5(c) Calculate the difference between the percentage decrease in temperature for the uncovered beaker and the covered beaker (initial 80°C, uncovered final 40°C, covered final 44°C).", correctValue:5, tolerance:1, marks:2, topic:"Maths/Percentages", msText:"covered 40 ÷ 80 x 100 = 50 % (1); uncovered 36 ÷ 80 x 100 = 45 %; difference = 5 (2)" },
+        { id:"q5d", type:"written", text:"5(d) Discuss the student's conclusion that it is better for farmers to keep their animals indoors.", correctKeywords:["less heat loss if indoors","depends on outside temperature","only small 5% difference","animals move around less","more energy for growth","diseases easier to spread","protected from predators","ethical objection","eat variety of food outdoors"], marks:4, requiredKeywords:4, topic:"Evaluation/Agriculture", msText:"less heat loss if indoors / eq (1); depends upon outside temperature different in hot country (1); but only small / 5% difference / eq (1); animals move around less (1); more energy for growth / making meat / eggs / milk (1); diseases easier to spread (1); protected from predators (1); ethical objection / cruel / quality of life idea (1); eat variety of food outdoors / taste (1)" },
+        { id:"q5e", type:"written", text:"5(e) Describe how the student could modify his investigation to find out if an animal's body size affects heat loss.", correctKeywords:["use beakers/containers of different sizes/different volumes","keep beakers out of box/under box"], marks:2, requiredKeywords:2, topic:"Practical/Investigation design", msText:"use beakers / containers of different sizes / different volumes (1); keep beakers out of box / keep beakers under box (1)" },
+        { id:"q6ai", type:"practical", text:"6(a)(i) Draw a circle on the diagram to show the part of the neurone where the impulses are transferred to the effector (axon terminals).", correctKeywords:["circle around axon terminals"], marks:1, topic:"Nervous system", msText:"Circle around axon terminals" },
+        { id:"q6aii", type:"mcq", text:"6(a)(ii) What is the name of this type of neurone (motor)?", options:["A association","B motor","C relay","D sensory"], correct:"B motor", marks:1, topic:"Nervous system", msText:"B motor" },
+        { id:"q6aiii", type:"written", text:"6(a)(iii) Explain the advantage of a withdrawal reflex when a finger touches a hot object.", correctKeywords:["fast","no brain involvement/no thought/automatic/involuntary","less damage/harm"], marks:2, requiredKeywords:2, topic:"Nervous system/Reflex arc", msText:"fast (1); no brain involvement / no thought / automatic / involuntary (1); less damage / harm (1)" },
+        { id:"q6bi", type:"mcq", text:"6(b)(i) Which conclusion is supported by the graph (impulse speed vs diameter)?", options:["A impulses are always faster in neurones with a myelin sheath","B neurones always have a myelin sheath","C wider neurones have a myelin sheath","D wider neurones have faster impulses"], correct:"D wider neurones have faster impulses", marks:1, topic:"Nervous system/Data analysis", msText:"D wider neurones have faster impulses" },
+        { id:"q6bii", type:"calc", text:"6(b)(ii) A neurone with a myelin sheath has a diameter of 1.0μm. Use the graph to determine the speed of an impulse.", correctValue:4.4, tolerance:0.2, marks:1, topic:"Nervous system/Graph reading", msText:"4.4 (m per s)" },
+        { id:"q6biii", type:"calc", text:"6(b)(iii) The neurone is 90cm long. Calculate the time taken for an impulse to travel along this neurone. Give answer in standard form.", correctValue:0.2045, tolerance:0.02, marks:3, topic:"Maths/Speed", msText:"90cm = 0.9m; 0.9 ÷ 4.4 = 0.20 s; = 2.0 × 10⁻¹ (3)" },
+        { id:"q7ai", type:"written", text:"7(a)(i) Describe how the scientists could tell if a maize seed had germinated.", correctKeywords:["radicle/root/plumule/shoot has grown","seed split","sprouts"], marks:1, topic:"Plant reproduction/Germination", msText:"Radicle/ root / plumule / shoot has grown / seed split/ sprouts /eq (1)" },
+        { id:"q7aii", type:"written", text:"7(a)(ii) State two other abiotic variables that the scientists need to control.", correctKeywords:["temperature","volume of solution","humidity","oxygen","light","pH","carbon dioxide"], marks:2, requiredKeywords:2, topic:"Practical/Variables", msText:"Temperature (1); Volume of solution (1); Humidity (1); Oxygen (1); Light (1); pH (1); Carbon dioxide (1)" },
+        { id:"q7bi", type:"graph", text:"7(b)(i) Plot a line graph to show the effect of concentration of salt solution on germination.", correctKeywords:["linear scale half each axis","straight lines through points","x axis correct (salt concentration)","axes labelled","points correctly plotted"], marks:5, topic:"Graph skills", msText:"S linear and half of each axis (1); L straight and passing through all points (1); A x axis correct way round (NaCl or salt conc / eq) (1); U axes labelled with NaCl / salt concentration in mmol and percentage / % germination (1); P points correctly plotted within one square (1)" },
+        { id:"q7bii", type:"written", text:"7(b)(ii) Explain the effect of increasing the concentration of salt solution on germination.", correctKeywords:["(increasing salt concentration) decreases germination","(lower) water potential","less water absorbed / water exits","by osmosis","to activate enzymes / digest starch"], marks:4, requiredKeywords:4, topic:"Osmosis/Plant biology", msText:"(increasing (salt)concentration) decreases germination (1); (as concentration of solution increases) (lower) water potential / concentration / osmotic gradient (1); less water absorbed / water exits (1); by osmosis (1); to activate enzymes / digest starch (1)" },
+        { id:"q7ci", type:"written", text:"7(c)(i) Compare the responses of roots and stems to gravity.", correctKeywords:["roots grow towards gravity","positively gravitropic/geotropic","stems grow away from gravity","negatively gravitropic/geotropic"], marks:2, requiredKeywords:2, topic:"Plant responses", msText:"roots grow towards gravity (1); positively gravitropic / geotropic (1)" },
+        { id:"q7cii", type:"written", text:"7(c)(ii) Compare the responses of roots and stems to light.", correctKeywords:["roots grow away from light","negatively phototropic","stems grow towards light","positively phototropic"], marks:2, requiredKeywords:2, topic:"Plant responses", msText:"roots grow away from light (1); negatively phototropic (1)" },
+        { id:"q8a", type:"written", text:"8(a) State what is meant by the term pesticide.", correctKeywords:["chemical/solution","kills/destroys pests/animals/plants/insects"], marks:1, topic:"Agriculture/Pollution", msText:"chemical / solution / eq that kills / destroys / eq pests / animals / plants / insects / eq (1)" },
+        { id:"q8b", type:"calc", text:"8(b) Determine which crop had the largest area sprayed with herbicide (barley: 1450 km², 91% sprayed).", correctValue:["1319.5/1320","barley"], marks:2, topic:"Maths/Data analysis", msText:"1450 × 0.91 = 1319.5/1320/1300 km² (1); barley (1)" },
+        { id:"q8c", type:"written", text:"8(c) Suggest why spring and winter wheat have different percentages of insecticide applied to them.", correctKeywords:["in winter cold/low temperature/less food","fewer insects/pests","less insecticide/pesticide needed","spring warmer/more food more insects"], marks:2, requiredKeywords:1, topic:"Agriculture", msText:"in winter cold / low temperature / less food eq (1); fewer insects / pests (1); less insecticide / pesticide needed (1)" },
+        { id:"q8d", type:"written", text:"8(d) Discuss the different combinations of pesticides applied to fruit and cereal crops.", correctKeywords:["around 70% even pattern in fruit crops","higher herbicide use in cereals","lower herbicide use in fruit","as smaller plants need to compete with weeds","higher insecticide use in fruit crops","more fungicide variation in cereals","high fungicide on rotting fruit","fruit more prone to decay/high sugar"], marks:4, requiredKeywords:4, topic:"Data analysis/Agriculture", msText:"around 70% / even pattern of herbicide / fungicide and insecticide in fruit crops (1); high(er) use of herbicide in cereals / low(er) use of herbicide in fruit(1); as smaller plants / growing plants need to compete with weeds (1); high(er) use of insecticide in fruit crops (1); more variation in fungicide use in cereals (1); high use of fungicide on (rotting) fruit (1); as fruit more prone to saprophytic decay/ high sugar content (1)" },
+        { id:"q8e", type:"written", text:"8(e) Explain an alternative to insecticide that a farmer could use.", correctKeywords:["use biological control","using a predator species","exclude insects with nets"], marks:2, requiredKeywords:2, topic:"Agriculture/Biological control", msText:"use biological control (1); using a predator (species) (such as Encarsia) to target / eat / consume (specific) pest / insect / eq (1); use nets (1); exclude insects from plants / eq (1)" },
+        { id:"q9ai", type:"written", text:"9(a)(i) Suggest why the person's blood vessels may become blocked (sickle cell anaemia).", correctKeywords:["sickle shaped red blood cells stick to each other","caught/trapped in walls of blood vessels"], marks:1, topic:"Disease/Circulation", msText:"Sickle shaped red blood cells stick to each other / caught / trapped /eq walls of blood vessels / eq (1)" },
+        { id:"q9aii", type:"written", text:"9(a)(ii) Suggest why symptoms of tiredness and joint pain get worse with cold temperatures and high altitudes.", correctKeywords:["cold temperatures reduce blood flow","cause more sickling","less oxygen (at high altitude)","less respiration/(more) anaerobic respiration","more lactic acid","(less) energy/ATP"], marks:3, requiredKeywords:3, topic:"Disease/Respiration", msText:"cold temperatures reduce blood flow / cause more sickling (1); less oxygen (at high altitude) (1); less respiration / (more) anaerobic respiration (1); more lactic acid (1); (less) energy / ATP (1)" },
+        { id:"q9bi", type:"written", text:"9(b)(i) State what is meant by the term recessive.", correctKeywords:["only expressed when homozygous","two copies","no dominant allele present","not expressed in heterozygote"], marks:1, topic:"Genetics", msText:"only expressed when homozygous / two copies / no dominant allele present / not expressed in heterozygote / eq (1)" },
+        { id:"q9bii", type:"calc", text:"9(b)(ii) Calculate the probability that the child will be female and not have sickle cell anaemia (both parents heterozygous).", correctValue:0.375, tolerance:0.01, marks:2, topic:"Genetics/Probability", msText:"0.75 x 0.5 = 0.375 or 3/8 or 37.5% (2)" },
+        { id:"q9c", type:"mcq", text:"9(c) Which type of organism causes malaria?", options:["A bacterium","B fungus","C plant","D protist"], correct:"D protist", marks:1, topic:"Disease", msText:"D" },
+        { id:"q9d", type:"mcq", text:"9(d) What is the name of the pigment found in red blood cells?", options:["A chlorophyll","B haemoglobin","C iron","D magnesium"], correct:"B haemoglobin", marks:1, topic:"Circulation", msText:"B" },
+        { id:"q9e", type:"written", text:"9(e) State two ways in which a red blood cell is different from a white blood cell.", correctKeywords:["red cells smaller","red cells have no nucleus","red cells are biconcave"], marks:2, requiredKeywords:2, topic:"Cell Biology/Circulation", msText:"red cells smaller (1); red cells have no nucleus (1); red cells are biconcave (1)" },
+        { id:"q10a", type:"written", text:"10(a) Explain the factors that affect the rate of movement of substances into and out of cells.", correctKeywords:["temperature increases kinetic energy","difference in concentration / concentration gradient","short(er) distance increases diffusion","surface area to volume ratio","mass/size of particle","larger/charged particles cannot pass membrane","oxygen/ATP/energy for active transport"], marks:5, requiredKeywords:5, topic:"Cell transport", msText:"temperature increases (kinetic) energy / particle movement / more collisions (1); difference in concentration / concentration gradient increases rate (1); short(er) distance increases diffusion (1); surface area to (volume ratio) increases diffusion (1); mass / size of particle smaller particles move faster (1); larger particles / charged particles cannot pass through cell membrane (1); (increased) oxygen / ATP / respiration / energy for active transport (1)" },
+        { id:"q10b", type:"written", text:"10(b) Describe the differences between diffusion and active transport.", correctKeywords:["diffusion passive","diffusion from high to low concentration","requires concentration gradient","active transport requires ATP/energy","active transport requires carrier proteins","diffusion can take place in non-living systems"], marks:4, requiredKeywords:4, topic:"Cell transport", msText:"diffusion passive (1); diffusion from high concentration to low / requires concentration gradient (1); active transport requires ATP / energy/ oxygen / respiration (1); active transport requires membrane / carrier proteins (1); diffusion can take place in non-living systems (1)" },
+        { id:"q11", type:"written", text:"11 Design an investigation to find out if changing the starch content of the flour causes the bread to expand more (using yeast).", correctKeywords:["C change amount of starch","O use same species/strain/mass/volume of yeast","R repeat each flour type more than once","M1 measure height/volume of dough/bread","M2 after stated time/same time","S1 use same measure of flour/water","S2 same temperature/knead for same time"], marks:6, requiredKeywords:6, topic:"Practical/Investigation design", msText:"C change amount of starch (1); O use same species / strain / genotype / mass / volume / measure of yeast (1); R repeat each flour type more than once (1); M1 measure height / volume of dough / bread / use ruler (1); M2 after stated time / same time (1); S1 use same measure of flour / volume / mass of flour / volume / mass of water (1); S2 same temperature / knead for stated / same time (1)" }
     ];
+
+    
+    // Auto-detect graph questions and add isGraphical flag
+// Auto-detect based ONLY on type
+    let questionsData = questionsDataRaw.map(q => ({
+        ...q,
+        isGraphical: isGraphOrPracticalQuestion(q)  // Now only checks type
+    }));
+    
+    // Count graph questions for display
+    const graphQuestionCount = questionsData.filter(q => q.isGraphical).length;
     
     let userAnswers = new Array(questionsData.length).fill("");
-    let userManualMarks = new Array(questionsData.length).fill(null);  // only used for graphical questions self-assessment
+    let userManualMarks = new Array(questionsData.length).fill(null);
     let currentQIndex = 0;
     let examSubmitted = false;
     let timerInterval;
     let timeSeconds = 120 * 60;
     let autoSaveTimer = null;
     
-
     function autoSaveToLocal() {
         if(examSubmitted) return;
         const saveData = {
@@ -460,10 +489,11 @@ const questionsData = [
                 updateTimerDisplay(); 
                 if(timeSeconds % 30 === 0) autoSaveToLocal();
             } else if(timeSeconds <= 0 && !examSubmitted) {
-                autoSubmitExam();  // Fixed: call correct function name
+                autoSubmitExam();
             }
         }, 1000);
-    }  
+    }
+    
     function renderNavigation() {
         const navDiv = document.getElementById("navContainer");
         navDiv.innerHTML = "";
@@ -478,13 +508,13 @@ const questionsData = [
         });
         let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
         document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
+        document.getElementById("graphCounter").innerHTML = `📊 Graph/Practical questions: ${graphQuestionCount} (self-assess)`;
     }
     
     function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
     function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
     function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
     function toggleMarkScheme(idx) { 
-        // Only allow toggle if question is graphical
         if(!questionsData[idx].isGraphical) return;
         let panel = document.getElementById(`ms-panel-${idx}`); 
         if(panel) panel.classList.toggle("visible"); 
@@ -498,12 +528,17 @@ const questionsData = [
             card.className = "question-card";
             if(idx === 0) card.classList.add("active-question");
             card.id = `qcard-${idx}`;
-            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span> ${q.isGraphical ? '(Graphical)' : ''}</div><div>${q.text}</div>`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span>`;
+            
+            if(q.isGraphical) {
+                inner += `<span class="graph-badge">📊 Graph/Diagram Question - Self-Assess</span>`;
+            }
+            inner += `</div><div>${q.text}</div>`;
             
             // Answer input based on type
             if(q.type === "mcq") {
                 inner += `<div class="subquestion">`;
-                q.options.forEach(opt => {
+                (q.options || []).forEach(opt => {
                     let checked = (userAnswers[idx] === opt) ? "checked" : "";
                     inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
                 });
@@ -516,11 +551,11 @@ const questionsData = [
                 inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
             
-            // ONLY for graphical questions: Show Mark Scheme button + self-assess marks dropdown
+            // AUTO-DETECTED: For graph questions, show Mark Scheme button + self-assess marks
             if(q.isGraphical === true) {
                 inner += `<div style="margin-top:12px;">
                             <button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme (for self-assessment)</button>
-                            <div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>
+                            <div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText || 'No mark scheme provided'}</div>
                             <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
                             <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
                 for(let m=0; m<=q.marks; m++) {
@@ -528,21 +563,21 @@ const questionsData = [
                     inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
                 }
                 inner += `</select></div></div>`;
-            } else {
-                // Non-graphical: No mark scheme button at all (completely removed)
-                //inner += `<div style="margin-top:8px;"><em class="ai-badge" style="background:#4a6fa5;">This question will be automatically marked by AI. Mark scheme is not displayed.</em></div>`;
             }
             
-            if(q.text.includes("graph") || q.isGraphical) inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper]</div>`;
+            // Show placeholder for graph/drawing questions
+            if(q.isGraphical || q.text.toLowerCase().includes('graph') || q.text.toLowerCase().includes('plot') || q.text.toLowerCase().includes('draw')) {
+                inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
+            }
+            
             card.innerHTML = inner;
             container.appendChild(card);
         });
     }
     
-    // AI Marking using OpenAI for non-graphical questions (graphical use self-assess)
+    // AI Marking function (same as original)
     async function callOpenAIForMark(question, studentAnswer, markScheme, maxMarks) {
         if(!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_API_KEY") {
-            // fallback keyword matching with basic feedback
             if(!studentAnswer) return { score: 0, feedback: "No answer provided" };
             let keywords = question.correctKeywords || [];
             if(keywords.length === 0) return { score: 0, feedback: "No keywords defined for marking" };
@@ -580,13 +615,11 @@ const questionsData = [
         }
     }
     
-        async function submitAndMarkExam() {
+    async function submitAndMarkExam() {
         if(examSubmitted) return;
         clearInterval(timerInterval);
         if(autoSaveTimer) clearInterval(autoSaveTimer);        
         examSubmitted = true;
-        
-        let aiFeedback = "";  // DECLARE THE VARIABLE HERE
         
         showToast("🤖 AI is marking non-graphical questions...", false);
         const loadingDiv = document.createElement("div");
@@ -601,13 +634,12 @@ const questionsData = [
             let q = questionsData[i];
             let answer = userAnswers[i] || "";
             let earned = 0;
-            aiFeedback = "";  // Reset for each question
+            let aiFeedback = "";
             
             if(q.isGraphical === true) {
-                // Use self-assessed mark for graphical questions
                 earned = (userManualMarks[i] !== null && !isNaN(userManualMarks[i])) ? userManualMarks[i] : 0;
                 earned = Math.min(Math.max(0, earned), q.marks);
-                aiFeedback = "Self-assessed by student (graph/diagram question)";
+                aiFeedback = "Self-assessed by student (graph/diagram question - compared with mark scheme)";
             } else if(q.type === "mcq") {
                 earned = (answer && answer.trim().toLowerCase() === (q.correct || "").toLowerCase()) ? q.marks : 0;
                 aiFeedback = earned === q.marks ? "Correct answer selected" : "Incorrect answer - correct option: " + q.correct;
@@ -621,7 +653,6 @@ const questionsData = [
                     aiFeedback = `Incorrect calculation. Expected: ${q.correctValue}, Got: ${answer || "no answer"}`;
                 }
             } else {
-                // AI marking for written/table/ordered - captures both score and feedback
                 const aiResult = await callOpenAIForMark(q, answer, q.msText, q.marks);
                 earned = aiResult.score;
                 aiFeedback = aiResult.feedback;
@@ -630,19 +661,16 @@ const questionsData = [
             totalEarned += earned;
             totalPossible += q.marks;
             let status = earned === q.marks ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
-            //let markMethod = q.isGraphical ? "":"";
             
             questionFeedback.push({
                 number: i+1, topic: q.topic, question: q.text,
                 studentAnswer: answer || "(blank)", marksEarned: earned,
                 marksTotal: q.marks, status: status, expectedAnswer: q.msText, 
-                //method: markMethod,
-                aiFeedback: aiFeedback
+                aiFeedback: aiFeedback,
+                isGraphical: q.isGraphical
             });
-
         }
         
-
         let percent = (totalEarned / totalPossible) * 100;
         let grade = percent >=85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : percent>=25 ? "2" : "1";
         let weakTopics = [];
@@ -653,7 +681,8 @@ const questionsData = [
         const reviewDiv = document.getElementById("reviewPanel");
         reviewDiv.classList.remove("hidden");
         let html = `<h2>📊 Exam Results</h2><div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
-                    <div class="grade-box"><strong>Edexcel Grade: ${grade}</strong></div>`;
+                    <div class="grade-box"><strong>Edexcel Grade: ${grade}</strong></div>
+                    <div class="grade-box" style="background:#e9f0f5;"><strong>📊 Graph Questions:</strong> ${graphQuestionCount} question(s) were self-assessed using mark scheme</div>`;
         if(weakTopics.length) html += `<div class="weakness-box"><h3>⚠️ Weak areas (&lt;55%)</h3><ul>${weakTopics.map(w=>`<li>${w}</li>`).join('')}</ul></div>`;
         else html += `<div class="weakness-box" style="background:#e0f2e9;"><h3>✅ Strong performance overall!</h3></div>`;
         
@@ -664,19 +693,18 @@ const questionsData = [
         for(let fb of questionFeedback) {
             let cls = fb.marksEarned === fb.marksTotal ? "correct-highlight" : (fb.marksEarned===0 ? "incorrect-highlight" : "");
             html += `<tr class="${cls}">`;
-            html += `<td>${fb.number}</td>`;
+            html += `<td>${fb.number}${fb.isGraphical ? ' 📊' : ''}</td>`;
             html += `<td>${fb.topic}</td>`;
             html += `<td>${fb.question}</td>`;
             html += `<td style="max-width:250px;">${fb.studentAnswer}</td>`;
             html += `<td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>`;
             html += `<td style="max-width:300px;">${fb.aiFeedback || "No feedback available"}</td>`;    
-            html += `<td style="max-width:250px;">${fb.expectedAnswer}</td>`;
+            html += `<td style="max-width:250px;">${fb.expectedAnswer || "N/A"}</td>`;
             html += `</tr>`;
         }
         
-        html += `</tbody>`;
-        html += `</table></details>`;
-        //html += `<p>✅ Mark scheme was only shown for graph/drawing questions. For other questions, AI evaluated your answer against the mark scheme internally and provided feedback.</p>`;
+        html += `</tbody></table></details>`;
+        html += `<p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Questions automatically detected as "graph/drawing/plot" questions (${graphQuestionCount} total) required self-assessment using the mark scheme. All other questions were automatically marked by AI.</p>`;
         
         reviewDiv.innerHTML = html;
         document.body.removeChild(loadingDiv);
@@ -685,7 +713,6 @@ const questionsData = [
         showToast("Marking complete!", false);
         localStorage.removeItem("igcse_bio_exam_autosave");
         
-        // ========== SEND EMAIL AFTER MARKING ==========
         try {
             const emailResultData = {
                 score: totalEarned,
@@ -702,10 +729,8 @@ const questionsData = [
             await sendResultsEmail(emailResultData, "Exam Candidate");
         } catch(emailError) {
             console.error("Failed to send email:", emailError);
-            // Don't block the UI if email fails
         }
     }
-    
     
     // Expose functions globally
     window.saveAnswer = saveAnswer;
@@ -721,7 +746,7 @@ const questionsData = [
         autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Non-graphical questions will be AI-marked; graphical questions require self-assessed marks.")) submitAndMarkExam(); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Graph questions require self-assessment; other questions will be AI-marked.")) submitAndMarkExam(); };
     };
 </script>
 </body>
