@@ -351,29 +351,6 @@
         setTimeout(() => { toast.style.opacity = "0"; }, 3000);
     }
     
-
-    function convertToCSV(resultData) {
-        let csvRows = [];
-        // Headers
-        csvRows.push(['#', 'Topic', 'Question', 'Your Answer', 'Score', 'Feedback', 'Mark Scheme'].join(','));
-        
-        // Data rows
-        for(let item of resultData.details) {
-            const row = [
-                item.number,
-                `"${item.topic.replace(/"/g, '""')}"`,
-                `"${item.question.replace(/"/g, '""').substring(0, 200)}"`,
-                `"${(item.studentAnswer || '').replace(/"/g, '""').substring(0, 150)}"`,
-                `${item.marksEarned}/${item.marksTotal}`,
-                `"${(item.aiFeedback || '').replace(/"/g, '""').substring(0, 200)}"`,
-                `"${(item.expectedAnswer || '').replace(/"/g, '""').substring(0, 200)}"`
-            ];
-            csvRows.push(row.join(','));
-        }
-        return csvRows.join('\n');
-    }
-
-
     async function sendResultsEmail(resultData, studentName = "Student") {
         if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
             console.log("EmailJS not configured. Results:", resultData);
@@ -390,9 +367,8 @@
                 grade: resultData.grade,
                 weak_topics: resultData.weakTopics.join(", ") || "None",
                 exam_date: new Date().toLocaleString(),
-                csv_attachment: csvData  // Send as CSV text
+                details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
             };
-            
             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
             showToast("✅ Results emailed successfully!", false);
             return true;
@@ -728,7 +704,7 @@
         }
         
         html += `</tbody></table></details>`;
-        html += `<p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Questions automatically detected as "graph/drawing/plot" questions (${graphQuestionCount} total) required self-assessment using the mark scheme. All other questions were automatically marked by AI.</p>`;
+        html += `<p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Questions automatically detected as "graph/drawing/plot" questions (${graphQuestionCount} total) required self-assessment using the mark scheme. All other questions were marked automatically.</p>`;
         
         reviewDiv.innerHTML = html;
         document.body.removeChild(loadingDiv);
@@ -744,7 +720,11 @@
                 percent: percent,
                 grade: grade,
                 weakTopics: weakTopics,
-                details: questionFeedback
+                details: questionFeedback.map(fb => ({
+                    qNum: fb.number,
+                    earned: fb.marksEarned,
+                    max: fb.marksTotal
+                }))
             };
             await sendResultsEmail(emailResultData, "Exam Candidate");
         } catch(emailError) {
