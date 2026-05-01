@@ -31,34 +31,38 @@ jobs:
           echo "Current directory contents:"
           ls -la
           
-          # Check if index.html exists
-          if [ -f "index.html" ]; then
-            echo "✅ index.html found"
-            
-            # Show before replacement (first few lines)
-            echo "📄 Before replacement:"
-            head -n 5 index.html | grep -i "OPENAI_API_KEY" || echo "Key not in first 5 lines"
-            
-            # Replace placeholder with actual secret
-            sed -i "s/OPENAI_API_KEY_PLACEHOLDER/${{ secrets.OPENAI_API_KEY }}/g" index.html
-            
-            # Verify replacement worked
-            echo "📄 After replacement:"
-            grep -n "OPENAI_API_KEY" index.html | head -n 2
-            
-            # Security: Verify no placeholder remains
-            if grep -q "OPENAI_API_KEY_PLACEHOLDER" index.html; then
-              echo "❌ ERROR: Placeholder still exists!"
-              exit 1
-            else
-              echo "✅ Placeholder successfully replaced"
-            fi
-          else
-            echo "❌ ERROR: index.html not found in repository root!"
-            echo "Files in root:"
-            ls -la
+          # Find all HTML files (including index.html and all 1B*.html files)
+          HTML_FILES=$(find . -maxdepth 1 -name "*.html" -type f)
+          
+          if [ -z "$HTML_FILES" ]; then
+            echo "❌ ERROR: No HTML files found in repository root!"
             exit 1
           fi
+          
+          echo "📁 Found HTML files:"
+          echo "$HTML_FILES"
+          
+          # Process each HTML file
+          for file in $HTML_FILES; do
+            echo "Processing: $file"
+            
+            # Show before replacement (first few lines)
+            echo "  📄 Before replacement in $file:"
+            head -n 5 "$file" | grep -i "OPENAI_API_KEY" || echo "  Key not in first 5 lines"
+            
+            # Replace placeholder with actual secret
+            sed -i "s/OPENAI_API_KEY_PLACEHOLDER/${{ secrets.OPENAI_API_KEY }}/g" "$file"
+            
+            # Verify replacement worked for this file
+            if grep -q "OPENAI_API_KEY_PLACEHOLDER" "$file"; then
+              echo "  ❌ ERROR: Placeholder still exists in $file!"
+              exit 1
+            else
+              echo "  ✅ Placeholder successfully replaced in $file"
+            fi
+          done
+          
+          echo "🎉 All HTML files processed successfully!"
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
