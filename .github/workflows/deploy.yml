@@ -25,9 +25,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
-      - name: Replace API key placeholder
+      - name: Replace API key placeholder in all HTML files
         run: |
-          # Debug: Check if file exists
+          # Debug: Check current directory contents
           echo "Current directory contents:"
           ls -la
           
