@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Edexcel IGCSE Biology Paper 1B (June 2022) | Interactive Self-Marking Exam</title>
+    <title>Pearson Edexcel International GCSE | Interactive with Auto Graph Detection</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>   
     <style>
         * { box-sizing: border-box; }
         body {
@@ -14,7 +15,7 @@
             color: #1e2a3e;
         }
         .exam-container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 28px;
@@ -46,8 +47,6 @@
             gap: 12px;
             align-items: center;
         }
-        .save-load-bar { display: flex; gap: 12px; background: #ffffffcc; padding: 5px 12px; border-radius: 40px; }
-        .save-load-bar button { background: #2c7da0; padding: 6px 14px; font-size: 0.8rem; }
         .question-nav {
             display: flex;
             flex-wrap: wrap;
@@ -67,6 +66,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.1s;
+            font-size: 0.9rem;
         }
         .nav-btn.active { background: #2c7da0; color: white; }
         .nav-btn.answered { background: #61a5c2; color: white; }
@@ -110,16 +110,69 @@
             font-family: inherit;
         }
         textarea { max-width: 100%; }
-        .mark-scheme-panel {
-            background: #f8f9fc;
-            border-left: 5px solid #2c7da0;
-            padding: 12px 16px;
-            margin-top: 15px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            display: none;
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .mark-scheme-panel.visible { display: block; }
+        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #b23c1c; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e2a3e; }
+        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
+        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        .feedback-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .feedback-table th, .feedback-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; text-align: left; }
+        .feedback-table th { background: #2c7da0; color: white; }
+        .feedback-table tr:nth-child(even) { background: #f9f9f9; }
+        .correct-highlight { background: #d4edda; }
+        .incorrect-highlight { background: #f8d7da; }
+        details summary { cursor: pointer; font-weight: 600; margin: 15px 0; }
+        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        .status-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2c7da0; color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.8rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+        }
+        .loading-spinner {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .spinner {
+            border: 4px solid #e9f0f5;
+            border-top: 4px solid #2c7da0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } .feedback-table { font-size: 0.8rem; } }
+        .ai-badge { background: #4a6fa5; color: white; font-size: 0.7rem; border-radius: 20px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
+        .ms-badge { background: #f4a261; color: white; font-size: 0.7rem; border-radius: 20px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
+        .ms-panel { background: #f8f9fc; border-left: 5px solid #f4a261; padding: 12px 16px; margin-top: 15px; border-radius: 16px; font-size: 0.9rem; display: none; }
+        .ms-panel.visible { display: block; }
         .marks-earned-row {
             margin-top: 12px;
             display: flex;
@@ -135,34 +188,30 @@
             font-weight: bold;
         }
         button.small {
-            background: #4a6f8a;
-            padding: 6px 14px;
-            font-size: 0.75rem;
+            background: #e76f51;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
         }
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            gap: 12px;
-            flex-wrap: wrap;
+        .graph-badge {
+            background: #f4a261;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-left: 10px;
+            vertical-align: middle;
         }
-        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-        button.secondary { background: #6c757d; }
-        button.warning { background: #b23c1c; }
-        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
-        .hidden { display: none; }
-        .score-badge { font-size: 1.6rem; font-weight: bold; }
-        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
-        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
-        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
-        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } }
     </style>
 </head>
 <body>
 <div class="exam-container" id="examApp">
     <div class="header">
         <div class="title">
-            <h1>Pearson Edexcel International GCSE (4BI1)</h1>
+            <h1>Edexcel IGCSE Biology (4BI1)</h1>
             <p>Biology Paper 1B | June 2022</p>
         </div>
         <div class="timer-area">
@@ -172,26 +221,170 @@
     </div>
     <div class="info-bar">
         <span>⏱️ 2 hours | 📝 Total marks: 110</span>
-        <span id="answeredCounter">✅ Attempted: 0 / 55 questions</span>
-        <div class="save-load-bar">
-            <button id="saveResponsesBtn">💾 Save Progress</button>
-            <button id="loadResponsesBtn" class="secondary">📂 Load Saved</button>
-        </div>
+        <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
+        <span id="graphCounter">📊 Graph/Practical questions: 0</span>
     </div>
     <div id="navContainer" class="question-nav"></div>
     <div id="questionsContainer"></div>
     <div class="action-buttons">
         <button id="prevBtn" class="secondary">◀ Previous</button>
         <button id="nextBtn">Next ▶</button>
-        <button id="submitBtn" class="warning">✔ Submit & Mark</button>
+        <button id="submitBtn" class="warning">Submit Exam</button>
     </div>
     <div id="reviewPanel" class="review-section hidden"></div>
-    <footer>For written questions: click "Show Mark Scheme" to see official criteria, then select marks earned (0 to max). Final score combines auto-keyword & manual marks.</footer>
+    <div id="statusToast" class="status-toast"></div>
 </div>
 
 <script>
-    // Question bank (55 items, total 110 marks). For written questions we store mark scheme text.
-const questionsData = [
+    
+    const EXAM_TITLE = "Edexcel IGCSE Biology (4BI1) - June 2022 Paper 1B";
+
+    // ========== OPENAI CONFIGURATION ==========
+    const OPENAI_API_KEY="OPENAI_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR OPENAI API KEY HERE
+    const OPENAI_MODEL = "gpt-3.5-turbo";
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+    
+    if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        try {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        } catch(e) {
+            console.log("EmailJS init error:", e);
+        }
+    }
+    
+    // ========== AUTO DETECTION FUNCTION FOR GRAPH QUESTIONS ==========
+    // This function automatically detects if a question requires graph/drawing/plotting
+ // MODIFIED: Only detects when type is 'graph' OR 'practical'
+    function isGraphOrPracticalQuestion(question) {
+        // Only return true if type is exactly 'graph' OR 'practical'
+        return question.type === 'graph' || question.type === 'practical';
+    }
+    
+    // ========== IndexedDB Setup ==========
+    const DB_NAME = "IGCSE_Biology_Exam_DB";
+    const DB_VERSION = 2;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) {
+                    dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                }
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) {
+                    dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+                }
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const record = {
+                id: "current_progress",
+                answers: answers,
+                manualMarks: manualMarks,
+                timeRemaining: timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            const request = store.put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readonly");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.get("current_progress");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([RESULTS_STORE], "readwrite");
+            const store = transaction.objectStore(RESULTS_STORE);
+            const record = {
+                timestamp: new Date().toISOString(),
+                ...resultData
+            };
+            const request = store.add(record);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.delete("current_progress");
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("statusToast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+    
+    async function sendResultsEmail(resultData, studentName = "Student") {
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+            console.log("EmailJS not configured. Results:", resultData);
+            showToast("Email not sent - configure EmailJS keys", false);
+            return false;
+        }
+        try {
+            const emailParams = {
+                EXAM_TITLE: EXAM_TITLE,
+                to_email: RECIPIENT_EMAIL,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", ") || "None",
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+            showToast("✅ Results emailed successfully!", false);
+            return true;
+        } catch(e) {
+            console.error("Email error:", e);
+            showToast("⚠️ Email failed - check EmailJS configuration", true);
+            return false;
+        }
+    }
+    
+    // ========== Question Bank (without isGraphical flag - will be auto-detected) ==========
+    const questionsDataRaw = [
         { id:"q1ai", type:"mcq", text:"1(a)(i) Which gland produces insulin?", options:["A (pancreas)","B","C","D"], correct:"A", marks:1, topic:"Hormones/Endocrine system", msText:"A" },
         { id:"q1aii", type:"mcq", text:"1(a)(ii) Which gland produces progesterone?", options:["A","B","C","D (ovary)"], correct:"D", marks:1, topic:"Hormones/Reproduction", msText:"D" },
         { id:"q1bi", type:"calc", text:"1(b)(i) Determine the ratio of nervous speed (55 m/s) to hormonal speed (420 cm/min).", correctValue:786, tolerance:5, marks:3, topic:"Maths/Ratio", msText:"convert hormonal speed to m/min = 4.2 m/min; convert to m/s = 0.07 m/s; 55 ÷ 0.07 = 786 : 1 (3)" },
@@ -236,20 +429,70 @@ const questionsData = [
         { id:"q9biii", type:"written", text:"9(b)(iii) Suggest why growing dwarf wheat (shorter, thicker stem) is an advantage for farmers.", correctKeywords:["less energy used to grow tall","more energy available for grain","higher yield / more grain / grains heavier","less likely to fall over / less wind/rain damage","easier to harvest"], marks:3, requiredKeywords:3, topic:"Agriculture/Plant biology", msText:"less energy used to grow tall (1); more energy available for grain (1); higher yield / more grain(s) / grains heavier (1); less likely to fall over / less likely to be damaged by wind and rain (1); easier to harvest (1)" },
         { id:"q10", type:"written", text:"10 Design an investigation to find out if the colour of a flower affects how attractive it is to pollinators.", correctKeywords:["C use plants with different coloured flowers","O same species / size / shape (of flower)","R repeat each colour","M1 count how many insects land on / visit flower","M2 in a stated time","S1 same scent / nectar / location / temperature / sunlight / time of day","S2 same number of insects / same distance from hive"], marks:6, requiredKeywords:6, topic:"Practical/Investigation design", msText:"C use plants with different coloured flowers (1); O same species / size / shape (of flower) (1); R repeat each colour (1); M1 count how many insects land on / visit flower (1); M2 in a stated time (1); S1 same scent / nectar / use paper flowers / same location/ temperature / sunlight / same season / same time of day (1); S2 same number of insects / same distance from hive (1)" }
     ];
-
-    // For each question store user answer + manual mark (if written) 
+    
+    // Auto-detect graph questions and add isGraphical flag
+// Auto-detect based ONLY on type
+    let questionsData = questionsDataRaw.map(q => ({
+        ...q,
+        isGraphical: isGraphOrPracticalQuestion(q)  // Now only checks type
+    }));
+    
+    // Count graph questions for display
+    const graphQuestionCount = questionsData.filter(q => q.isGraphical).length;
+    
     let userAnswers = new Array(questionsData.length).fill("");
-    let userManualMarks = new Array(questionsData.length).fill(null); // null = not set, else numeric
+    let userManualMarks = new Array(questionsData.length).fill(null);
     let currentQIndex = 0;
     let examSubmitted = false;
     let timerInterval;
     let timeSeconds = 120 * 60;
+    let autoSaveTimer = null;
+    
+    function autoSaveToLocal() {
+        if(examSubmitted) return;
+        const saveData = {
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now()
+        };
+        localStorage.setItem("igcse_bio_exam_autosave", JSON.stringify(saveData));
+    }
 
+    function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if(saved) {
+            try {
+                const data = JSON.parse(saved);
+                if(data.answers && data.answers.length === userAnswers.length) {
+                    userAnswers = data.answers;
+                    if(data.manualMarks) userManualMarks = data.manualMarks;
+                    if(data.timeRemaining && data.timeRemaining > 0 && data.timeRemaining < 7200) {
+                        timeSeconds = data.timeRemaining;
+                        updateTimerDisplay();
+                    }
+                    return true;
+                }
+            } catch(e) { console.log("Load error:", e); }
+        }
+        return false;
+    }
+    
     function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
-    function autoSubmit() { clearInterval(timerInterval); submitExam(); }
-    function startTimer() { timerInterval = setInterval(()=>{ if(!examSubmitted){ timeSeconds--; updateTimerDisplay(); if(timeSeconds<=0) autoSubmit(); } },1000); }
-
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmitExam(); }
+    function autoSubmitExam() { if(!examSubmitted) submitAndMarkExam(); }
+    function startTimer() { 
+        timerInterval = setInterval(()=>{ 
+            if(!examSubmitted && timeSeconds > 0){ 
+                timeSeconds--; 
+                updateTimerDisplay(); 
+                if(timeSeconds % 30 === 0) autoSaveToLocal();
+            } else if(timeSeconds <= 0 && !examSubmitted) {
+                autoSubmitExam();
+            }
+        }, 1000);
+    }
+    
     function renderNavigation() {
         const navDiv = document.getElementById("navContainer");
         navDiv.innerHTML = "";
@@ -262,40 +505,20 @@ const questionsData = [
             btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
             navDiv.appendChild(btn);
         });
-        updateAnsweredCounter();
-    }
-    function updateAnsweredCounter() {
         let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
-        document.getElementById("answeredCounter").innerHTML = `✅ Attempted: ${answered} / ${questionsData.length} questions`;
+        document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
+        document.getElementById("graphCounter").innerHTML = `📊 Graph/Practical questions: ${graphQuestionCount} (self-assess)`;
     }
-    function goToQuestion(idx) {
-        if(examSubmitted) return;
-        document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question"));
-        currentQIndex = idx;
-        const target = document.getElementById(`qcard-${idx}`);
-        if(target) target.classList.add("active-question");
-        renderNavigation();
+    
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
+    function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
+    function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
+    function toggleMarkScheme(idx) { 
+        if(!questionsData[idx].isGraphical) return;
+        let panel = document.getElementById(`ms-panel-${idx}`); 
+        if(panel) panel.classList.toggle("visible"); 
     }
-    function saveAnswer(idx, value) {
-        if(examSubmitted) return;
-        userAnswers[idx] = value;
-        updateAnsweredCounter();
-        renderNavigation();
-    }
-    function setManualMark(idx, markValue) {
-        if(examSubmitted) return;
-        let num = parseInt(markValue);
-        if(isNaN(num)) num = 0;
-        let maxMarks = questionsData[idx].marks;
-        if(num > maxMarks) num = maxMarks;
-        if(num < 0) num = 0;
-        userManualMarks[idx] = num;
-    }
-    function toggleMarkScheme(idx) {
-        let panel = document.getElementById(`ms-panel-${idx}`);
-        if(panel) panel.classList.toggle("visible");
-    }
-
+    
     function buildQuestionsHTML() {
         const container = document.getElementById("questionsContainer");
         container.innerHTML = "";
@@ -304,201 +527,225 @@ const questionsData = [
             card.className = "question-card";
             if(idx === 0) card.classList.add("active-question");
             card.id = `qcard-${idx}`;
-            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span></div><div>${q.text}</div>`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span>`;
+            
+            if(q.isGraphical) {
+                inner += `<span class="graph-badge">📊 Graph/Diagram Question - Self-Assess</span>`;
+            }
+            inner += `</div><div>${q.text}</div>`;
             
             // Answer input based on type
             if(q.type === "mcq") {
                 inner += `<div class="subquestion">`;
-                q.options.forEach(opt => {
+                (q.options || []).forEach(opt => {
                     let checked = (userAnswers[idx] === opt) ? "checked" : "";
                     inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
                 });
                 inner += `</div>`;
             } else if(q.type === "calc") {
                 let val = userAnswers[idx] || "";
-                inner += `<div class="subquestion"><input type="text" placeholder="Your numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+                inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
             } else {
-                // written / pair / short
                 let val = userAnswers[idx] || "";
                 inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
             
-            // Mark scheme button + manual marks selector for non-MCQ
-            if(q.type !== "mcq") {
-                inner += `<div style="margin-top: 12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show / Hide Mark Scheme</button>`;
-                inner += `<div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText}</div>`;
-                // Manual marks dropdown
-                let selectedVal = (userManualMarks[idx] !== null) ? userManualMarks[idx] : "";
-                inner += `<div class="marks-earned-row"><span>✍️ Self-assess marks earned (0 to ${q.marks}): </span>
-                          <select onchange="setManualMark(${idx}, this.value)">
-                            <option value="">-- select --</option>`;
+            // AUTO-DETECTED: For graph questions, show Mark Scheme button + self-assess marks
+            if(q.isGraphical === true) {
+                inner += `<div style="margin-top:12px;">
+                            <button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme (for self-assessment)</button>
+                            <div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText || 'No mark scheme provided'}</div>
+                            <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
+                            <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
                 for(let m=0; m<=q.marks; m++) {
-                    let sel = (selectedVal === m) ? "selected" : "";
+                    let sel = (userManualMarks[idx] === m) ? "selected" : "";
                     inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
                 }
                 inner += `</select></div></div>`;
-            } else {
-                // MCQ simple mark scheme hint
-                inner += `<div style="margin-top: 8px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme</button>
-                          <div id="ms-panel-${idx}" class="mark-scheme-panel"><strong>Answer:</strong> ${q.msText}</div></div>`;
             }
             
-            if(q.text.includes("diagram") || q.text.includes("graph") || q.text.includes("Diagram")) {
-                inner += `<div class="placeholder-img">📊 [Figure/Graph/Diagram placeholder - refer to original paper]</div>`;
+            // Show placeholder for graph/drawing questions
+            if(q.isGraphical || q.text.toLowerCase().includes('graph') || q.text.toLowerCase().includes('plot') || q.text.toLowerCase().includes('draw')) {
+                inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
             }
+            
             card.innerHTML = inner;
             container.appendChild(card);
         });
     }
-
-    // Final marking: For written, if manual mark set use that, else fallback to keyword auto-mark.
-    function getFinalMark(q, idx, answer) {
-        if(q.type === "mcq") {
-            if(!answer) return 0;
-            return answer.toLowerCase().trim() === q.correct.toLowerCase() ? q.marks : 0;
+    
+    // AI Marking function (same as original)
+    async function callOpenAIForMark(question, studentAnswer, markScheme, maxMarks) {
+        if(!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_API_KEY") {
+            if(!studentAnswer) return { score: 0, feedback: "No answer provided" };
+            let keywords = question.correctKeywords || [];
+            if(keywords.length === 0) return { score: 0, feedback: "No keywords defined for marking" };
+            let ansLower = studentAnswer.toLowerCase();
+            let matched = keywords.filter(kw => ansLower.includes(kw.toLowerCase())).length;
+            let required = question.requiredKeywords || keywords.length;
+            let score = Math.min(matched, required, maxMarks);
+            let feedback = `Matched ${matched}/${required} key terms. Expected: ${keywords.join(", ")}`;
+            return { score: score, feedback: feedback };
         }
-        if(q.type === "calc") {
-            if(!answer) return 0;
-            let num = parseFloat(answer);
-            if(isNaN(num)) return 0;
-            return Math.abs(num - q.correctValue) <= q.tolerance ? q.marks : 0;
+        
+        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on the mark scheme and provide constructive feedback.
+    Question: "${question.text}"
+    Mark Scheme: "${markScheme}"
+    Maximum marks: ${maxMarks}
+    Student Answer: "${studentAnswer || '[no answer]'}"
+    Return ONLY a JSON object: {"score": number (0-${maxMarks}), "feedback": "brief constructive feedback explaining what was good/missing"}. Do not include any other text.`;
+        
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
+                body: JSON.stringify({ model: OPENAI_MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.1 })
+            });
+            if(!response.ok) throw new Error(`API error ${response.status}`);
+            const data = await response.json();
+            const result = JSON.parse(data.choices[0].message.content);
+            return {
+                score: Math.min(Math.max(0, parseInt(result.score) || 0), maxMarks),
+                feedback: result.feedback || "AI assessment complete."
+            };
+        } catch(e) { 
+            console.error("OpenAI error:", e); 
+            return { score: 0, feedback: "AI marking error - please review manually" };
         }
-        if(q.type === "pair") {
-            if(!answer) return 0;
-            let a = answer.toLowerCase();
-            let matched = q.correctPairs.some(pair => a.includes(pair[0].toLowerCase()) && a.includes(pair[1].toLowerCase()));
-            return matched ? q.marks : 0;
-        }
-        // written & short: prefer manual mark if set
-        if(userManualMarks[idx] !== null && userManualMarks[idx] !== undefined) {
-            return Math.min(userManualMarks[idx], q.marks);
-        }
-        // fallback to keyword marking
-        if(!answer) return 0;
-        let a = answer.toLowerCase();
-        let kw = q.correctKeywords || [];
-        let required = q.requiredKeywords || 1;
-        let count = kw.filter(k => a.includes(k.toLowerCase())).length;
-        return Math.min(count, q.marks);
     }
-
-    function getGrade(percent) {
-        if(percent >= 85) return "9 (excellent)";
-        if(percent >= 78) return "8 (strong)";
-        if(percent >= 70) return "7 (good)";
-        if(percent >= 62) return "6 (high merit)";
-        if(percent >= 54) return "5 (merit)";
-        if(percent >= 45) return "4 (standard pass)";
-        if(percent >= 35) return "3";
-        if(percent >= 25) return "2";
-        return "1";
-    }
-
-    function computeWeakTopics(scoresByTopic) {
-        let weak = [];
-        for(let [topic, data] of Object.entries(scoresByTopic)) {
-            let percentage = (data.earned / data.total) * 100;
-            if(percentage < 55) weak.push({ topic, percentage, earned: data.earned, total: data.total });
-        }
-        weak.sort((a,b)=> a.percentage - b.percentage);
-        return weak;
-    }
-
-    function submitExam() {
+    
+    async function submitAndMarkExam() {
         if(examSubmitted) return;
         clearInterval(timerInterval);
+        if(autoSaveTimer) clearInterval(autoSaveTimer);        
         examSubmitted = true;
+        
+        showToast("🤖 AI is marking non-graphical questions...", false);
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "loading-overlay";
+        loadingDiv.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Marking in progress...</div>`;
+        document.body.appendChild(loadingDiv);
+        
         let totalEarned = 0, totalPossible = 0;
-        let topicScores = {};
-        let details = [];
-        questionsData.forEach((q, idx) => {
-            let ans = userAnswers[idx] || "";
-            let earned = getFinalMark(q, idx, ans);
+        let questionFeedback = [];
+        
+        for(let i=0; i<questionsData.length; i++) {
+            let q = questionsData[i];
+            let answer = userAnswers[i] || "";
+            let earned = 0;
+            let aiFeedback = "";
+            
+            if(q.isGraphical === true) {
+                earned = (userManualMarks[i] !== null && !isNaN(userManualMarks[i])) ? userManualMarks[i] : 0;
+                earned = Math.min(Math.max(0, earned), q.marks);
+                aiFeedback = "Self-assessed by student (graph/diagram question - compared with mark scheme)";
+            } else if(q.type === "mcq") {
+                earned = (answer && answer.trim().toLowerCase() === (q.correct || "").toLowerCase()) ? q.marks : 0;
+                aiFeedback = earned === q.marks ? "Correct answer selected" : "Incorrect answer - correct option: " + q.correct;
+            } else if(q.type === "calc") {
+                let num = parseFloat(answer);
+                if(!isNaN(num) && Math.abs(num - q.correctValue) <= (q.tolerance || 0.01)) {
+                    earned = q.marks;
+                    aiFeedback = `Correct calculation (expected: ${q.correctValue})`;
+                } else {
+                    earned = 0;
+                    aiFeedback = `Incorrect calculation. Expected: ${q.correctValue}, Got: ${answer || "no answer"}`;
+                }
+            } else {
+                const aiResult = await callOpenAIForMark(q, answer, q.msText, q.marks);
+                earned = aiResult.score;
+                aiFeedback = aiResult.feedback;
+            }
+            
             totalEarned += earned;
             totalPossible += q.marks;
-            let topic = q.topic || "General";
-            if(!topicScores[topic]) topicScores[topic] = { earned:0, total:0 };
-            topicScores[topic].earned += earned;
-            topicScores[topic].total += q.marks;
-            let markingMethod = (q.type !== "mcq" && userManualMarks[idx] !== null) ? "manual" : "auto-keyword";
-            details.push({ text: q.text.substring(0,70), answer: ans.substring(0,60), earned, max: q.marks, topic, method: markingMethod, scheme: q.msText });
-        });
-        let percent = (totalEarned/totalPossible)*100;
-        let grade = getGrade(percent);
-        let weakTopics = computeWeakTopics(topicScores);
+            let status = earned === q.marks ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
+            
+            questionFeedback.push({
+                number: i+1, topic: q.topic, question: q.text,
+                studentAnswer: answer || "(blank)", marksEarned: earned,
+                marksTotal: q.marks, status: status, expectedAnswer: q.msText, 
+                aiFeedback: aiFeedback,
+                isGraphical: q.isGraphical
+            });
+        }
+        
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade = percent >=85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : percent>=25 ? "2" : "1";
+        let weakTopics = [];
+        let topicAgg = {};
+        questionFeedback.forEach(fb => { if(!topicAgg[fb.topic]) topicAgg[fb.topic]={earned:0,total:0}; topicAgg[fb.topic].earned+=fb.marksEarned; topicAgg[fb.topic].total+=fb.marksTotal; });
+        for(let t in topicAgg) if((topicAgg[t].earned/topicAgg[t].total)*100 < 55) weakTopics.push(t);
+        
         const reviewDiv = document.getElementById("reviewPanel");
         reviewDiv.classList.remove("hidden");
-        let html = `<h2>📊 Exam Results — Final Mark</h2><div class="score-badge">Score: ${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
-        <div class="grade-box"><strong>Edexcel IGCSE 9–1 grade: ${grade}</strong> (Boundaries: 9≥85%, 8≥78%, 7≥70%, 6≥62%, 5≥54%, 4≥45%)</div>`;
-        if(weakTopics.length > 0) {
-            html += `<div class="weakness-box"><h3>⚠️ Weaker areas (below 55%)</h3><ul>`;
-            weakTopics.forEach(w => { html += `<li><strong>${w.topic}</strong>: ${w.earned}/${w.total} marks (${w.percentage.toFixed(1)}%) — review this topic.</li>`; });
-            html += `</ul></div>`;
-        } else {
-            html += `<div class="weakness-box"><h3>✅ No weak areas identified (all ≥55%). Great work!</h3></div>`;
+        let html = `<h2>📊 Exam Results</h2><div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+                    <div class="grade-box"><strong>Edexcel Grade: ${grade}</strong></div>
+                    <div class="grade-box" style="background:#e9f0f5;"><strong>📊 Graph Questions:</strong> ${graphQuestionCount} question(s) were self-assessed using mark scheme</div>`;
+        if(weakTopics.length) html += `<div class="weakness-box"><h3>⚠️ Weak areas (&lt;55%)</h3><ul>${weakTopics.map(w=>`<li>${w}</li>`).join('')}</ul></div>`;
+        else html += `<div class="weakness-box" style="background:#e0f2e9;"><h3>✅ Strong performance overall!</h3></div>`;
+        
+        html += `<details open><summary>📋 Detailed Feedback</summary><table class="feedback-table"><thead>`;
+        html += `<tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr>`;
+        html += `</thead><tbody>`;
+        
+        for(let fb of questionFeedback) {
+            let cls = fb.marksEarned === fb.marksTotal ? "correct-highlight" : (fb.marksEarned===0 ? "incorrect-highlight" : "");
+            html += `<tr class="${cls}">`;
+            html += `<td>${fb.number}${fb.isGraphical ? ' 📊' : ''}</td>`;
+            html += `<td>${fb.topic}</td>`;
+            html += `<td>${fb.question}</td>`;
+            html += `<td style="max-width:250px;">${fb.studentAnswer}</td>`;
+            html += `<td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>`;
+            html += `<td style="max-width:300px;">${fb.aiFeedback || "No feedback available"}</td>`;    
+            html += `<td style="max-width:250px;">${fb.expectedAnswer || "N/A"}</td>`;
+            html += `</tr>`;
         }
-        html += `<p><strong>Detailed breakdown:</strong></p><ul>`;
-        details.forEach((d,i) => { html += `<li><strong>Q${i+1} (${d.topic})</strong> [${d.max} marks]: earned ${d.earned} (${d.method})<br>Your answer: "${d.answer || 'blank'}"<br>📖 MS: ${d.scheme}</li>`; });
-        html += `</ul><p>✔️ For written questions you could manually assign marks using the dropdown; otherwise auto-keyword marking applied.</p>`;
+        
+        html += `</tbody></table></details>`;
+        html += `<p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Questions automatically detected as "graph/drawing/plot" questions (${graphQuestionCount} total) required self-assessment using the mark scheme. All other questions were marked automatically.</p>`;
+        
         reviewDiv.innerHTML = html;
-        document.querySelectorAll("input, textarea, button.nav-btn, #prevBtn, #nextBtn, select").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
+        document.body.removeChild(loadingDiv);
+        document.querySelectorAll("input, textarea, button, select").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
         document.getElementById("submitBtn").disabled = true;
-    }
-
-    function saveProgress() {
-        const data = { answers: userAnswers, manualMarks: userManualMarks, timestamp: new Date().toISOString() };
-        localStorage.setItem("igcse_bio_paper1b_save_full", JSON.stringify(data));
-        alert("Progress saved (including manual marks)! Use 'Load Saved' to resume.");
-    }
-    function loadProgress() {
-        if(examSubmitted) { alert("Exam already submitted."); return; }
-        const raw = localStorage.getItem("igcse_bio_paper1b_save_full");
-        if(!raw) { alert("No saved data found."); return; }
+        showToast("Marking complete!", false);
+        localStorage.removeItem("igcse_bio_exam_autosave");
+        
         try {
-            const saved = JSON.parse(raw);
-            if(saved.answers && saved.answers.length === userAnswers.length) {
-                userAnswers = saved.answers;
-                if(saved.manualMarks) userManualMarks = saved.manualMarks;
-                rebuildInputsFromAnswers();
-                renderNavigation();
-                alert("Progress loaded.");
-            } else { alert("Data mismatch."); }
-        } catch(e) { alert("Error loading."); }
-    }
-    function rebuildInputsFromAnswers() {
-        buildQuestionsHTML();
-        for(let i=0; i<userAnswers.length; i++) {
-            let val = userAnswers[i];
-            if(val && val !== "") {
-                let radios = document.querySelectorAll(`input[name="q${i}"]`);
-                if(radios.length) {
-                    radios.forEach(r => { if(r.value === val) r.checked = true; });
-                } else {
-                    let inputField = document.querySelector(`#qcard-${i} textarea, #qcard-${i} input[type="text"]`);
-                    if(inputField) inputField.value = val;
-                }
-            }
-            if(userManualMarks[i] !== null && userManualMarks[i] !== undefined) {
-                let selectEl = document.querySelector(`#qcard-${i} select`);
-                if(selectEl) selectEl.value = userManualMarks[i];
-            }
+            const emailResultData = {
+                score: totalEarned,
+                totalMarks: totalPossible,
+                percent: percent,
+                grade: grade,
+                weakTopics: weakTopics,
+                details: questionFeedback.map(fb => ({
+                    qNum: fb.number,
+                    earned: fb.marksEarned,
+                    max: fb.marksTotal
+                }))
+            };
+            await sendResultsEmail(emailResultData, "Exam Candidate");
+        } catch(emailError) {
+            console.error("Failed to send email:", emailError);
         }
-        renderNavigation();
     }
-
+    
+    // Expose functions globally
     window.saveAnswer = saveAnswer;
     window.setManualMark = setManualMark;
     window.toggleMarkScheme = toggleMarkScheme;
     window.goToQuestion = goToQuestion;
+    
     window.onload = () => {
+        loadAutoSave();
         buildQuestionsHTML();
         renderNavigation();
         startTimer();
+        autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam and see final grade & weak topics?")) submitExam(); };
-        document.getElementById("saveResponsesBtn").onclick = saveProgress;
-        document.getElementById("loadResponsesBtn").onclick = loadProgress;
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Graph questions require self-assessment; other questions will be AI-marked.")) submitAndMarkExam(); };
     };
 </script>
 </body>
