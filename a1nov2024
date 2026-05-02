@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pearson Edexcel IGCSE English Language A | AI-Powered Marking</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>   
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .exam-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+            overflow: hidden;
+            padding: 20px 30px 40px;
+        }
+        .header {
+            border-bottom: 4px solid #003c5f;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f6fa 100%);
+            padding: 15px 20px;
+            border-radius: 28px;
+        }
+        .title h1 { margin: 0; font-size: 1.8rem; color: #003c5f; letter-spacing: -0.5px; }
+        .title p { margin: 5px 0 0; color: #0077b6; font-weight: 500; }
+        .timer-area { background: #003c5f; padding: 6px 20px; border-radius: 60px; color: white; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .timer { font-size: 2rem; font-family: monospace; font-weight: bold; letter-spacing: 2px; }
+        .info-bar {
+            background: #e9f0f9;
+            padding: 12px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            font-weight: 500;
+        }
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #cbdde9;
+            padding-bottom: 15px;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+        .nav-btn {
+            background: #eef2f8;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 44px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .nav-btn.active { background: #0077b6; color: white; }
+        .nav-btn.answered { background: #52b788; color: white; }
+        .question-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            border: 1px solid #dce5ef;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .question-card.active-question { display: block; animation: fade 0.2s ease; }
+        @keyframes fade { from { opacity: 0.5; } to { opacity: 1; } }
+        .q-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            background: #eef2fa;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            color: #003c5f;
+        }
+        .marks { font-size: 0.8rem; background: #cbdde9; border-radius: 30px; padding: 3px 12px; margin-left: 12px; font-weight: normal; }
+        .reading-text {
+            background: #fdf8e7;
+            border-left: 6px solid #d4a373;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .placeholder-img {
+            background: #f1f5f9;
+            border: 2px dashed #8ba0bc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e66;
+        }
+        .subquestion { margin: 20px 0 20px 12px; border-left: 3px solid #cbdde9; padding-left: 20px; }
+        textarea, input[type="text"] {
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid #b9c7d9;
+            width: 100%;
+            max-width: 100%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fefefe;
+        }
+        textarea { min-height: 120px; }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        button { background: #0077b6; border: none; padding: 12px 30px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.1s; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #bc6c25; }
+        .review-section { background: #fef9e3; padding: 24px; border-radius: 28px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e466e; }
+        .grade-box { background: #d9e6f2; padding: 14px; border-radius: 28px; margin: 15px 0; }
+        .feedback-card {
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 10px solid #0077b6;
+        }
+        .feedback-header { font-weight: 800; font-size: 1.2rem; margin-bottom: 12px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+        .mark-badge { background: #003c5f; color: white; border-radius: 60px; padding: 2px 12px; font-size: 0.8rem; }
+        .ai-tips { background: #e9f5e9; padding: 16px; border-radius: 20px; margin-top: 15px; border-left: 5px solid #2e7d32; }
+        .ai-badge {background: #0077b6; color: white; font-size: 0.7rem; border-radius: 30px; padding: 3px 12px; margin-left: 12px; vertical-align: middle;}
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
+        .loading-spinner { background: white; padding: 30px 40px; border-radius: 40px; text-align: center; font-weight: bold; max-width: 400px; }
+        .spinner { border: 4px solid #e9f0f5; border-top: 4px solid #0077b6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ms-panel { background: #f0f4fa; border-left: 5px solid #bc6c25; padding: 12px 18px; margin-top: 18px; border-radius: 20px; font-size: 0.9rem; display: none; }
+        .ms-panel.visible { display: block; }
+        .choice-buttons { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+        .choice-card { background: #f8fafc; border: 2px solid #cbdde9; border-radius: 24px; padding: 20px; flex: 1; min-width: 260px; cursor: pointer; transition: 0.1s; }
+        .choice-card.selected { border-color: #0077b6; background: #eef4ff; box-shadow: 0 4px 12px rgba(0,119,182,0.2); }
+        .choice-card h3 { margin-top: 0; color: #003c5f; }
+        @media (max-width: 700px) { .exam-container { padding: 12px; } .choice-buttons { flex-direction: column; } }
+        .status-toast { position: fixed; bottom: 20px; right: 20px; background: #2c7da0; color: white; padding: 10px 20px; border-radius: 40px; font-size: 0.9rem; opacity: 0; transition: opacity 0.2s; z-index: 1000; }
+    </style>
+</head>
+<body>
+<div class="exam-container" id="examApp">
+    <div class="header">
+        <div class="title">
+            <h1>Pearson Edexcel International GCSE (9-1)</h1>
+            <p>English Language A (4EA1) Paper 01: Non-fiction Texts and Transactional Writing</p>
+            <p>📅 Tuesday 5 November 2024 | Morning (2h 15min) | <span class="ai-badge">🤖 Smart Marking Enabled</span></p>
+        </div>
+        <div class="timer-area">
+            <div>⏱️ Time Remaining</div>
+            <div class="timer" id="timerDisplay">02:15:00</div>
+        </div>
+    </div>
+    <div class="info-bar">
+        <span>📖 Total marks: 90 | Section A (Reading) + Section B (Transactional Writing)</span>
+        <span id="answeredCounter">📝 Questions answered: 0 / 6</span>
+    </div>
+    <div id="navContainer" class="question-nav"></div>
+    <div id="questionsContainer"></div>
+    <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">✅ Submit Exam</button>
+    </div>
+    <div id="reviewPanel" class="review-section hidden"></div>
+    <div id="statusToast" class="status-toast"></div>
+</div>
+
+<script>
+    // -------------------- CONFIGURATION (IMPORTANT) --------------------
+    // 🔑 PASTE YOUR OPENAI API KEY BELOW (ensure it has billing enabled)
+    const DEEPSEEK_API_KEY = "sk-35f79bc9fa8d47018f05940e7252e56f"; // Get from platform.deepseek.com
+    const DEEPSEEK_MODEL = "deepseek-chat"; // or "deepseek-coder"
+    const USE_AI_MARKING = true;
+    
+    // -------------------- EMAIL & DB CONFIG --------------------
+    const EMAILJS_PUBLIC_KEY = "#PmVcThAzwAjgqOwSD";
+    const EMAILJS_SERVICE_ID = "service_301bogs";
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t";
+    const RECIPIENT_EMAIL = "ibn.daray@gmail.com";
+    
+    if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e) { console.log("EmailJS init error"); }
+    }
+    
+    // ---------- IndexedDB for saving progress ----------
+    const DB_NAME = "IGCSE_English_Exam_DB";
+    const DB_VERSION = 1;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { db = request.result; resolve(db); };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = tx.objectStore(PROGRESS_STORE);
+            store.put({ id: "current_progress", answers: answers, timeRemaining: timeLeft, timestamp: new Date().toISOString() });
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction([PROGRESS_STORE], "readonly");
+            const store = tx.objectStore(PROGRESS_STORE);
+            const req = store.get("current_progress");
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction([RESULTS_STORE], "readwrite");
+            const store = tx.objectStore(RESULTS_STORE);
+            store.add({ ...resultData, savedAt: new Date().toISOString() });
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+    
+    function showToast(msg, isErr = false) {
+        const toast = document.getElementById("statusToast");
+        toast.textContent = msg;
+        toast.style.background = isErr ? "#bc6c25" : "#0077b6";
+        toast.style.opacity = "1";
+        setTimeout(() => toast.style.opacity = "0", 3000);
+    }
+    
+    async function sendResultsEmail(resultData, studentName = "Candidate") {
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") { console.log("EmailJS not configured"); return false; }
+        try {
+            const params = {
+                to_email: RECIPIENT_EMAIL,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", "),
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+            showToast("📧 Results emailed successfully!", false);
+            return true;
+        } catch(e) { console.error("Email error", e); showToast("Email failed", true); return false; }
+    }
+    
+    // ---------- EXAM DATA (preserved original structure) ----------
+    const questionsData = [
+        { id: "q1", type: "selection", text: "1 From lines 1-4, select two words or phrases that describe Amazin LeThi.", marks: 2, readingLines: "Text One lines 1-4", msText: "'Vietnamese'(1), 'bodybuilder'(1), 'bullied mercilessly'(1), 'the only Asian person'(1), 'involved in sport'(1). Any two valid.", topic: "Reading comprehension / details" },
+        { id: "q2", type: "written", text: "2 Look again at lines 13-24. In your own words, explain what you learn about Amazin LeThi's life as a child.", marks: 4, readingLines: "Text One lines 13-24", msText: "any reasonable explanation: Australia unfriendly, bullied by children/community/teachers, teacher singled her out, humiliated, other pupils laughed, teacher threw eraser, she determined never to be humiliated again, sport as outlet.", topic: "Childhood experience" },
+        { id: "q3", type: "written", text: "3 From lines 31-42, describe Amazin LeThi's experiences within the world of sport. You may support your points with brief quotations.", marks: 5, readingLines: "Text One lines 31-42", msText: "bullying; coach's prejudice; stereotype of Asian as nerdy; told to switch from sprinting; pushed out; returned to weight training.", topic: "Sport stereotypes" },
+        { id: "q4", type: "written_analysis", text: "4 How does the writer, Chimamanda Ngozi Adichie, use language and structure in Text Two to create interest in her ideas? Support with close reference.", marks: 12, readingLines: "Text Two (full speech extract)", msText: "Level-based marking: analysis of language & structure e.g. anecdote, ethos, repetition of 'single story', use of contrast, short paragraphs, metaphor.", topic: "Language and structure analysis" },
+        { id: "q5", type: "comparison", text: "5 Compare how the writers present their ideas and perspectives about the experiences described. Support with detailed examples from both texts, including brief quotations.", marks: 22, readingLines: "Both Text One and Text Two", msText: "Level 5 (19-22 marks): Perceptive understanding and analysis of links and connections between writers' ideas and perspectives. Detailed comparison of language, structure and presentation of experiences. Award for exploration of similarities/differences: stereotyping, prejudice, childhood anecdotes, emotional impact, use of single-sentence paragraphs, lists of three, personal lessons, final uplifting messages.", topic: "Comparison of texts" },
+        { id: "q6", type: "transactional_choice", text: "6 (Transactional Writing) Choose ONE of the following options.", marks: 45, isTransactional: true, topic: "Transactional Writing (Letter or Article)", msText: "AO4/AO5: form, tone, register, purpose, vocabulary, grammar, organisation." }
+    ];
+    
+    let userAnswers = new Array(questionsData.length).fill("");
+    let transactionalData = { choice: null, content: "" };
+    let currentQIndex = 0;
+    let examSubmitted = false;
+    let timeSeconds = 135 * 60;
+    let timerInterval;
+    let autoSaveInterval;
+    
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmit(); }
+    function autoSubmit() { if(!examSubmitted) submitAndMarkExam(); }
+    
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if(!examSubmitted && timeSeconds>0) { timeSeconds--; updateTimerDisplay(); if(timeSeconds%30===0) saveAutoProgress(); }
+            else if(timeSeconds<=0 && !examSubmitted) autoSubmit();
+        }, 1000);
+    }
+    
+    function saveAutoProgress() { 
+        if(!examSubmitted) {
+            let answersToStore = [...userAnswers];
+            answersToStore[5] = JSON.stringify(transactionalData);
+            saveProgressToDB(answersToStore, timeSeconds);
+        }
+    }
+    
+    function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = idx+1;
+            btn.classList.add("nav-btn");
+            let isAnswered = false;
+            if(idx === 5) {
+                isAnswered = (transactionalData.choice !== null && transactionalData.content.trim().length > 20);
+            } else {
+                isAnswered = (userAnswers[idx] && userAnswers[idx].trim() !== "");
+            }
+            if(isAnswered) btn.classList.add("answered");
+            if(idx === currentQIndex) btn.classList.add("active");
+            btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
+            navDiv.appendChild(btn);
+        });
+        let answeredCount = 0;
+        for(let i=0;i<questionsData.length;i++) {
+            if(i===5) { if(transactionalData.choice && transactionalData.content.trim().length>20) answeredCount++; }
+            else { if(userAnswers[i] && userAnswers[i].trim()!=="") answeredCount++; }
+        }
+        document.getElementById("answeredCounter").innerHTML = `📝 Questions answered: ${answeredCount} / ${questionsData.length}`;
+    }
+    
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(c => c.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
+    
+    function saveReadingAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); saveAutoProgress(); }
+    
+    function updateTransactionalChoice(choice) {
+        if(examSubmitted) return;
+        transactionalData.choice = choice;
+        renderNavigation();
+        saveAutoProgress();
+        const card = document.getElementById(`qcard-5`);
+        if(card) {
+            const letterDiv = card.querySelector('.choice-card.letter-card');
+            const articleDiv = card.querySelector('.choice-card.article-card');
+            if(letterDiv) letterDiv.classList.toggle('selected', choice === 'letter');
+            if(articleDiv) articleDiv.classList.toggle('selected', choice === 'article');
+        }
+    }
+    
+    function updateTransactionalContent(content) {
+        if(examSubmitted) return;
+        transactionalData.content = content;
+        renderNavigation();
+        saveAutoProgress();
+    }
+    
+    function getFullTextForQuestion(q, idx) {
+        if(idx <= 4) {
+            let readingHtml = `<div class="reading-text"><strong>📖 Refer to Source Booklet (Text One / Text Two)</strong><br>`;
+            if(q.id === "q1") readingHtml += `Lines 1-4: "Racial stereotyping is a big problem... Vietnamese bodybuilder, Amazon LeThi, was bullied mercilessly..."`;
+            else if(q.id === "q2") readingHtml += `Lines 13-24: "She says growing up in Australia was an incredibly hostile environment... teacher made me stand up... threw the blackboard eraser..."`;
+            else if(q.id === "q3") readingHtml += `Lines 31-42: "Amazin fell victim to damaging stereotypes... We are seen as very nerdy, very geeky... coach told me that Asian people aren't very good at fast sports..."`;
+            else if(q.id === "q4") readingHtml += `Text Two (Chimamanda Ngozi Adichie): "I'm a storyteller... the danger of the single story... My roommate had a single story of Africa... Stories matter."`;
+            else if(q.id === "q5") readingHtml += `Compare Text One (Stereotyping in sport) and Text Two (The danger of a single story). Both explore prejudice and resilience.`;
+            readingHtml += `</div>`;
+            return readingHtml;
+        }
+        return "";
+    }
+    
+    function buildQuestionCards() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            if(idx===0) card.classList.add("active-question");
+            card.id = `qcard-${idx}`;
+            let inner = `<div class="q-title">Question ${idx+1} <span class="marks">${q.marks} marks</span> ${q.isTransactional ? '✍️ Transactional Writing' : ''}</div>`;
+            inner += getFullTextForQuestion(q, idx);
+            inner += `<div class="subquestion">${q.text}</div>`;
+            
+            if(idx === 5) {
+                inner += `
+                <div class="choice-buttons">
+                    <div class="choice-card letter-card ${transactionalData.choice === 'letter' ? 'selected' : ''}" onclick="updateTransactionalChoice('letter')">
+                        <h3>📩 Option 6: Letter to the Editor</h3>
+                        <p><strong>A newspaper report has stated that some older people have a negative view of teenagers today and think that they are selfish, lazy and rude.</strong></p>
+                        <p>Write a letter to the editor of the newspaper expressing your views on this.</p>
+                        <ul><li>Your thoughts about the statement</li><li>Your own opinions of young people today</li><li>Any other points you wish to make</li></ul>
+                        <p><em>Formal letter format, appropriate salutation and ending.</em></p>
+                    </div>
+                    <div class="choice-card article-card ${transactionalData.choice === 'article' ? 'selected' : ''}" onclick="updateTransactionalChoice('article')">
+                        <h3>📰 Option 7: Magazine Article</h3>
+                        <p><strong>A magazine is publishing a series of articles with the title "The benefits of taking part in sport".</strong></p>
+                        <p>Write your article on this topic.</p>
+                        <ul><li>The advantages to health of taking part in sport</li><li>Additional ways in which participation in sport can benefit people</li><li>Any other points you wish to make</li></ul>
+                        <p><em>Engaging article with heading, organised paragraphs.</em></p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <label><strong>✍️ Your written response (approx 350-450 words):</strong></label>
+                    <textarea id="transContent" rows="12" placeholder="Write your letter or article here..." oninput="updateTransactionalContent(this.value)">${transactionalData.content}</textarea>
+                </div>
+                <div class="ms-panel" style="margin-top:20px; background:#eef2fa; display:block;">
+                    <strong>📌 Marking Criteria (AO4 & AO5):</strong><br>• Communicate effectively and imaginatively, adapting form, tone and register.<br>• Wide vocabulary, sentence structures, paragraphing, accurate SP&G.<br>• Letter: formal salutation, clear argument. Article: engaging headline, lively style.
+                </div>
+                `;
+            } else {
+                let answerVal = userAnswers[idx] || "";
+                inner += `<textarea rows="6" placeholder="Write your answer in detail..." onchange="saveReadingAnswer(${idx}, this.value)">${answerVal}</textarea>`;
+                inner += `<div><button type="button" style="background:#bc6c25; margin-top:8px; padding:5px 12px;" onclick="toggleMarkScheme(${idx})">📘 Show Mark Scheme (self-review)</button></div>`;
+                inner += `<div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme Reference:</strong><br>${q.msText}</div>`;
+            }
+            card.innerHTML = inner;
+            container.appendChild(card);
+        });
+        window.saveReadingAnswer = saveReadingAnswer;
+        window.updateTransactionalChoice = updateTransactionalChoice;
+        window.updateTransactionalContent = updateTransactionalContent;
+        window.toggleMarkScheme = (idx) => {
+            let panel = document.getElementById(`ms-panel-${idx}`);
+            if(panel) panel.classList.toggle("visible");
+        };
+    }
+    
+    //---------- AI MARKING FUNCTION (OpenAI) with full feedback ----------
+    // async function getAIFeedback(questionNum, questionText, studentAnswer, maxMarks, markSchemeRef, isTransactional = false, choiceType = null) {
+    //     if(!USE_AI_MARKING || !OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_API_KEY_HERE") {
+    //         return { earned: Math.floor(maxMarks * 0.5), feedback: "⚠️ AI marking unavailable (API key missing). Please set valid OpenAI key.", expected: markSchemeRef };
+    //     }
+    //     const systemPrompt = `You are an Edexcel IGCSE English Language examiner. Award a mark out of ${maxMarks} based strictly on the mark scheme. Provide detailed feedback (3-5 sentences) referencing the mark scheme, AND include specific Grade 9 pointers/tips for improvement. Return valid JSON: {"earned": number, "feedback": "detailed feedback with mark scheme references", "tips": "actionable grade 9 advice"}.`;
+    //     let userPrompt = `Question ${questionNum}: ${questionText}\nMark Scheme: ${markSchemeRef}\nStudent Answer: """${studentAnswer.substring(0, 3500)}"""\n${isTransactional ? `This is ${choiceType === 'letter' ? 'a letter' : 'an article'}. Evaluate form, register, purpose, organisation, vocabulary, grammar.` : "Assess using AO1/AO2/AO3 criteria from the mark scheme."}`;
+    //     try {
+    //         const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    //             method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
+    //             body: JSON.stringify({ model: OPENAI_MODEL, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: 0.2, response_format: { type: "json_object" } })
+    //         });
+    //         if(!response.ok) throw new Error(`API error ${response.status}`);
+    //         const data = await response.json();
+    //         const result = JSON.parse(data.choices[0].message.content);
+    //         let earned = Math.min(maxMarks, Math.max(0, Math.round(result.earned)));
+    //         const finalFeedback = `${result.feedback || "AI feedback generated."}\n\n🌟 GRADE 9 TIPS: ${result.tips || "Analyse writer's methods, embed quotations, compare perspectives explicitly."}`;
+    //         return { earned: earned, feedback: finalFeedback, expected: markSchemeRef };
+    //     } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.4), feedback: `AI error: ${err.message}. Review mark scheme manually.`, expected: markSchemeRef }; }
+    // }
+
+    // ---------- AI MARKING ENGINE (OpenAI) WITH DETAILED FEEDBACK & GRADE 9 TIPS ----------
+        async function getAIFeedback(questionNum, questionText, studentAnswer, maxMarks, markSchemeRef, isTransactional = false, choiceType = null) {
+        if(!USE_AI_MARKING || !DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "your-deepseek-api-key-here") {
+            return { earned: 0, feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.", tips: "Set a valid DEEPSEEK_API_KEY.", level: "Not marked" };
+        }
+        const systemPrompt = `You are an Edexcel IGCSE English Language examiner. Provide a mark (out of ${maxMarks}) and detailed feedback with explicit reference to the mark scheme. Also give 3-5 actionable 'Grade 9 Tips' for improvement. Return valid JSON: { "earned": number, "feedback": "string", "tips": "string", "grade9pointers": "string" }`;
+        let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0,3500)}"""\n${isTransactional ? `This is a transactional writing task (${choiceType === 'letter' ? 'letter' : 'article'}). Evaluate form, register, organisation, vocabulary, and accuracy according to AO4/AO5.` : "Assess using AO1/AO2/AO3 criteria."}`;
+        try {
+            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                method: "POST", 
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                },
+                body: JSON.stringify({ 
+                    model: DEEPSEEK_MODEL, 
+                    messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
+                    temperature: 0.2,
+                    response_format: { type: "json_object" }
+                })
+            });
+            if(!response.ok){ const errText=await response.text(); throw new Error(`API Error ${response.status}: ${errText}`); }
+            const data = await response.json();
+            const jsonResult = JSON.parse(data.choices[0].message.content);
+            let earned = Math.min(maxMarks, Math.max(0, Math.round(jsonResult.earned)));
+            if(isNaN(earned)) earned = Math.floor(maxMarks*0.6);
+            return { earned: earned, feedback: jsonResult.feedback || "AI generated feedback.", tips: jsonResult.tips || jsonResult.grade9pointers || "Focus on precise textual references and apt vocabulary.", level: "AI Marked" };
+        } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `DeepSeek error: ${err.message}. Partial heuristic score.`, tips: "Review mark scheme manually.", level: "Heuristic fallback" }; }
+    }
+
+    async function submitAndMarkExam() {
+        if(examSubmitted) return;
+        clearInterval(timerInterval); clearInterval(autoSaveInterval);
+        examSubmitted = true;
+        showToast("🤖 Smart Marking in progress ... (each question analysed)", false);
+        const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Marking ... </p></div>`;
+        document.body.appendChild(loading);
+        
+        let feedbackItems = [];
+        let totalEarned = 0, totalPossible = 0;
+        
+        // Mark Q1 to Q5 with AI
+        for(let i=0;i<5;i++){
+            const q = questionsData[i];
+            const answer = userAnswers[i] || "";
+            const maxM = q.marks;
+            totalPossible += maxM;
+            let result = { earned: 0, feedback: "No answer provided.", tips: "" };
+            if(answer.trim().length > 15) {
+                result = await getAIFeedback(i+1, q.text, answer, maxM, q.msText, false);
+            } else {
+                result = { earned: 0, feedback: "❌ Answer too short or blank. Refer to mark scheme details.", tips: "Make sure to use quotations or specific points from the text." };
+            }
+            totalEarned += result.earned;
+            // FIXED: Use FULL answer, no truncation
+            feedbackItems.push({ num: i+1, topic: q.topic, answerExcerpt: answer, earned: result.earned, max: maxM, feedback: result.feedback, tips: result.tips, markSchemeRef: q.msText });
+        }
+        
+        // Transactional Q6 AI marking
+        const transMax = 45;
+        totalPossible += transMax;
+        let transResult = { earned: 0, feedback: "No valid transactional response.", tips: "" };
+        if(transactionalData.choice && transactionalData.content.trim().length > 80) {
+            transResult = await getAIFeedback(6, "Transactional writing: "+(transactionalData.choice==='letter'?"Letter to Editor":"Sport benefits article"), transactionalData.content, transMax, questionsData[5].msText, true, transactionalData.choice);
+        } else if(transactionalData.content.trim().length > 20) {
+            transResult = { earned: Math.min(15, Math.floor(transactionalData.content.length/15)), feedback: "Partial response. For grade 9 ensure clear format, developed arguments & varied punctuation.", tips: "Write a full letter or article with strong opening, paragraphs, and sign-off." };
+        } else {
+            transResult = { earned: 0, feedback: "No transactional response provided.", tips: "Select a topic and write at least 300-400 words for a passing grade." };
+        }
+        totalEarned += transResult.earned;
+        // FIXED: Use FULL content, no truncation
+        feedbackItems.push({ num: 6, topic: `Transactional Writing (${transactionalData.choice === 'letter' ? 'Letter' : 'Article' || 'Not selected'})`, answerExcerpt: transactionalData.content, earned: transResult.earned, max: transMax, feedback: transResult.feedback, tips: transResult.tips, markSchemeRef: questionsData[5].msText });
+        
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade = percent >= 85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : "U";
+        
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        let html = `<h2>✨ Results | Edexcel IGCSE English Language A</h2>
+        <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+        <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong> <span style="font-size:0.9rem;">(based on mark scheme alignment)</span></div>`;
+        
+        html += `<div style="margin-top:20px;"><h3>📌 Detailed Feedback & Grade 9 Pointers</h3>`;
+        for(let fb of feedbackItems){
+            // Use white-space: pre-wrap to preserve formatting and show full answer
+            html += `<div class="feedback-card">
+                <div class="feedback-header"><span>Q${fb.num}: ${fb.topic}</span><span class="mark-badge">${fb.earned}/${fb.max}</span></div>
+                <div><strong>📝 Your answer (full):</strong><br><div style="white-space:pre-wrap; background:#f9f9f9; padding:12px; border-radius:12px; margin-top:8px; max-height:400px; overflow-y:auto;">${(fb.answerExcerpt || "---").replace(/</g,'&lt;')}</div></div>
+                <div style="margin-top:15px;"><strong>🤖 Feedback (against mark scheme):</strong><br>${fb.feedback.replace(/\n/g, '<br>')}</div>
+                <div class="ai-tips"><strong>🌟 GRADE 9 TIPS & GUIDANCE:</strong><br>${fb.tips || "• Embed short quotations. • Analyse writer's methods (similes, repetition). • Compare perspectives using comparative phrases. • For transactional: hook the reader with rhetorical questions."}<br><br><small>📖 Mark scheme reference: ${fb.markSchemeRef.substring(0,300)}</small></div>
+            </div>`;
+        }
+        html += `<div class="weakness-box" style="background:#f0f7ff;"><h3>🎯 What to do for Grade 9 (Summary)</h3><ul>
+        <li>Use precise terminology: metaphor, juxtaposition, anecdote, single-story effect.</li>
+        <li>Compare both texts explicitly: "Whereas Text One focuses on sport stereotypes, Text Two broadens to cultural prejudice."</li>
+        <li>Transactional writing: adopt confident register, include counterargument, advanced punctuation (semicolons, dashes).</li>
+        <li>Always embed brief quotations to support analysis.</li>
+        <li>Structure comparison answers using 'both writers... however...' + 'furthermore' for depth.</li>
+        </ul><p>✅ This marking references official Edexcel IGCSE English Language A mark schemes (AO1-AO5).</p></div>`;
+        reviewDiv.innerHTML = html;
+        document.body.removeChild(loading);
+        document.querySelectorAll("input, textarea, button").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
+        document.getElementById("submitBtn").disabled = true;
+        
+        // optional email result stub
+        try { if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: RECIPIENT_EMAIL, student_name: "IGCSE Candidate", score: totalEarned, grade: grade }); } catch(e) {}
+        showToast("✅ Exam marked. Feedback includes Grade 9 tips.", false);
+    }
+    
+    async function loadSavedProgress() {
+        const saved = await loadProgressFromDB();
+        if(saved && saved.answers) {
+            if(confirm("📀 Resume previous exam progress?")) {
+                let loadedAnswers = saved.answers;
+                if(loadedAnswers && loadedAnswers.length === questionsData.length) {
+                    for(let i=0;i<5;i++) userAnswers[i] = loadedAnswers[i] || "";
+                    if(loadedAnswers[5]) {
+                        try {
+                            let trans = JSON.parse(loadedAnswers[5]);
+                            transactionalData.choice = trans.choice;
+                            transactionalData.content = trans.content || "";
+                        } catch(e) { console.log(e); }
+                    }
+                }
+                timeSeconds = saved.timeRemaining || timeSeconds;
+                updateTimerDisplay();
+                buildQuestionCards();
+                renderNavigation();
+            } else { buildQuestionCards(); renderNavigation(); }
+        } else { buildQuestionCards(); renderNavigation(); }
+    }
+    
+    window.onload = async () => {
+        await initDatabase();
+        await loadSavedProgress();
+        startTimer();
+        autoSaveInterval = setInterval(saveAutoProgress, 30000);
+        document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
+        document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? AI will mark using OpenAI and provide detailed Grade 9 feedback.")) submitAndMarkExam(); };
+    };
+</script>
+</body>
+</html>
