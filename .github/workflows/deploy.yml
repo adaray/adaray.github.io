@@ -31,7 +31,7 @@ jobs:
           echo "Current directory contents:"
           ls -la
           
-          # Find all HTML files (including index.html and all 1B*.html files)
+          # Find all HTML files (including index.html and all *.html files)
           HTML_FILES=$(find . -maxdepth 1 -name "*.html" -type f)
           
           if [ -z "$HTML_FILES" ]; then
@@ -48,13 +48,13 @@ jobs:
             
             # Show before replacement (first few lines)
             echo "  📄 Before replacement in $file:"
-            head -n 5 "$file" | grep -i "OPENAI_API_KEY" || echo "  Key not in first 5 lines"
+            head -n 5 "$file" | grep -i "DEEPSEEK_API_KEY" || echo "  Key not in first 5 lines"
             
             # Replace placeholder with actual secret
-            sed -i "s/OPENAI_API_KEY_PLACEHOLDER/${{ secrets.OPENAI_API_KEY }}/g" "$file"
+            sed -i "s/DEEPSEEK_API_KEY_PLACEHOLDER/${{ secrets.DEEPSEEK_API_KEY }}/g" "$file"
             
             # Verify replacement worked for this file
-            if grep -q "OPENAI_API_KEY_PLACEHOLDER" "$file"; then
+            if grep -q "DEEPSEEK_API_KEY_PLACEHOLDER" "$file"; then
               echo "  ❌ ERROR: Placeholder still exists in $file!"
               exit 1
             else
