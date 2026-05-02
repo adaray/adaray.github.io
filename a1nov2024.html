@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Pearson Edexcel IGCSE English Language A | AI-Powered Marking</title>
+    <title>Pearson Edexcel IGCSE English Language A | Smart-Powered Marking</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>   
     <style>
         * { box-sizing: border-box; }
@@ -469,9 +469,9 @@
     //         const data = await response.json();
     //         const result = JSON.parse(data.choices[0].message.content);
     //         let earned = Math.min(maxMarks, Math.max(0, Math.round(result.earned)));
-    //         const finalFeedback = `${result.feedback || "AI feedback generated."}\n\n🌟 GRADE 9 TIPS: ${result.tips || "Analyse writer's methods, embed quotations, compare perspectives explicitly."}`;
+    //         const finalFeedback = `${result.feedback || "Smart feedback generated."}\n\n🌟 GRADE 9 TIPS: ${result.tips || "Analyse writer's methods, embed quotations, compare perspectives explicitly."}`;
     //         return { earned: earned, feedback: finalFeedback, expected: markSchemeRef };
-    //     } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.4), feedback: `AI error: ${err.message}. Review mark scheme manually.`, expected: markSchemeRef }; }
+    //     } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.4), feedback: `Smart error: ${err.message}. Review mark scheme manually.`, expected: markSchemeRef }; }
     // }
 
     // ---------- Smart marking ENGINE (DEEPSEEK) WITH DETAILED FEEDBACK & GRADE 9 TIPS ----------
@@ -500,7 +500,7 @@
             const jsonResult = JSON.parse(data.choices[0].message.content);
             let earned = Math.min(maxMarks, Math.max(0, Math.round(jsonResult.earned)));
             if(isNaN(earned)) earned = Math.floor(maxMarks*0.6);
-            return { earned: earned, feedback: jsonResult.feedback || "AI generated feedback.", tips: jsonResult.tips || jsonResult.grade9pointers || "Focus on precise textual references and apt vocabulary.", level: "AI Marked" };
+            return { earned: earned, feedback: jsonResult.feedback || "Smart generated feedback.", tips: jsonResult.tips || jsonResult.grade9pointers || "Focus on precise textual references and apt vocabulary.", level: "Smart Marked" };
         } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `DeepSeek error: ${err.message}. Partial heuristic score.`, tips: "Review mark scheme manually.", level: "Heuristic fallback" }; }
     }
 
@@ -515,7 +515,7 @@
         let feedbackItems = [];
         let totalEarned = 0, totalPossible = 0;
         
-        // Mark Q1 to Q5 with AI
+        // Mark Q1 to Q5 with Smart
         for(let i=0;i<5;i++){
             const q = questionsData[i];
             const answer = userAnswers[i] || "";
@@ -613,7 +613,7 @@
         autoSaveInterval = setInterval(saveAutoProgress, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? AI will mark using DEEPSEEK and provide detailed Grade 9 feedback.")) submitAndMarkExam(); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Smart will mark using DEEPSEEK and provide detailed Grade 9 feedback.")) submitAndMarkExam(); };
     };
 </script>
 </body>

@@ -605,7 +605,7 @@
             const result = JSON.parse(data.choices[0].message.content);
             return {
                 score: Math.min(Math.max(0, parseInt(result.score) || 0), maxMarks),
-                feedback: result.feedback || "AI assessment complete."
+                feedback: result.feedback || "Smart assessment complete."
             };
         } catch(e) { 
             console.error("DEEPSEEK error:", e); 
@@ -619,7 +619,7 @@
         if(autoSaveTimer) clearInterval(autoSaveTimer);        
         examSubmitted = true;
         
-        showToast("🤖 AI is marking non-graphical questions...", false);
+        showToast("🤖 Smart marking for non-graphical questions...", false);
         const loadingDiv = document.createElement("div");
         loadingDiv.className = "loading-overlay";
         loadingDiv.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Marking in progress...</div>`;
@@ -744,7 +744,7 @@
         autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Graph questions require self-assessment; other questions will be AI-marked.")) submitAndMarkExam(); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Graph questions require self-assessment; other questions will be Smart-marked.")) submitAndMarkExam(); };
     };
 </script>
 </body>
