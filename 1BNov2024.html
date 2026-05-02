@@ -239,9 +239,9 @@
     
     const EXAM_TITLE = "Edexcel IGCSE Biology (4BI1) - Nov 2024 Paper 1B";
 
-    // ========== OPENAI CONFIGURATION ==========
-    const OPENAI_API_KEY="OPENAI_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR OPENAI API KEY HERE
-    const OPENAI_MODEL = "gpt-3.5-turbo";
+    // ========== DEEPSEEK CONFIGURATION ==========
+    const DEEPSEEK_API_KEY="DEEPSEEK_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR DEEPSEEK API KEY HERE
+    const DEEPSEEK_MODEL = "deepseek-chat";
     const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
     const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
     const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
@@ -576,9 +576,9 @@
         });
     }
     
-    // AI Marking function (same as original)
-    async function callOpenAIForMark(question, studentAnswer, markScheme, maxMarks) {
-        if(!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_API_KEY") {
+    // Smart marking function (same as original)
+    async function callDEEPSEEKForMark(question, studentAnswer, markScheme, maxMarks) {
+        if(!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "YOUR_DEEPSEEK_API_KEY") {
             if(!studentAnswer) return { score: 0, feedback: "No answer provided" };
             let keywords = question.correctKeywords || [];
             if(keywords.length === 0) return { score: 0, feedback: "No keywords defined for marking" };
@@ -598,10 +598,10 @@
     Return ONLY a JSON object: {"score": number (0-${maxMarks}), "feedback": "brief constructive feedback explaining what was good/missing"}. Do not include any other text.`;
         
         try {
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            const response = await fetch("https://api.DEEPSEEK.com/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
-                body: JSON.stringify({ model: OPENAI_MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.1 })
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEPSEEK_API_KEY}` },
+                body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.1 })
             });
             if(!response.ok) throw new Error(`API error ${response.status}`);
             const data = await response.json();
@@ -611,8 +611,8 @@
                 feedback: result.feedback || "AI assessment complete."
             };
         } catch(e) { 
-            console.error("OpenAI error:", e); 
-            return { score: 0, feedback: "AI marking error - please review manually" };
+            console.error("DEEPSEEK error:", e); 
+            return { score: 0, feedback: "Smart marking error - please review manually" };
         }
     }
     
@@ -654,7 +654,7 @@
                     aiFeedback = `Incorrect calculation. Expected: ${q.correctValue}, Got: ${answer || "no answer"}`;
                 }
             } else {
-                const aiResult = await callOpenAIForMark(q, answer, q.msText, q.marks);
+                const aiResult = await callDEEPSEEKForMark(q, answer, q.msText, q.marks);
                 earned = aiResult.score;
                 aiFeedback = aiResult.feedback;
             }

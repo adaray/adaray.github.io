@@ -577,7 +577,7 @@
         });
     }
     
-    // AI Marking function (same as original)
+    // Smart marking function (same as original)
     async function calldeepseekForMark(question, studentAnswer, markScheme, maxMarks) {
         if(!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "YOUR_DEEPSEEK_API_KEY") {
             if(!studentAnswer) return { score: 0, feedback: "No answer provided" };
@@ -613,7 +613,7 @@
             };
         } catch(e) { 
             console.error("deepseek error:", e); 
-            return { score: 0, feedback: "AI marking error - please review manually" };
+            return { score: 0, feedback: "Smart marking error - please review manually" };
         }
     }
     
