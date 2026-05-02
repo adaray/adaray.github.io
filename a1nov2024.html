@@ -198,6 +198,8 @@
 </div>
 
 <script>
+    const EXAM_TITLE = "Edexcel IGCSE English (4EA1/01) - Nov 2024 Paper 1";
+
     // -------------------- CONFIGURATION (IMPORTANT) --------------------
     // 🔑 PASTE YOUR DEEPSEEK API KEY BELOW (ensure it has billing enabled)
     const DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY_PLACEHOLDER"; // Get from platform.deepseek.com
@@ -208,10 +210,12 @@
     const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";
     const EMAILJS_SERVICE_ID = "service_301bogs";
     const EMAILJS_TEMPLATE_ID = "englishA";
-    const RECIPIENT_EMAIL = "ibn.daray@gmail.com";
+    const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
     
     if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
-        try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e) { console.log("EmailJS init error"); }
+        try { 
+            emailjs.init(EMAILJS_PUBLIC_KEY); 
+        } catch(e) { console.log("EmailJS init error"); e}
     }
     
     // ---------- IndexedDB for saving progress ----------
@@ -276,9 +280,14 @@
     }
     
     async function sendResultsEmail(resultData, studentName = "Candidate") {
-        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") { console.log("EmailJS not configured"); return false; }
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") { 
+            console.log("EmailJS not configured. Results", resultData);
+            showToast("Email not sent - configure EmailJS keys", false); 
+            return false; 
+        }
         try {
             const params = {
+                EXAM_TITLE: EXAM_TITLE,
                 to_email: RECIPIENT_EMAIL,
                 student_name: studentName,
                 score: resultData.score,
@@ -290,9 +299,12 @@
                 details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
             };
             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-            showToast("📧 Results emailed successfully!", false);
+            showToast("✅ Results emailed successfully!", false);
             return true;
-        } catch(e) { console.error("Email error", e); showToast("Email failed", true); return false; }
+        } catch(e) { 
+            console.error("Email error", e); 
+            showToast("⚠️ Email failed - check EmailJS configuration", true); 
+            return false; }
     }
     
     // ---------- EXAM DATA (preserved original structure) ----------
