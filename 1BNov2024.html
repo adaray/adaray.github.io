@@ -260,7 +260,7 @@
  // MODIFIED: Only detects when type is 'graph' OR 'practical'
     function isGraphOrPracticalQuestion(question) {
         // Only return true if type is exactly 'graph' OR 'practical'
-        return question.type === 'graph' || question.type === 'practical' || question.type === 'draw';
+        return question.type === 'graph' || question.type === 'practical' || question.type === 'draw' || question.type === 'diagram';
     }
     
     // ========== IndexedDB Setup ==========
@@ -590,7 +590,7 @@
             }
             
             // Show placeholder for graph/drawing questions
-            if(q.isGraphical || q.text.toLowerCase().includes('graph') || q.text.toLowerCase().includes('diagram') || q.text.toLowerCase().includes('plot') || q.text.toLowerCase().includes('draw')) {
+            if(q.isGraphical || q.text.toLowerCase().includes('graph') || q.text.toLowerCase().includes('diagram')) {
                 inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
             }
             
