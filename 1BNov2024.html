@@ -688,6 +688,7 @@
                         }
                     }
                     aiFeedback = `Incorrect. Correct answer is ${q.correct}${correctFullText ? ': ' + correctFullText : ''}. Your answer: ${answer || 'none selected'}`;
+                }
             } else {
                 const aiResult = await callDEEPSEEKForMark(q, answer, q.msText, q.marks);
                 earned = aiResult.score;
