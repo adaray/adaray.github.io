@@ -539,7 +539,9 @@
         let panel = document.getElementById(`ms-panel-${idx}`); 
         if(panel) panel.classList.toggle("visible"); 
     }
-    
+    function handleTextareaInput(idx, value) {
+        saveAnswer(idx, value);
+    }
     function buildQuestionsHTML() {
         const container = document.getElementById("questionsContainer");
         container.innerHTML = "";
@@ -568,7 +570,9 @@
                 inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
             } else {
                 let val = userAnswers[idx] || "";
-                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." data-idx="${idx}" 
+                    oninput="handleTextareaInput(${idx}, this.value)" 
+                    onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
             
             // AUTO-DETECTED: For graph questions, show Mark Scheme button + self-assess marks
@@ -660,18 +664,30 @@
                 earned = (userManualMarks[i] !== null && !isNaN(userManualMarks[i])) ? userManualMarks[i] : 0;
                 earned = Math.min(Math.max(0, earned), q.marks);
                 aiFeedback = "Self-assessed by student (graph/diagram question - compared with mark scheme)";
-            } else if(q.type === "mcq") {
-                earned = (answer && answer.trim().toLowerCase() === (q.correct || "").toLowerCase()) ? q.marks : 0;
-                aiFeedback = earned === q.marks ? "Correct answer selected" : "Incorrect answer - correct option: " + q.correct;
-            } else if(q.type === "calc") {
-                let num = parseFloat(answer);
-                if(!isNaN(num) && Math.abs(num - q.correctValue) <= (q.tolerance || 0.01)) {
+            } else if (q.type === "mcq") {
+                let studentAnswer = (answer || "").trim().toLowerCase();
+                let correctOptionLetter = (q.correct || "").trim().toLowerCase();
+                
+                // Extract just the letter from student's answer if it's the full text
+                let studentLetter = studentAnswer.charAt(0);
+                
+                if (studentLetter === correctOptionLetter || 
+                    studentAnswer === correctOptionLetter) {
                     earned = q.marks;
-                    aiFeedback = `Correct calculation (expected: ${q.correctValue})`;
+                    aiFeedback = `Correct answer: ${q.correct}`;
                 } else {
                     earned = 0;
-                    aiFeedback = `Incorrect calculation. Expected: ${q.correctValue}, Got: ${answer || "no answer"}`;
-                }
+                    // Find the full correct option text for feedback
+                    let correctFullText = "";
+                    if (q.options) {
+                        for (let opt of q.options) {
+                            if (opt.toLowerCase().startsWith(correctOptionLetter)) {
+                                correctFullText = opt;
+                                break;
+                            }
+                        }
+                    }
+                    aiFeedback = `Incorrect. Correct answer is ${q.correct}${correctFullText ? ': ' + correctFullText : ''}. Your answer: ${answer || 'none selected'}`;
             } else {
                 const aiResult = await callDEEPSEEKForMark(q, answer, q.msText, q.marks);
                 earned = aiResult.score;
@@ -757,6 +773,7 @@
     window.setManualMark = setManualMark;
     window.toggleMarkScheme = toggleMarkScheme;
     window.goToQuestion = goToQuestion;
+    window.handleTextareaInput = handleTextareaInput;
     
     window.onload = () => {
         loadAutoSave();
