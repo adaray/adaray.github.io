@@ -212,7 +212,7 @@
     <div class="header">
         <div class="title">
             <h1>Edexcel IGCSE Biology (4BI1)</h1>
-            <p>Biology Paper 1B | Jan 2020</p>
+            <p>Biology Paper 1B | June 2024</p>
         </div>
         <div class="timer-area">
             <div>Time Remaining</div>
@@ -237,12 +237,12 @@
 
 <script>
     
-    const EXAM_TITLE = "Edexcel IGCSE Biology (4BI1) - Jan 2020 Paper 1B";
+    const EXAM_TITLE = "Edexcel IGCSE Biology (4BI1) - June 2024 Paper 1B";
 
     // ========== DEEPSEEK CONFIGURATION ==========
     const DEEPSEEK_API_KEY="DEEPSEEK_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR DEEPSEEK API KEY HERE
     const DEEPSEEK_MODEL = "deepseek-chat";
-    const EMAILJS_PUBLIC_KEY = "#PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
     const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
     const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
     const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
@@ -455,7 +455,6 @@ const questionsDataRaw = [
     { id:"q10bii", type:"written", text:"10(b)(ii) Suggest why fewer seeds germinate when they are stored in wet and warm conditions than in the other conditions.", correctKeywords:["more fungi","more bacteria","microbes","seeds diseased","contents digested","seeds killed","enzymes activated","seeds started to germinate in storage"], marks:2, topic:"Plant biology/Germination", msText:"in warm (and wet) conditions there are more fungi/bacteria/microbes (1); so seeds are diseased or contents digested/consumed / seeds killed (by microbes) (1); enzymes are activated in storage (1); seeds have (already) started to germinate in storage (1)" },
     { id:"q10biii", type:"written", text:"10(b)(iii) Give one observation that shows a seed has germinated.", correctKeywords:["seed/testa split","radicle/root seen","plumule/shoot seen","sprouts"], marks:1, topic:"Plant biology/Germination", msText:"(seed/testa) split (1); radicle/root (is seen) (1); plumule/shoot (is seen) (1); sprouts (1)" }
 ];
-
     
     // Auto-detect graph questions and add isGraphical flag
 // Auto-detect based ONLY on type
@@ -545,6 +544,9 @@ const questionsDataRaw = [
         let panel = document.getElementById(`ms-panel-${idx}`); 
         if(panel) panel.classList.toggle("visible"); 
     }
+    function handleTextareaInput(idx, value) {
+    saveAnswer(idx, value);
+    }
     
     function buildQuestionsHTML() {
         const container = document.getElementById("questionsContainer");
@@ -574,7 +576,9 @@ const questionsDataRaw = [
                 inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
             } else {
                 let val = userAnswers[idx] || "";
-                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." data-idx="${idx}" 
+                    oninput="handleTextareaInput(${idx}, this.value)" 
+                    onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
             }
             
             // AUTO-DETECTED: For graph questions, show Mark Scheme button + self-assess marks
@@ -666,17 +670,30 @@ const questionsDataRaw = [
                 earned = (userManualMarks[i] !== null && !isNaN(userManualMarks[i])) ? userManualMarks[i] : 0;
                 earned = Math.min(Math.max(0, earned), q.marks);
                 aiFeedback = "Self-assessed by student (graph/diagram question - compared with mark scheme)";
-            } else if(q.type === "mcq") {
-                earned = (answer && answer.trim().toLowerCase() === (q.correct || "").toLowerCase()) ? q.marks : 0;
-                aiFeedback = earned === q.marks ? "Correct answer selected" : "Incorrect answer - correct option: " + q.correct;
-            } else if(q.type === "calc") {
-                let num = parseFloat(answer);
-                if(!isNaN(num) && Math.abs(num - q.correctValue) <= (q.tolerance || 0.01)) {
+            } else if (q.type === "mcq") {
+                let studentAnswer = (answer || "").trim().toLowerCase();
+                let correctOptionLetter = (q.correct || "").trim().toLowerCase();
+                
+                // Extract just the letter from student's answer if it's the full text
+                let studentLetter = studentAnswer.charAt(0);
+                
+                if (studentLetter === correctOptionLetter || 
+                    studentAnswer === correctOptionLetter) {
                     earned = q.marks;
-                    aiFeedback = `Correct calculation (expected: ${q.correctValue})`;
+                    aiFeedback = `Correct answer: ${q.correct}`;
                 } else {
                     earned = 0;
-                    aiFeedback = `Incorrect calculation. Expected: ${q.correctValue}, Got: ${answer || "no answer"}`;
+                    // Find the full correct option text for feedback
+                    let correctFullText = "";
+                    if (q.options) {
+                        for (let opt of q.options) {
+                            if (opt.toLowerCase().startsWith(correctOptionLetter)) {
+                                correctFullText = opt;
+                                break;
+                            }
+                        }
+                    }
+                    aiFeedback = `Incorrect. Correct answer is ${q.correct}${correctFullText ? ': ' + correctFullText : ''}. Your answer: ${answer || 'none selected'}`;
                 }
             } else {
                 const aiResult = await callDEEPSEEKForMark(q, answer, q.msText, q.marks);
@@ -763,6 +780,7 @@ const questionsDataRaw = [
     window.setManualMark = setManualMark;
     window.toggleMarkScheme = toggleMarkScheme;
     window.goToQuestion = goToQuestion;
+    window.handleTextareaInput = handleTextareaInput;
     
     window.onload = () => {
         loadAutoSave();
