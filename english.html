@@ -171,7 +171,7 @@
     // =======================  EMAIL CONFIGURATION (Google Apps Script) =======================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-gaxbXX2wzyjap5m8KYtMBHWywGyr6HBEWpQXp_oe627cXEnsYt91AJEjoguaXcBv/exec"; 
     const DEFAULT_RECIPIENT_EMAIL = "aisha.daray@gmail.com";
-    const ASK_STUDENT_EMAIL = true;
+    const ASK_STUDENT_EMAIL = false;
 
     // Extract exam metadata
     let EXAM_META = {
@@ -542,7 +542,7 @@
         if(examSubmitted) return;
         clearInterval(timerInterval); clearInterval(autoSaveInterval);
         examSubmitted = true;
-        showToast("🤖 Smart Marking in progress...", false);
+        showToast("🤖 Marking in progress...", false);
         const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Smart marking in progress...</p></div>`;
         document.body.appendChild(loading);
         
@@ -662,7 +662,7 @@
         autoSaveInterval = setInterval(saveAutoProgress, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < actualQuestions.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Smart marking and you can receive full results by email (or download).")) submitAndMarkExam(); };
+        document.getElementById("submitBtn").onclick = () => { submitAndMarkExam(); };
     };
 </script>
 </body>
