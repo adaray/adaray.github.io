@@ -168,6 +168,7 @@
     ];
     // =======================  END OF USER-EDITABLE SECTION =======================
 
+  
     // =======================  EMAIL CONFIGURATION (Google Apps Script) =======================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-gaxbXX2wzyjap5m8KYtMBHWywGyr6HBEWpQXp_oe627cXEnsYt91AJEjoguaXcBv/exec"; 
     const DEFAULT_RECIPIENT_EMAIL = "aisha.daray@gmail.com";
@@ -611,7 +612,8 @@
         document.getElementById("submitBtn").disabled = true;
         
         // Prepare email version with full styling, now includes mark scheme reference and responsive design
-        const emailHtml = buildEmailHtml(reviewHtml);
+        const reviewHtmlForEmail = removeEmojis(reviewHtml);
+        const emailHtml = buildEmailHtml(reviewHtmlForEmail);
         
         // ----- Email sending -----
         let recipient = DEFAULT_RECIPIENT_EMAIL;
@@ -654,7 +656,12 @@
             } else { buildQuestionCards(); renderNavigation(); }
         } else { buildQuestionCards(); renderNavigation(); }
     }
-    
+    // Remove emoji characters (icons) from a string
+    function removeEmojis(text) {
+        // Regex matches most emojis (including skin tones, flags, etc.)
+        return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
+    }
+        
     window.onload = async () => {
         await initDatabase();
         await loadSavedProgress();
