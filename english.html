@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Smart Exam Platform | Email Results Enabled</title>
+    <title>Edexcel IGCSE Smart Exam Platform | Smart Marking Enabled</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', 'Roboto', 'Georgia', serif; background-color: #f4f7fc; margin: 0; padding: 20px; color: #1e2a3e; }
@@ -176,7 +176,7 @@
     // Extract exam metadata
     let EXAM_META = {
         title: "Smart Exam",
-        subtitle: "AI-Powered Assessment",
+        subtitle: "Smart-Powered Assessment",
         dateInfo: "",
         durationSeconds: 135 * 60,
         defaultTotalMarksText: ""
@@ -383,8 +383,8 @@
             const result = JSON.parse(data.choices[0].message.content);
             let earned = Math.min(maxMarks, Math.max(0, Math.round(result.earned)));
             if(isNaN(earned)) earned = Math.floor(maxMarks*0.6);
-            return { earned, feedback: result.feedback || "Smart feedback.", tips: result.tips || "Analyse writer's methods, embed quotations, compare explicitly.", level: "AI Marked" };
-        } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `AI error: ${err.message}. Partial score.`, tips: "Review mark scheme manually.", level: "Fallback" }; }
+            return { earned, feedback: result.feedback || "Smart feedback.", tips: result.tips || "Analyse writer's methods, embed quotations, compare explicitly.", level: "Smart Marked" };
+        } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `Smart marking error: ${err.message}. Partial score.`, tips: "Review mark scheme manually.", level: "Fallback" }; }
     }
 
     // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
@@ -543,7 +543,7 @@
         clearInterval(timerInterval); clearInterval(autoSaveInterval);
         examSubmitted = true;
         showToast("🤖 Smart Marking in progress...", false);
-        const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Analysing answers with AI...</p></div>`;
+        const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Smart marking in progress...</p></div>`;
         document.body.appendChild(loading);
         
         let feedbackItems = [];
@@ -662,7 +662,7 @@
         autoSaveInterval = setInterval(saveAutoProgress, 30000);
         document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < actualQuestions.length && !examSubmitted) goToQuestion(currentQIndex+1); };
         document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
-        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? AI will mark and you can receive full results by email (or download).")) submitAndMarkExam(); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Smart marking and you can receive full results by email (or download).")) submitAndMarkExam(); };
     };
 </script>
 </body>
