@@ -375,7 +375,7 @@
 
     // AI marking (unchanged)
     async function getAIFeedback(questionNum, questionText, studentAnswer, maxMarks, markSchemeRef, isTransactional = false, choiceType = null) {
-        if(!USE_AI_MARKING || !DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "DEEPSEEK_API_KEY_PLACEHOLDER") {
+        if(!USE_AI_MARKING || !DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "your-deepseek-api-key-here") {
             return { earned: 0, feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.", tips: "Set valid DEEPSEEK_API_KEY.", level: "Not marked" };
         }
         const systemPrompt = `You are an examiner. Provide a mark (out of ${maxMarks}) and detailed feedback with mark scheme reference. Give 3-5 actionable 'Grade 9 Tips'. Return JSON: { "earned": number, "feedback": "string", "tips": "string" }`;
