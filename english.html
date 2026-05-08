@@ -658,8 +658,16 @@
     }
     // Remove emoji characters (icons) from a string
     function removeEmojis(text) {
-        // Regex matches most emojis (including skin tones, flags, etc.)
-        return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
+        const emojisToRemove = [
+            '📖', '✨', '🎓', '📝', '🤖', '🌟', '📌', '✅', 
+            '📘', '✍️', '📩', '📰', '⏱️', '🧠', '📂', '🔍',
+            '◀', '▶', '📀', '🎯', '💡', '🔔', '⚠️', '❌'
+        ];
+        let result = text;
+        for (const emoji of emojisToRemove) {
+            result = result.split(emoji).join('');
+        }
+        return result;
     }
         
     window.onload = async () => {
