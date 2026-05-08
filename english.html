@@ -387,7 +387,7 @@
         } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `AI error: ${err.message}. Partial score.`, tips: "Review mark scheme manually.", level: "Fallback" }; }
     }
 
-    // ---------- Email sending via Google Apps Script ----------
+    // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
     async function sendResultsViaGoogleScript(recipientEmail, htmlContent, csvContent) {
         if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
             console.warn("Google Script URL not configured. Falling back to download.");
@@ -428,9 +428,10 @@
         showToast("📁 Results downloaded as HTML file.", false);
     }
 
-    // Helper to build a full email HTML with the same CSS as the on-screen results
+    // Helper to build a full email HTML with the same CSS as on-screen results,
+    // including mark scheme reference, and made responsive for desktop/mobile.
     function buildEmailHtml(reviewHtmlContent) {
-        // Extract the CSS that is relevant for the results (from the main style)
+        // CSS that is fully responsive – includes a container with max-width and media query.
         const cssForEmail = `
             body {
                 font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
@@ -439,10 +440,19 @@
                 padding: 20px;
                 color: #1e2a3e;
             }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 32px;
+                padding: 30px 20px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
             .score-badge {
                 font-size: 2rem;
                 font-weight: bold;
                 color: #1e466e;
+                word-break: break-word;
             }
             .grade-box {
                 background: #d9e6f2;
@@ -489,19 +499,34 @@
             h2, h3 {
                 color: #003c5f;
             }
-            .container {
-                max-width: 900px;
-                margin: 0 auto;
-                background: white;
-                border-radius: 32px;
-                padding: 30px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                body {
+                    padding: 10px;
+                }
+                .container {
+                    padding: 20px 15px;
+                }
+                .score-badge {
+                    font-size: 1.5rem;
+                }
+                .feedback-header {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .feedback-card {
+                    padding: 15px;
+                }
+                .mark-badge {
+                    align-self: flex-start;
+                }
             }
         `;
         return `<!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
             <title>Exam Results - ${EXAM_META.title}</title>
             <style>${cssForEmail}</style>
         </head>
@@ -555,7 +580,7 @@
         let percent = (totalEarned / totalPossible) * 100;
         let grade = percent >= 85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : "U";
         
-        // Build the same HTML for on‑screen display (unchanged)
+        // Build the same HTML for on‑screen display, now including mark scheme reference (as originally)
         let reviewHtml = `<h2>✨ Results | ${EXAM_META.title}</h2>
         <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
         <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong></div>
@@ -566,6 +591,7 @@
                 <div><strong>📝 Your answer (full):</strong><br><div style="white-space:pre-wrap;">${(fb.answerExcerpt || "---").replace(/</g,'&lt;')}</div></div>
                 <div><strong>🤖 Feedback:</strong><br>${fb.feedback.replace(/\n/g, '<br>')}</div>
                 <div class="ai-tips"><strong>🌟 GRADE 9 TIPS:</strong><br>${fb.tips}</div>
+                <div style="margin-top: 12px; font-size: 0.85rem; background: #f0f4fa; padding: 8px; border-radius: 12px;"><strong>📖 Mark scheme reference:</strong><br>${fb.markSchemeRef.substring(0,300)}</div>
             </div>`;
         }
         reviewHtml += `<div class="weakness-box"><h3>🎯 What to do for Grade 9 (Summary)</h3><ul>
@@ -584,7 +610,7 @@
         document.querySelectorAll("input, textarea, button").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
         document.getElementById("submitBtn").disabled = true;
         
-        // Prepare email version with full styling (same content, but wrapped in email-friendly HTML)
+        // Prepare email version with full styling, now includes mark scheme reference and responsive design
         const emailHtml = buildEmailHtml(reviewHtml);
         
         // ----- Email sending -----
