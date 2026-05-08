@@ -583,7 +583,7 @@
         // Build the same HTML for on‑screen display, now including mark scheme reference (as originally)
         let reviewHtml = `<h2>✨ Results | ${EXAM_META.title}</h2>
         <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
-        <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong></div>
+        <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong> (based on mark scheme alignment)</div>
         <div><h3>📌 Detailed Feedback & Grade 9 Pointers</h3>`;
         for(let fb of feedbackItems){
             reviewHtml += `<div class="feedback-card">
