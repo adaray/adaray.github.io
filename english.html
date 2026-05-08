@@ -581,7 +581,7 @@
         let grade = percent >= 85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : "U";
         
         // Build the same HTML for on‑screen display, now including mark scheme reference (as originally)
-        let reviewHtml = `<h2>✨ Results | ${EXAM_META.title}</h2>
+        let reviewHtml = `<h2>✨ Results | ${EXAM_META.title}: ${EXAM_META.dateInfo}</h2>
         <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
         <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong> (based on mark scheme alignment)</div>
         <div><h3>📌 Detailed Feedback & Grade 9 Pointers</h3>`;
