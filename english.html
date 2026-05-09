@@ -545,7 +545,7 @@
         clearInterval(timerInterval); clearInterval(autoSaveInterval);
         examSubmitted = true;
         showToast("🤖 Marking in progress...", false);
-        const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Smart marking in progress...</p></div>`;
+        const loading = document.createElement("div"); loading.className="loading-overlay"; loading.innerHTML=`<div class="loading-spinner"><div class="spinner"></div><p>🧠 Marking in progress...</p></div>`;
         document.body.appendChild(loading);
         
         let feedbackItems = [];
