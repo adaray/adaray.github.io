@@ -396,10 +396,10 @@
         }
         try {
             const payload = {
-            recipient: recipientEmail,
-            subject: `Exam Results: ${EXAM_META.title}`,
-            htmlBody: htmlContent
-        };
+                recipient: recipientEmail,
+                subject: `Exam Results: ${EXAM_META.title}`,
+                htmlBody: htmlContent
+            };
             
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
@@ -407,6 +407,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+            
             if (response.ok) {
                 showToast(`✅ Results emailed to ${recipientEmail}`, false);
                 return true;
@@ -419,7 +420,7 @@
             return false;
         }
     }
-
+    
     function downloadAsHTML(htmlContent) {
         const blob = new Blob([htmlContent], { type: "text/html" });
         const link = document.createElement("a");
