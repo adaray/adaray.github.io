@@ -389,25 +389,23 @@
     }
 
     // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
-    async function sendResultsViaGoogleScript(recipientEmail, htmlContent, csvContent) {
+        async function sendResultsViaGoogleScript(recipientEmail, htmlContent, csvContent) {
         if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
             console.warn("Google Script URL not configured. Falling back to download.");
             return false;
         }
         try {
-            const payload = {
-                recipient: recipientEmail,
-                subject: `Exam Results: ${EXAM_META.title}`,
-                htmlBody: htmlContent
-            };
+            const formData = new URLSearchParams();
+            formData.append("recipient", recipientEmail);
+            formData.append("subject", `Exam Results: ${EXAM_META.title}`);
+            formData.append("htmlBody", htmlContent);
             
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 mode: "cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: formData.toString()
             });
-            
             if (response.ok) {
                 showToast(`✅ Results emailed to ${recipientEmail}`, false);
                 return true;
@@ -420,6 +418,7 @@
             return false;
         }
     }
+
     
     function downloadAsHTML(htmlContent) {
         const blob = new Blob([htmlContent], { type: "text/html" });
