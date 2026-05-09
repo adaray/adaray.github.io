@@ -199,7 +199,7 @@
       icon: "🧬",
       description: "Edexcel IGCSE Biology (4BI1) – Paper 1",
       paperCode: "4BI1/1B",
-      link: "biology_p1\biology_p1.html" // Replace with actual PDF link when available
+      link: "biology_p1/biology_p1.html" // Replace with actual PDF link when available
     },
     {
       id: "biology_p2",
@@ -229,14 +229,9 @@
 
   // Function to handle exam access
   function accessSubject(subject) {
-    // Replace this alert with real navigation later (e.g., window.location.href = subject.link)
-    alert(`▶️ Starting: ${subject.name}\n📄 Paper code: ${subject.paperCode}\n\n✨ Replace this alert with actual exam link/PDF when ready.`);
-    console.log(`[IGCSE Exam] ${subject.name} (${subject.paperCode}) selected`);
-    
-    // Uncomment below to enable actual redirection:
-    // if (subject.link && subject.link !== "#") {
-    //   window.open(subject.link, "_blank");
-    // }
+    // 👇 This replaces the alert – change to window.location.href or window.open
+    window.location.href = subject.link;   // opens in same tab
+    // If you prefer a new tab, use: window.open(subject.link, "_blank");
   }
 
   // Render subject cards dynamically
