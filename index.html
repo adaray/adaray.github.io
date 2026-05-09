@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>International GCSE Exam Hub | Pearson Edexcel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f5fa 0%, #e6edf4 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: #1a2c3e;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    /* main container */
+    .main-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* header – clean & simple */
+    .hero {
+      background: #0b2b44;
+      padding: 2rem 2rem;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      opacity: 0.85;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* subjects grid section */
+    .subjects-section {
+      padding: 2.5rem 2rem;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      color: #0b2b44;
+      border-left: 5px solid #f4a261;
+      padding-left: 1rem;
+    }
+
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    /* subject card – minimal & modern */
+    .subject-card {
+      background: #ffffff;
+      border-radius: 1.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 28px -10px rgba(0, 0, 0, 0.12);
+      border-color: #cbd5e1;
+    }
+
+    .card-content {
+      padding: 1.5rem 1.3rem 1.6rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .subject-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .subject-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0b2b44;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.2px;
+    }
+
+    .subject-desc {
+      font-size: 0.85rem;
+      color: #5b6e8c;
+      margin-bottom: 1.2rem;
+      line-height: 1.4;
+    }
+
+    .paper-code {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #eef2f8;
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      color: #1e4a76;
+      margin-bottom: 1rem;
+      align-self: flex-start;
+    }
+
+    .btn-start {
+      display: block;
+      width: 100%;
+      background: #1e6091;
+      border: none;
+      padding: 0.8rem 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      font-family: inherit;
+      margin-top: auto;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-start:hover {
+      background: #0f4a73;
+      transform: scale(0.98);
+    }
+
+    /* no extra footers, panels, or clutter */
+    @media (max-width: 680px) {
+      body {
+        padding: 1rem;
+      }
+      .hero {
+        padding: 1.5rem;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .subjects-section {
+        padding: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="hero">
+    <h1>📘 International GCSE Exam Hub</h1>
+    <p>Select exam seriese</p>
+  </div>
+
+  <div class="subjects-section">
+    <div class="section-title">
+      🧪 Available exam papers
+    </div>
+    <div class="subjects-grid" id="subjectsGrid">
+      <!-- subject cards will be inserted dynamically -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // ----- ONLY THE 4 SPECIFIED IGCSE EXAMS -----
+  const igcseSubjects = [
+    {
+      id: "biology_p1",
+      name: "Biology Paper 1",
+      icon: "🧬",
+      description: "Edexcel IGCSE Biology (4BI1) – Paper 1",
+      paperCode: "4BI1/1B",
+      link: "biology_p1/biology_p1.html" // Replace with actual PDF link when available
+    },
+    {
+      id: "biology_p2",
+      name: "Biology Paper 2",
+      icon: "🔬",
+      description: "Edexcel IGCSE Biology (4BI1) – Paper 2",
+      paperCode: "4BI1/2B",
+      link: "biology_p2/biology_p2.html" // Replace with actual PDF link when available
+    },
+    {
+      id: "english_p1",
+      name: "English Language A Paper 1",
+      icon: "📖",
+      description: "Edexcel IGCSE English Language A – Paper 1",
+      paperCode: "4EA1/01",
+      link: "english_p1/english_p1.html" // Replace with actual PDF link when available
+    },
+    {
+      id: "english_p2",
+      name: "English Language A Paper 2",
+      icon: "✍️",
+      description: "Edexcel IGCSE English Language A – Paper 2",
+      paperCode: "4EA1/02",
+      link: "english_p2/english_p2.html" // Replace with actual PDF link when available
+    }
+  ];
+
+  // Function to handle exam access
+  function accessSubject(subject) {
+    // Replace this alert with real navigation later (e.g., window.location.href = subject.link)
+    alert(`▶️ Starting: ${subject.name}\n📄 Paper code: ${subject.paperCode}\n\n✨ Replace this alert with actual exam link/PDF when ready.`);
+    console.log(`[IGCSE Exam] ${subject.name} (${subject.paperCode}) selected`);
+    
+    // Uncomment below to enable actual redirection:
+    // if (subject.link && subject.link !== "#") {
+    //   window.open(subject.link, "_blank");
+    // }
+  }
+
+  // Render subject cards dynamically
+  function renderSubjects() {
+    const gridContainer = document.getElementById("subjectsGrid");
+    if (!gridContainer) return;
+    gridContainer.innerHTML = "";
+
+    igcseSubjects.forEach(subject => {
+      const card = document.createElement("div");
+      card.className = "subject-card";
+
+      const cardContent = document.createElement("div");
+      cardContent.className = "card-content";
+
+      // icon
+      const iconSpan = document.createElement("div");
+      iconSpan.className = "subject-icon";
+      iconSpan.textContent = subject.icon;
+
+      // name
+      const nameElem = document.createElement("h3");
+      nameElem.className = "subject-name";
+      nameElem.textContent = subject.name;
+
+      // description
+      const descElem = document.createElement("p");
+      descElem.className = "subject-desc";
+      descElem.textContent = subject.description;
+
+      // paper code badge
+      const codeElem = document.createElement("div");
+      codeElem.className = "paper-code";
+      codeElem.textContent = subject.paperCode;
+
+      // button
+      const actionBtn = document.createElement("button");
+      actionBtn.className = "btn-start";
+      actionBtn.textContent = "📌 Access Exam";
+      
+      actionBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        accessSubject(subject);
+      });
+
+      cardContent.appendChild(iconSpan);
+      cardContent.appendChild(nameElem);
+      cardContent.appendChild(descElem);
+      cardContent.appendChild(codeElem);
+      cardContent.appendChild(actionBtn);
+      card.appendChild(cardContent);
+      gridContainer.appendChild(card);
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    renderSubjects();
+  });
+</script>
+
+<noscript>
+  <div style="background:#ffebee; margin:1rem; padding:1rem; border-radius:1rem; text-align:center;">
+    ⚠️ Please enable JavaScript to see the exam papers.
+  </div>
+</noscript>
+</body>
+</html>
