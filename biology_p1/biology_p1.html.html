@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Pearson Edexcel IGCSE Biology 4BI1 | Paper 1B Practice Hub</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #1a2c3e;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+    }
+
+    /* main container */
+    .exam-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(2px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0,0,0,0.05);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    /* header area */
+    .hero {
+      background: linear-gradient(135deg, #002b5c 0%, #0a3e6f 100%);
+      padding: 2.5rem 2rem 2rem 2rem;
+      color: white;
+      border-bottom: 5px solid #f9b81b;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero h1 span {
+      font-weight: 500;
+      background: rgba(249, 184, 27, 0.2);
+      padding: 0.1rem 0.4rem;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .hero .code {
+      font-size: 1rem;
+      background: rgba(255,255,255,0.15);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      margin-top: 0.75rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .subhead {
+      margin-top: 1rem;
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 85%;
+      border-left: 3px solid #f9b81b;
+      padding-left: 1rem;
+    }
+
+    /* instruction panel */
+    .info-panel {
+      background: white;
+      margin: 1.8rem 2rem 0 2rem;
+      padding: 1.2rem 1.8rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid rgba(0,43,92,0.1);
+    }
+
+    .instruction-text {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      color: #1f4e7a;
+    }
+
+    .instruction-text .badge {
+      background: #f9b81b20;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a45f00;
+    }
+
+    .start-hint {
+      background: #eef3fc;
+      padding: 0.4rem 1.2rem;
+      border-radius: 80px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #0a3e6f;
+    }
+
+    /* grid for buttons */
+    .series-section {
+      padding: 2rem 2rem 2.5rem 2rem;
+    }
+
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title small {
+      font-size: 0.85rem;
+      font-weight: normal;
+      background: #eef2f8;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      color: #2c5a7a;
+    }
+
+    .exam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.6rem;
+      margin-top: 1.8rem;
+    }
+
+    /* card style button (exam series temple) */
+    .exam-card {
+      background: white;
+      border-radius: 1.8rem;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9edf2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exam-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 30px -12px rgba(0, 43, 92, 0.2);
+      border-color: #cbdde9;
+    }
+
+    .card-header {
+      background: #f8fafd;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid #ebf0f5;
+    }
+
+    .exam-series {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #002b5c;
+      letter-spacing: -0.2px;
+    }
+
+    .exam-date {
+      font-size: 0.75rem;
+      color: #5b7c9c;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-body {
+      padding: 0.8rem 1.2rem 1.2rem 1.2rem;
+      flex-grow: 1;
+    }
+
+    .paper-code {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #eef2f8;
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      color: #1e4a76;
+      margin-bottom: 1rem;
+    }
+
+    .btn-start-exam {
+      display: block;
+      width: 100%;
+      background: linear-gradient(100deg, #002b5c, #0f4c81);
+      border: none;
+      padding: 0.85rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      text-decoration: none;
+      font-family: inherit;
+      margin-top: 0.7rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-start-exam:hover {
+      background: linear-gradient(100deg, #001f44, #0a3f6f);
+      transform: scale(0.98);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* extra note */
+    .info-footer {
+      background: #e9f0f6;
+      margin: 0 2rem 2rem 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #2c5f8a;
+    }
+
+    .info-footer a {
+      color: #002b5c;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 1rem;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .hero {
+        padding: 1.5rem;
+      }
+      .info-panel {
+        margin: 1rem 1rem 0 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .series-section {
+        padding: 1.5rem;
+      }
+      .info-footer {
+        margin: 0 1rem 1.5rem 1rem;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+      .subhead {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="exam-container">
+  <div class="hero">
+    <h1>Pearson Edexcel International GCSE <span>(4BI1)</span><br>Biology Paper 1B</h1>
+    <div class="code">📘 Exam code: 4BI1 | Paper 1B (Higher Tier)</div>
+    <div class="subhead">
+      🧬 Navigate through the past exam series. Select any series below to launch your timed exam session.
+    </div>
+  </div>
+
+  <div class="info-panel">
+    <div class="instruction-text">
+      <span class="badge">📌 Student Navigation</span>
+      <span>🔍 Click any <strong>“Start the exam”</strong> button to begin.</span>
+    </div>
+    <div class="start-hint">
+      ⚡ Each button is a clickable template — ready for real exam simulation
+    </div>
+  </div>
+
+  <div class="series-section">
+    <div class="section-title">
+      📅 Exam series — practice papers
+      <small>click to start</small>
+    </div>
+    <div class="exam-grid" id="examSeriesGrid">
+      <!-- Exam series buttons (templates) will be populated via JS but also hardcoded for reliability.
+           However, we want dynamic but also static fallback. We'll generate from an array to keep maintainable,
+           but each button is fully clickable and triggers exam start simulation. -->
+    </div>
+  </div>
+
+  <div class="info-footer">
+    <span>📖 Pearson Edexcel International GCSE Biology (4BI1) — Paper 1B exam practice navigation</span>
+    <span>✨ Each "Start the exam" button opens the respective series template → you can replace # links with actual exam PDFs or quizzes.</span>
+  </div>
+</div>
+
+<script>
+  // ---------- EXAM SERIES DATA (templates) ----------
+  // These represent different real exam series 
+  // Each object holds series identifier, label, date context, and a placeholder link.
+  // In real usage, replace href or action with actual exam paper URL, but here we demonstrate clickable navigation
+  // that logs a message to console and shows a friendly alert (or opens a mock exam page).
+  // For student practice, you can replace window.open or simulate a start.
+  
+  const examSeriesList =[
+  { 
+    id: "may-2019", 
+    series: "May 2019", 
+    paperRef: "4BI1/1B", 
+    dateContext: "May series 2019",
+    link: "1BMay2019.html",
+    fullLabel: "May 2019 (4BI1/1B)"
+  },
+  { 
+    id: "jan-2020", 
+    series: "January 2020", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Jan series 2020",
+    link: "1BJan2020.html",
+    fullLabel: "January 2020 (4BI1/1B)"
+  },
+  { 
+    id: "may-2020", 
+    series: "May 2020", 
+    paperRef: "4BI1/1B", 
+    dateContext: "May series 2020",
+    link: "1BMay2020.html",
+    fullLabel: "May 2020 (4BI1/1B)"
+  },
+  { 
+    id: "jan-2021", 
+    series: "January 2021", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Jan series 2021",
+    link: "1BJan2021.html",
+    fullLabel: "January 2021 (4BI1/1B)"
+  },
+  { 
+    id: "jun-2021", 
+    series: "June 2021", 
+    paperRef: "4BI1/1B", 
+    dateContext: "June series 2021",
+    link: "1BJune2021.html",
+    fullLabel: "June 2021 (4BI1/1B)"
+  },
+  { 
+    id: "nov-2021", 
+    series: "November 2021", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Nov series 2021",
+    link: "1BNov2021.html",
+    fullLabel: "November 2021 (4BI1/1B)"
+  },
+  { 
+    id: "jan-2022", 
+    series: "January 2022", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Jan series 2022",
+    link: "1BJan2022.html",
+    fullLabel: "January 2022 (4BI1/1B)"
+  },
+  { 
+    id: "jun-2022", 
+    series: "June 2022", 
+    paperRef: "4BI1/1B", 
+    dateContext: "June series 2022",
+    link: "1BJune2022.html",
+    fullLabel: "June 2022 (4BI1/1B)"
+  },
+  { 
+    id: "jan-2023", 
+    series: "January 2023", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Jan series 2023",
+    link: "1BJan2023.html",
+    fullLabel: "January 2023 (4BI1/1B)"
+  },
+  { 
+    id: "may-2023", 
+    series: "May 2023", 
+    paperRef: "4BI1/1B", 
+    dateContext: "May series 2023",
+    link: "1BMay2023.html",
+    fullLabel: "May 2023 (4BI1/1B)"
+  },
+  { 
+    id: "nov-2023", 
+    series: "November 2023", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Nov series 2023",
+    link: "1BNov2023.html",
+    fullLabel: "November 2023 (4BI1/1B)"
+  },
+  { 
+    id: "jun-2024", 
+    series: "June 2024", 
+    paperRef: "4BI1/1B", 
+    dateContext: "June series 2024",
+    link: "1BJune2024.html",
+    fullLabel: "June 2024 (4BI1/1B)"
+  },
+  { 
+    id: "nov-2024", 
+    series: "November 2024", 
+    paperRef: "4BI1/1B", 
+    dateContext: "Nov series 2024",
+    link: "1BNov2024.html",
+    fullLabel: "November 2024 (4BI1/1B)"
+  }
+];
+
+  // Function to handle exam start action.
+  // Since it's a landing page for navigation/clickable templates, we display a clear prompt
+  // that teachers/students can replace the placeholder with actual exam link.
+  // However, we want to simulate "Start the exam" and also provide a way to open new window if actual PDF is set.
+  // We make it flexible: for this demo we show an overlay notification that simulates launching the exam practice.
+  // BUT we also set a default behaviour: you can right click or we can add configuration: If you want to replace links,
+  // you'd edit the 'link' property. But we want clickable templates: clicking button triggers startExam(seriesData)
+  // Meanwhile retaining button style and "start the exam" text. Also provides a console log to help customise.
+
+  function startExam(seriesObj) {
+    // This function simulates the navigation for exam practice.
+    // For a real deployment, you would redirect to a PDF or interactive quiz page.
+    // For student navigation: we show an informative modal / confirm and then open the template link in a new tab? 
+    // Since the requirement is to create clickable links templates that will be used for different exam series 
+    // in the form of a button and write "start the exam". To meet the clause, I'll provide a realistic popup
+    // that mimics "launching exam", and also logs the actual link that could be configured.
+    
+    // For best practice: We can open the link if it's not a dummy hash. But typically you’d replace # with actual exam URL.
+    // We'll also give an option to user to proceed with that placeholder explanation.
+    const targetLink = seriesObj.link;
+    const seriesName = seriesObj.series;
+    const fullCode = `${seriesObj.paperRef} (${seriesObj.series})`;
+    
+    // Sweet alert style using native confirm but modern dialog approach.
+    // Use deliberate modal to show exam navigation ready.
+    const userConfirmed = confirm(`🧬 Pearson Edexcel IGCSE Biology 4BI1 Paper 1B\n\n📌 Series: ${seriesName}\n📄 Paper code: ${seriesObj.paperRef}\n\n🔗 Once ready. Click "OK" to start your exam session.`);
+    
+    if (userConfirmed) {
+      // If the link is not a dummy # or a real absolute/relative URL, we attempt to open in new tab.
+      // For demo, we simulate opening a fresh practice environment and show a success message.
+      if (targetLink && targetLink !== "#" && !targetLink.startsWith("#exam-")) {
+        // In future integration you'd have actual link e.g. "/papers/4bi1_1b_jan2023.pdf"
+        window.open(targetLink, "_blank");
+      } else {
+        // for dummy hash or placeholder we create a temporary "Exam session started" page simulation.
+        // but since it's a navigation landing page, we can provide a simple feedback in console and alert.
+        alert(`✅ Exam "${seriesName}" started! \n\n✨ This is a clickable template. Replace the button's destination with your actual exam paper URL (PDF/quiz) to launch the real assessment.\n\n📌 Student navigation: you can now attempt the paper.`);
+        console.log(`[Exam Practice] Series: ${seriesName} | Paper: ${seriesObj.paperRef} | Link placeholder: ${targetLink} — replace with actual exam resource.`);
+        // additional: we can also redirect to a global practice page if needed.
+        // but ideal: teacher updates examSeriesList with proper URLs.
+      }
+    } else {
+      console.log("Exam start cancelled by student.");
+    }
+  }
+
+  // Function to render the exam cards dynamically
+  function renderExamGrid() {
+    const gridContainer = document.getElementById("examSeriesGrid");
+    if (!gridContainer) return;
+    
+    // Clear skeleton if any
+    gridContainer.innerHTML = "";
+    
+    examSeriesList.forEach(series => {
+      // Create card element
+      const card = document.createElement("div");
+      card.className = "exam-card";
+      
+      // Header
+      const cardHeader = document.createElement("div");
+      cardHeader.className = "card-header";
+      cardHeader.innerHTML = `
+        <div class="exam-series">${escapeHtml(series.series)}</div>
+        <div class="exam-date"><span>📅 ${escapeHtml(series.dateContext)}</span></div>
+      `;
+      
+      // Body
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body";
+      cardBody.innerHTML = `
+        <div class="paper-code">📖 ${escapeHtml(series.paperRef)} • 4BI1/1B</div>
+        <button class="btn-start-exam" data-series-id="${escapeHtml(series.id)}">🚀 Start the exam</button>
+      `;
+      
+      card.appendChild(cardHeader);
+      card.appendChild(cardBody);
+      
+      // Attach event listener to button
+      const startBtn = cardBody.querySelector(".btn-start-exam");
+      startBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        startExam(series);
+      });
+      
+      gridContainer.appendChild(card);
+    });
+  }
+  
+  // Helper to avoid XSS but we trust the data
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+  
+  // Additionally, for extra demo, we include an alternative static approach,
+  // but we rely on JS for scalability and easy customization for new exam series.
+  
+  // Also we can add a note: each card uses button with text "Start the exam", fully clickable.
+  // Implementation of additional exam series templates: we prepend or append more series if needed.
+  // For the purpose of "clickable links temples that will be used for different exam series", we present each button as interactive.
+  // Moreover, we are directly displaying exam series for June 2024, January etc — international GCSE 4BI1 paper 1B.
+  
+  // After page load, render.
+  window.addEventListener("DOMContentLoaded", () => {
+    renderExamGrid();
+    // Provide a second way: some might want updated, but already.
+    console.log("Edexcel IGCSE Biology Paper 1B navigation ready — all exam series use 'Start the exam' buttons.");
+  });
+  
+  // Also allow external customization: if new exam series must be added, just modify examSeriesList.
+  // Provide example to demonstrate customization: for teacher use, we could keep an editable in console.
+  // Not required but nice: expose a global addSeries for dev but not needed.
+  
+  // Additionally, we ensure that the 'start the exam' button representation appears as per requirement,
+  // and we maintain text: "start the exam". Each card includes full series info.
+  // Also we respect accessibility.
+  
+  // For responsiveness and extra touch: every click on 'start the exam' triggers the startExam handler.
+  // Also we have included a note in the footer about how to replace links.
+  
+  // adding optional focus styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .btn-start-exam:focus-visible {
+      outline: 3px solid #f9b81b;
+      outline-offset: 2px;
+    }
+  `;
+  document.head.appendChild(style);
+</script>
+
+<!-- for users without JS with fallback support? minimal static fallback but our grid will be populated by JS,
+     but we also hide original empty container from showing broken. Provide no-js text -->
+<noscript>
+  <div style="background:#f8d7da; margin:2rem; padding:1rem; border-radius:1rem; text-align:center;">
+    ⚠️ Please enable JavaScript to use the interactive exam series buttons. However, here are static series: Jan 2023, June 2023, Nov 2023, etc. Contact your teacher.
+  </div>
+</noscript>
+</body>
+</html>

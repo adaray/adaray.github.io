@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pearson Edexcel International GCSE | Interactive with Auto Graph Detection</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>   
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .exam-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px 30px 40px;
+        }
+        .header {
+            border-bottom: 3px solid #2c7da0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .title h1 { margin: 0; font-size: 1.7rem; color: #0b3b4f; }
+        .title p { margin: 5px 0 0; color: #2c7da0; font-weight: 500; }
+        .timer-area { background: #1e2a3e; padding: 8px 18px; border-radius: 60px; color: white; text-align: center; font-weight: bold; }
+        .timer { font-size: 2rem; font-family: monospace; letter-spacing: 2px; }
+        .info-bar {
+            background: #e9f0f5;
+            padding: 10px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .nav-btn {
+            background: #eef2f6;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 42px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.9rem;
+        }
+        .nav-btn.active { background: #2c7da0; color: white; }
+        .nav-btn.answered { background: #61a5c2; color: white; }
+        .question-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .question-card.active-question { display: block; }
+        .q-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: #f0f6fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .marks { font-size: 0.8rem; background: #cbd5e1; border-radius: 20px; padding: 2px 10px; margin-left: 12px; }
+        .subquestion { margin: 20px 0 20px 12px; border-left: 3px solid #cbd5e1; padding-left: 18px; }
+        .placeholder-img {
+            background: #eef2f9;
+            border: 1px dashed #8ba0bc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e66;
+        }
+        .mcq-option { margin: 10px 0; }
+        input[type="text"], input[type="number"], textarea {
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #b9c7d9;
+            width: 100%;
+            max-width: 550px;
+            font-family: inherit;
+        }
+        textarea { max-width: 100%; }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button { background: #2c7da0; border: none; padding: 10px 26px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        button.secondary { background: #6c757d; }
+        button.warning { background: #b23c1c; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .review-section { background: #fef9e3; padding: 20px; border-radius: 20px; margin-top: 30px; }
+        .hidden { display: none; }
+        .score-badge { font-size: 2rem; font-weight: bold; color: #1e2a3e; }
+        .grade-box { background: #d9e6f2; padding: 12px; border-radius: 24px; margin: 15px 0; }
+        .weakness-box { background: #ffe6e6; padding: 16px; border-radius: 20px; margin-top: 20px; border-left: 8px solid #c7362b; }
+        .feedback-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .feedback-table th, .feedback-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; text-align: left; }
+        .feedback-table th { background: #2c7da0; color: white; }
+        .feedback-table tr:nth-child(even) { background: #f9f9f9; }
+        .correct-highlight { background: #d4edda; }
+        .incorrect-highlight { background: #f8d7da; }
+        details summary { cursor: pointer; font-weight: 600; margin: 15px 0; }
+        footer { text-align: center; font-size: 0.8rem; margin-top: 30px; color: #6c757d; }
+        .status-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2c7da0; color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.8rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+        }
+        .loading-spinner {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .spinner {
+            border: 4px solid #e9f0f5;
+            border-top: 4px solid #2c7da0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 700px) { .exam-container { padding: 15px; } .timer { font-size: 1.4rem; } .feedback-table { font-size: 0.8rem; } }
+        .ai-badge { background: #4a6fa5; color: white; font-size: 0.7rem; border-radius: 20px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
+        .ms-badge { background: #f4a261; color: white; font-size: 0.7rem; border-radius: 20px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
+        .ms-panel { background: #f8f9fc; border-left: 5px solid #f4a261; padding: 12px 16px; margin-top: 15px; border-radius: 16px; font-size: 0.9rem; display: none; }
+        .ms-panel.visible { display: block; }
+        .marks-earned-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .marks-earned-row select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid #b9c7d9;
+            font-weight: bold;
+        }
+        button.small {
+            background: #e76f51;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .graph-badge {
+            background: #f4a261;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="exam-container" id="examApp">
+    <div class="header">
+        <div class="title">
+            <h1>Edexcel IGCSE Biology (4BI1)</h1>
+            <p>Biology Paper 1B | June 2024</p>
+        </div>
+        <div class="timer-area">
+            <div>Time Remaining</div>
+            <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+    </div>
+    <div class="info-bar">
+        <span>⏱️ 2 hours | 📝 Total marks: 110</span>
+        <span id="answeredCounter">📋 Questions answered: 0 / 55</span>
+        <span id="graphCounter">📊 Graph/Practical questions: 0</span>
+    </div>
+    <div id="navContainer" class="question-nav"></div>
+    <div id="questionsContainer"></div>
+    <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">Submit Exam</button>
+    </div>
+    <div id="reviewPanel" class="review-section hidden"></div>
+    <div id="statusToast" class="status-toast"></div>
+</div>
+
+<script>
+    
+    const EXAM_TITLE = "Edexcel IGCSE Biology (4BI1) - June 2024 Paper 1B";
+
+    // ========== DEEPSEEK CONFIGURATION ==========
+    const DEEPSEEK_API_KEY="DEEPSEEK_API_KEY_PLACEHOLDER";  // <-- PASTE YOUR DEEPSEEK API KEY HERE
+    const DEEPSEEK_MODEL = "deepseek-chat";
+    const EMAILJS_PUBLIC_KEY = "PmVcThAzwAjgqOwSD";     // Replace with your EmailJS public key
+    const EMAILJS_SERVICE_ID = "service_301bogs";   // Replace with your service ID
+    const EMAILJS_TEMPLATE_ID = "template_mld7q9t"; // Replace with your template ID
+    const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+    
+    if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        try {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        } catch(e) {
+            console.log("EmailJS init error:", e);
+        }
+    }
+    
+    // ========== AUTO DETECTION FUNCTION FOR GRAPH QUESTIONS ==========
+    // This function automatically detects if a question requires graph/drawing/plotting
+ // MODIFIED: Only detects when type is 'graph' OR 'practical'
+    function isGraphOrPracticalQuestion(question) {
+        // Only return true if type is exactly 'graph' OR 'practical'
+        return question.type === 'graph' || question.type === 'practical' || question.type === 'draw' || question.type === 'diagram';
+    }
+    
+    // ========== IndexedDB Setup ==========
+    const DB_NAME = "IGCSE_Biology_Exam_DB";
+    const DB_VERSION = 2;
+    const PROGRESS_STORE = "exam_progress";
+    const RESULTS_STORE = "exam_results";
+    let db = null;
+    
+    function initDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE)) {
+                    dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+                }
+                if (!dbEvent.objectStoreNames.contains(RESULTS_STORE)) {
+                    dbEvent.createObjectStore(RESULTS_STORE, { keyPath: "id", autoIncrement: true });
+                }
+            };
+        });
+    }
+    
+    async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const record = {
+                id: "current_progress",
+                answers: answers,
+                manualMarks: manualMarks,
+                timeRemaining: timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            const request = store.put(record);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readonly");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.get("current_progress");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([RESULTS_STORE], "readwrite");
+            const store = transaction.objectStore(RESULTS_STORE);
+            const record = {
+                timestamp: new Date().toISOString(),
+                ...resultData
+            };
+            const request = store.add(record);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+            const store = transaction.objectStore(PROGRESS_STORE);
+            const request = store.delete("current_progress");
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("statusToast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+    
+    async function sendResultsEmail(resultData, studentName = "Student") {
+        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+            console.log("EmailJS not configured. Results:", resultData);
+            showToast("Email not sent - configure EmailJS keys", false);
+            return false;
+        }
+        try {
+            const emailParams = {
+                EXAM_TITLE: EXAM_TITLE,
+                to_email: RECIPIENT_EMAIL,
+                student_name: studentName,
+                score: resultData.score,
+                total_marks: resultData.totalMarks,
+                percentage: resultData.percent.toFixed(1),
+                grade: resultData.grade,
+                weak_topics: resultData.weakTopics.join(", ") || "None",
+                exam_date: new Date().toLocaleString(),
+                details_summary: resultData.details.map(d => `Q${d.qNum}: ${d.earned}/${d.max}`).join("; ")
+            };
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+            showToast("✅ Results emailed successfully!", false);
+            return true;
+        } catch(e) {
+            console.error("Email error:", e);
+            showToast("⚠️ Email failed - check EmailJS configuration", true);
+            return false;
+        }
+    }
+    
+    // ========== Question Bank (without isGraphical flag - will be auto-detected) ==========
+const questionsDataRaw = [
+  // Question 1 - Bread starch and fungus (Page 2)
+  { id: "q1a", type: "written", text: "1(a) Describe how you would test a piece of bread to show it contains starch.", correctKeywords: ["iodine", "blue black", "blue", "black", "purple"], marks: 2, topic: "Biochemistry/Food tests", msText: "iodine (1); blue black / blue / black / purple (1)" },
+  { id: "q1bi", type: "mcq", text: "1(b)(i) Which type of organism is shown growing on the bread? [See diagram of mycelium on bread in original paper]", options: ["A bacterium", "B fungus", "C protostit", "D virus"], correct: "B", marks: 1, topic: "Classification/Fungi", msText: "B fungus (1)" },
+  { id: "q1bii", type: "mcq", text: "1(b)(ii) Which enzyme is released by the organism to digest starch?", options: ["A amylase", "B ligase", "C lipase", "D protease"], correct: "A", marks: 1, topic: "Enzymes/Digestion", msText: "A amylase (1)" },
+
+  // Question 2 - Blood cells (Pages 3-4)
+  { id: "q2ai", type: "written", text: "2(a)(i) Complete the table to give the number of white blood cells per mm³ in standard form. (White blood cells = 6000 per mm³)", correctKeywords: ["6.0 × 10³", "6.0e3"], marks: 1, topic: "Maths/Standard form", msText: "6.0 × 10³ (1)" },
+  { id: "q2aii", type: "mcq", text: "2(a)(ii) What is the number of red blood cells in 1000 cm³ of this person's blood? (Red blood cells = 5.0 × 10⁶ per mm³)", options: ["A 5.0 × 10⁶", "B 5.0 × 10⁹", "C 5.0 × 10¹¹", "D 5.0 × 10¹²"], correct: "D", marks: 1, topic: "Maths/Conversions", msText: "D 5.0 × 10¹² (1)" },
+  { id: "q2bi", type: "written", text: "2(b)(i) Explain why a person with anaemia is often tired.", correctKeywords: ["less oxygen transported", "less respiration", "less energy", "less ATP"], marks: 2, topic: "Human biology/Blood", msText: "(less) oxygen transported (1); (less) respiration (1); (less) energy / less ATP (1)" },
+  { id: "q2bii", type: "written", text: "2(b)(ii) Explain why a person with leukopenia is likely to get infections.", correctKeywords: ["fewer phagocytes", "fewer lymphocytes", "less ingestion/phagocytosis", "fewer antibodies"], marks: 2, topic: "Human biology/Immune system", msText: "(fewer) phagocytes / (fewer) lymphocytes (1); (so less) ingestion / phagocytosis / digestion (1); (so fewer) antibodies (1)" },
+
+  // Question 3 - Cow digestive system (Pages 6-7)
+  { id: "q3a", type: "written", text: "3(a) Name the parts labelled P and Q. [See diagram of cow digestive system in original paper]", correctKeywords: ["P: ileum / small intestine", "Q: oesophagus"], marks: 2, topic: "Animal nutrition/Digestive system", msText: "P is the ileum / small intestine (1); Q is the oesophagus (1)" },
+  { id: "q3b", type: "written", text: "3(b) The cow's stomach contains microorganisms that digest plant cell walls. Suggest why these microorganisms are useful to a cow.", correctKeywords: ["digest cellulose", "produce glucose", "release energy", "respiration"], marks: 2, topic: "Animal nutrition/Digestion", msText: "cellulose (1); (produces / release) glucose / energy (1); respiration (1)" },
+  { id: "q3c", type: "written", text: "3(c) Farmers keep cows to produce milk. Injecting cows with growth hormone (GH) will increase milk production. This allows farmers to obtain the same volume of milk from fewer cows. Digestion in cows releases methane gas into the atmosphere. A scientist claims that injecting GH into cows would reduce climate change. Comment on this claim.", correctKeywords: ["fewer cows means less methane", "greenhouse gas", "less heat trapped", "less global warming", "farmers may keep same number", "other sources of greenhouse gas"], marks: 4, topic: "Environmental science/Climate change", msText: "fewer cows means less methane (1); greenhouse gas (1); (less) heat trapped / radiation reflected (1); (less) global warming (1); farmers may choose to keep same number (1); other sources of greenhouse gas / cars / fossil fuels (1)" },
+
+  // Question 4 - Vitamins and yeast growth (Pages 8-9)
+  { id: "q4a", type: "written", text: "4(a) Complete the table by stating the correct vitamins. (Functions: improves vision, helps bone growth)", correctKeywords: ["improves vision: vitamin A", "helps bone growth: vitamin D"], marks: 2, topic: "Nutrition/Vitamins", msText: "improves vision: A (1); helps bone growth: D (1)" },
+  { id: "q4bi", type: "calc", text: "4(b)(i) The student calculates that the mean rate of yeast growth with vitamin C is 0.22 g per hour. Calculate the mean rate of yeast growth without vitamin C. (Dry mass: 0 h = 0.50 g, 30 h = 6.50 g)", correctValue: 0.2, tolerance: 0.01, marks: 2, topic: "Maths/Rate", msText: "6.5 - 0.5 = 6.0; ÷ 30 = 0.20 (2)" },
+  { id: "q4bii", type: "written", text: "4(b)(ii) Suggest how to find the dry mass of yeast in each flask.", correctKeywords: ["pour contents onto filter paper", "heat / warm in oven", "weigh the residue", "use balance"], marks: 2, topic: "Practical skills/Measurement", msText: "pour contents onto filter paper (1); heat / warm in oven (1); weigh the residue (using balance) (1)" },
+  { id: "q4biii", type: "written", text: "4(b)(iii) State the dependent variable in this investigation.", correctKeywords: ["dry mass of yeast"], marks: 1, topic: "Practical skills/Variables", msText: "(dry) mass of yeast (1)" },
+  { id: "q4biv", type: "written", text: "4(b)(iv) The method gives some variables that the student controlled. Justify two other variables the student should control.", correctKeywords: ["temperature: affects enzymes/kinetic energy", "pH: affects/denatures enzymes", "oxygen/aerobic/anaerobic: affects respiration", "species/strain of yeast: different growth rates", "concentration of glucose: used in respiration"], marks: 4, topic: "Practical skills/Experimental design", msText: "temperature because it affects enzymes (1); pH because it affects/denatures enzymes (1); oxygen because it affects respiration (1); species/strain because they grow at different rates (1); concentration of glucose because used in respiration (1)" },
+
+  // Question 5 - Genetic modification and weed removal (Pages 10-11)
+  { id: "q5a", type: "written", text: "5(a) Describe the role of a named vector in the process of genetic modification.", correctKeywords: ["plasmid / virus / bacteriophage / gene gun", "transfer recombinant DNA / gene into organism", "carry/insert DNA"], marks: 2, topic: "Biotechnology/Genetic modification", msText: "plasmid / virus / bacteriophage / phage / gene gun (1); transfer (recombinant) DNA / gene into organism (1)" },
+  { id: "q5bi", type: "written", text: "5(b)(i) Name the mineral ion used to make chlorophyll.", correctKeywords: ["magnesium", "Mg", "Mg²⁺"], marks: 1, topic: "Plant nutrition/Minerals", msText: "Magnesium / Mg (1)" },
+  { id: "q5bii", type: "design", text: "5(b)(ii) Design an investigation to find out which method (pull weeds out by hand or spray with chemical) produces the highest crop yield. Include experimental details in your answer and write in full sentences.", correctKeywords: ["C use pulling method (A) and weedicide (B)", "O same species of crop / same plant", "R repeat / use more than one field", "M1 measure crop mass / weigh", "M2 use quadrats / per unit area", "S1 after stated time period / one growing season", "S2 control temperature / light / CO2 / soil / water / fertiliser"], marks: 6, topic: "Practical skills/Investigation design", msText: "C pulling and weedicide (1); O same species of crop (1); R repeat / more than one field (1); M1 measure crop mass / weigh (1); M2 use quadrats / per unit area (1); S1 after stated time period (1); S2 control temperature / light / CO2 / soil / water / fertiliser (1)" },
+
+  // Question 6 - Cholesterol and heart disease (Pages 12-14)
+  { id: "q6a", type: "written", text: "6(a) State the role of the cell membrane.", correctKeywords: ["control movement of substances in/out of cell", "selectively permeable", "control what enters/leaves"], marks: 1, topic: "Cell biology/Cell membrane", msText: "control the movement (of substances) in/out of cell (1)" },
+  { id: "q6b", type: "calc", text: "6(b) The lumen of an artery had a diameter of 4.0 mm before the build-up of a fatty deposit. The fatty deposit covers 45% of the original area of the lumen. Calculate the area in mm² of the lumen that is available for blood flow. [area of lumen = πr², π = 3.14]", correctValue: 6.9, tolerance: 0.05, marks: 2, topic: "Maths/Area", msText: "original area = 3.14 × 4 = 12.56; 0.55 × 12.56 = 6.9 / 6.91 mm² (2)" },
+  { id: "q6ci", type: "graph", text: "6(c)(i) Plot a suitable graph on the grid to show these results. [See data table of cholesterol ranges and number of men in original paper]", options: null, correct: null, marks: 5, topic: "Practical skills/Graphing", msText: "S y axis linear and half grid (1); L labelled bars (1); A1 axes labelled 'number (of men)' (1); A2 axes labelled 'cholesterol concentration in mg/cm³' (1); P bar heights correct (1)" },
+  { id: "q6cii", type: "mcq", text: "6(c)(ii) Which range of blood cholesterol levels is the mode for this sample?", options: ["A 80 to 119", "B 80 to 379", "C 160 to 199", "D 360 to 399"], correct: "C", marks: 1, topic: "Statistics/Mode", msText: "C 160 to 199 (1)" },
+  { id: "q6ciii", type: "calc", text: "6(c)(iii) A blood cholesterol level greater than 239 mg per 100 cm³ means a person has a higher risk of heart disease. Calculate the percentage of men in the sample at a higher risk of heart disease.", correctValue: 15.3, tolerance: 0.3, marks: 2, topic: "Maths/Percentage", msText: "115+34+9+5=163; total men=1067; 163÷1067×100=15.28% (2)" },
+  { id: "q6d", type: "written", text: "6(d) A conclusion from this data is that statins reduce the risk of heart attacks. Discuss this conclusion.", correctKeywords: ["statin shows less percentage of heart attacks", "only one statin tested", "only tested for four years", "difference could be due to chance", "small group size", "pre-existing conditions", "different diet/exercise/stress/smoking", "different ages/masses/genetics"], marks: 4, topic: "Data evaluation/Medicine", msText: "statin shows less percentage of heart attacks (1); only one statin tested (1); only tested for four years (1); difference could be due to chance (1); small group size (1); pre-existing conditions (1); groups may not have same diet/exercise (1); different ages/masses/genetics (1)" },
+
+  // Question 7 - Mouse hair colour genetics (Pages 16-17)
+  { id: "q7ai", type: "written", text: "7(a)(i) State what is meant by the term gene.", correctKeywords: ["section of DNA that codes for a specific protein", "length of DNA that codes for a polypeptide"], marks: 1, topic: "Genetics/DNA", msText: "a gene is a section / length / part of a molecule of DNA that codes for a specific protein / polypeptide (1)" },
+  { id: "q7aii", type: "written", text: "7(a)(ii) State the phenotype coded for by the dominant allele.", correctKeywords: ["grey hair", "grey"], marks: 1, topic: "Genetics/Inheritance", msText: "grey hair / grey (1)" },
+  { id: "q7b", type: "genetics", text: "7(b) A male mouse and a female mouse with grey hair were chosen from the offspring of the first cross. These mice are mated in a second cross. Some of the offspring have grey hair and some have white hair. Use a genetic diagram to show the second cross. Give the genotypes of the parents and the gametes formed, and the genotypes and ratio of phenotypes of the offspring.", correctKeywords: ["parents Gg and Gg", "gametes G and g", "offspring genotypes GG Gg Gg gg", "phenotypes 3 grey : 1 white"], marks: 4, topic: "Genetics/Inheritance", msText: "Gg and Gg (1); G or g (1); GG Gg Gg gg (1); 3 grey : 1 white (1)" },
+  { id: "q7c", type: "written", text: "7(c) The scientist concludes that a mouse with grey hair could have two possible genotypes. Explain how the scientist could use a cross to determine the genotype of a mouse with grey hair.", correctKeywords: ["cross with white hair mouse (gg)", "test cross / back cross", "if all offspring grey → parent is homozygous (GG)", "if any/half offspring white → parent is heterozygous (Gg)"], marks: 2, topic: "Genetics/Test cross", msText: "cross with mouse with white hair / gg (1); if all offspring grey - parent is homozygous / GG (1); if some / any / half offspring white - parent is heterozygous / Gg (1)" },
+  { id: "q7d", type: "written", text: "7(d) Albino mice have white hair and pink eyes, and are less likely to explore new areas. This is an example of one gene having many effects. Describe how the genetic control of most phenotypic features differs from this example.", correctKeywords: ["most polygenic", "many genes", "each of small effect", "show continuous variation", "single genes affect one phenotype"], marks: 3, topic: "Genetics/Polygenic inheritance", msText: "most polygenic (1); many genes / more than one gene (1); each of small effect (1); show continuous variation (1); most single genes only affect one phenotype (1)" },
+
+  // Question 8 - Reproduction and sperm (Pages 18-21)
+  { id: "q8a", type: "written", text: "8(a) Describe how asexual reproduction differs from sexual reproduction.", correctKeywords: ["no gametes formed / no meiosis", "no fertilisation", "no genetic variation / clones", "only one parent cell required"], marks: 3, topic: "Reproduction", msText: "no gametes formed / no meiosis (1); no fertilisation (1); no genetic variation / clones (1); only one parent cell required (1)" },
+  { id: "q8bi", type: "mcq", text: "8(b)(i) What is the site of fertilisation? [See diagram of female reproductive organs in original paper]", options: ["A oviduct", "B cervix", "C uterus", "D vagina"], correct: "A", marks: 1, topic: "Human reproduction", msText: "A oviduct (1)" },
+  { id: "q8bii", type: "mcq", text: "8(b)(ii) Where does the fetus usually develop?", options: ["A cervix", "B ovary", "C uterus", "D vagina"], correct: "C", marks: 1, topic: "Human reproduction", msText: "C uterus / womb (1)" },
+  { id: "q8biii", type: "written", text: "8(b)(iii) Describe the role of the hormones produced by structure B (ovary).", correctKeywords: ["oestrogen", "thickens uterus lining", "secondary sexual characteristics", "stimulates LH / inhibits FSH", "progesterone", "maintains uterus lining"], marks: 4, topic: "Human biology/Hormones", msText: "oestrogen (1); thickens uterus lining (1); development of secondary sexual characteristics (1); stimulates LH / inhibits FSH (1); progesterone (1); maintains uterus lining (1)" },
+  { id: "q8ci", type: "calc", text: "8(c)(i) Calculate the mean number of sperm released in one ejaculation from men aged 40-43. (Mean semen volume = 3.22 cm³, mean sperm concentration = 62.1 million per cm³)", correctValue: 200, tolerance: 1, marks: 1, topic: "Maths/Multiplication", msText: "3.22 × 62.1 = 200 (million) (1)" },
+  { id: "q8cii", type: "written", text: "8(c)(ii) Explain why mean number of sperm released is a better measure of fertility than either mean semen volume or mean sperm concentration.", correctKeywords: ["depends on both factors", "high concentration but low volume gives few sperm", "high volume but low concentration gives few sperm"], marks: 2, topic: "Human reproduction/Fertility", msText: "number of sperm depends upon both factors (1); you could have a high conc but low volume (this would provide few sperm) (1); or a high volume but low conc (this would provide few sperm) (1)" },
+  { id: "q8ciii", type: "calc", text: "8(c)(iii) Calculate the percentage decrease in mean number of sperm between men aged 37-39 (202 million) and men aged 48-72 (142 million).", correctValue: 29.7, tolerance: 0.5, marks: 2, topic: "Maths/Percentage change", msText: "(202-142)÷202×100 = 29.7% (2)" },
+
+  // Question 9 - Ocean food web (Pages 22-24)
+  { id: "q9ai", type: "written", text: "9(a)(i) Name the producers in this food web. [See diagram of ocean food web in original paper]", correctKeywords: ["algae", "bladder wrack"], marks: 2, topic: "Ecology/Food webs", msText: "algae (1); bladder wrack (1)" },
+  { id: "q9aii", type: "written", text: "9(a)(ii) Name two secondary consumers in this food web.", correctKeywords: ["common seal", "crab", "lobster", "herring gull"], marks: 2, topic: "Ecology/Food webs", msText: "(common) seal (1); crab (1); lobster (1); (herring) gull (1) [any two]" },
+  { id: "q9aiii", type: "diagram", text: "9(a)(iii) Draw a food chain from this food web that contains four organisms and includes the herring gull.", correctKeywords: ["bladder wrack → winkle → crab → gull", "correct order and arrows"], marks: 2, topic: "Ecology/Food chains", msText: "bladder wrack → winkle → crab → gull (2)" },
+  { id: "q9bi", type: "diagram", text: "9(b)(i) Sketch and label the pyramid of energy for this food chain: microscopic algae → limpet → lobster → common seal.", options: null, correct: null, marks: 2, topic: "Ecology/Pyramids", msText: "order correct (1); shape correct (1)" },
+  { id: "q9bii", type: "written", text: "9(b)(ii) Explain why the amount of energy available to the organisms changes along this food chain.", correctKeywords: ["energy lost between each level", "as heat / used in respiration / movement", "excreted / urine", "not eaten / not digested / egested / faeces", "decompose / die"], marks: 3, topic: "Ecology/Energy transfer", msText: "energy lost (between each stage) (1); as heat / used in respiration / movement (1); excreted / urine (1); not eaten / not digested / egested / faeces (1); decompose / die (1)" },
+
+  // Question 10 - Photosynthesis experiment (Pages 25-26)
+  { id: "q10ai", type: "written", text: "10(a)(i) Describe how the student could remove all the starch from the leaf.", correctKeywords: ["keep plant in dark", "for 12 hours plus", "in cupboard / cover with black paper"], marks: 2, topic: "Plant biology/Photosynthesis", msText: "keep plant in dark (1); for 12 hours plus (1)" },
+  { id: "q10aii", type: "written", text: "10(a)(ii) State why the student removes all the starch from the leaf before starting the experiment.", correctKeywords: ["starch only made during experiment", "prevent false positive"], marks: 1, topic: "Practical skills/Experimental design", msText: "starch only made during experiment / produced in the light / prevent false positive (1)" },
+  { id: "q10b", type: "written", text: "10(b) Before testing a leaf for starch, chlorophyll needs to be removed. Give a safety precaution the student needs to take when removing chlorophyll.", correctKeywords: ["heat ethanol using water bath", "extinguish Bunsen flame"], marks: 1, topic: "Practical skills/Safety", msText: "(heat ethanol) using water bath / extinguish Bunsen flame (1)" },
+  { id: "q10c", type: "written", text: "10(c) Give a suitable control the student should use in this experiment.", correctKeywords: ["keep leaf in dark", "mask leaf", "cover with foil"], marks: 1, topic: "Practical skills/Controls", msText: "keep leaf in dark / mask leaf / cover with foil (1)" },
+  { id: "q10d", type: "written", text: "10(d) Explain how the leaf is adapted for photosynthesis.", correctKeywords: ["leaf flat / wide for light absorption", "thin for short diffusion distance", "upper epidermis transparent", "palisade cells contain many chloroplasts", "spongy cells have air spaces for gas exchange", "stomata for CO2 absorption", "xylem bring water"], marks: 5, topic: "Plant biology/Leaf structure", msText: "leaf flat / wide for light absorption (1); leaf thin so short diffusion distance (1); upper epidermis transparent (1); palisade cells contain many chloroplasts (1); spongy cells have air spaces for gas exchange (1); stomata to absorb CO2 (1); xylem bring water (1)" },
+
+  // Question 11 - Human eye (Pages 27-28)
+  { id: "q11ai", type: "written", text: "11(a)(i) Describe the role of structures A, C and D in focusing light from a near object onto the retina. [See diagram of eye in original paper: A = lens, C = cornea, D = ciliary muscles]", correctKeywords: ["cornea bends / refracts light", "lens becomes more curved / rounder / convex", "ciliary muscles contract", "suspensory ligaments relax / become less taut"], marks: 4, topic: "Human biology/Sense organs", msText: "cornea bends / refracts light (1); lens becomes more curved / rounder / convex (1); ciliary muscles contract (1); cause suspensory ligaments to relax (1)" },
+  { id: "q11aii", type: "written", text: "11(a)(ii) Bright light can damage the retina. Explain how a reflex involving structure B (iris) protects the retina from this damage.", correctKeywords: ["circular muscles contract", "radial muscles relax", "pupil constricts / becomes smaller", "less light enters eye"], marks: 3, topic: "Human biology/Reflexes", msText: "circular muscles contract (1); radial muscles relax (1); pupil constricts / smaller (1); less light enters eye (1)" },
+  { id: "q11bi", type: "written", text: "11(b)(i) Suggest why the liquid contains lysozyme.", correctKeywords: ["breaks down cell walls of bacteria / fungi", "prevent infection / disease"], marks: 2, topic: "Human biology/Immune system", msText: "(breaks down / digests cell walls of) bacteria / fungi / pathogens (1); prevent infection / disease (1)" },
+  { id: "q11bii", type: "written", text: "11(b)(ii) Suggest why the liquid is maintained at pH 7.", correctKeywords: ["optimum pH for lysozyme", "prevents enzyme being denatured", "neutral won't damage eye"], marks: 2, topic: "Enzymes/Optimum pH", msText: "optimum pH (for lysozyme) (1); prevent enzyme being denatured / change in active site (1); neutral won't damage eye (1)" }
+];
+    
+    // Auto-detect graph questions and add isGraphical flag
+// Auto-detect based ONLY on type
+    let questionsData = questionsDataRaw.map(q => ({
+        ...q,
+        isGraphical: isGraphOrPracticalQuestion(q)  // Now only checks type
+    }));
+    
+    // Count graph questions for display
+    const graphQuestionCount = questionsData.filter(q => q.isGraphical).length;
+    
+    let userAnswers = new Array(questionsData.length).fill("");
+    let userManualMarks = new Array(questionsData.length).fill(null);
+    let currentQIndex = 0;
+    let examSubmitted = false;
+    let timerInterval;
+    let timeSeconds = 120 * 60;
+    let autoSaveTimer = null;
+    
+    function autoSaveToLocal() {
+        if(examSubmitted) return;
+        const saveData = {
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now()
+        };
+        localStorage.setItem("igcse_bio_exam_autosave", JSON.stringify(saveData));
+    }
+
+    function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if(saved) {
+            try {
+                const data = JSON.parse(saved);
+                if(data.answers && data.answers.length === userAnswers.length) {
+                    userAnswers = data.answers;
+                    if(data.manualMarks) userManualMarks = data.manualMarks;
+                    if(data.timeRemaining && data.timeRemaining > 0 && data.timeRemaining < 7200) {
+                        timeSeconds = data.timeRemaining;
+                        updateTimerDisplay();
+                    }
+                    return true;
+                }
+            } catch(e) { console.log("Load error:", e); }
+        }
+        return false;
+    }
+    
+    function formatTime(sec) { let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+    function updateTimerDisplay() { document.getElementById("timerDisplay").innerText = formatTime(timeSeconds); if(timeSeconds<=0 && !examSubmitted) autoSubmitExam(); }
+    function autoSubmitExam() { if(!examSubmitted) submitAndMarkExam(); }
+    function startTimer() { 
+        timerInterval = setInterval(()=>{ 
+            if(!examSubmitted && timeSeconds > 0){ 
+                timeSeconds--; 
+                updateTimerDisplay(); 
+                if(timeSeconds % 30 === 0) autoSaveToLocal();
+            } else if(timeSeconds <= 0 && !examSubmitted) {
+                autoSubmitExam();
+            }
+        }, 1000);
+    }
+    
+    function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = idx+1;
+            btn.classList.add("nav-btn");
+            if(userAnswers[idx] && userAnswers[idx].toString().trim() !== "") btn.classList.add("answered");
+            if(idx === currentQIndex) btn.classList.add("active");
+            btn.onclick = () => { if(!examSubmitted) goToQuestion(idx); };
+            navDiv.appendChild(btn);
+        });
+        let answered = userAnswers.filter(a => a && a.toString().trim() !== "").length;
+        document.getElementById("answeredCounter").innerHTML = `📋 Questions answered: ${answered} / ${questionsData.length}`;
+        document.getElementById("graphCounter").innerHTML = `📊 Graph/Practical questions: ${graphQuestionCount} (self-assess)`;
+    }
+    
+    function goToQuestion(idx) { if(examSubmitted) return; document.querySelectorAll(".question-card").forEach(card => card.classList.remove("active-question")); currentQIndex = idx; const target = document.getElementById(`qcard-${idx}`); if(target) target.classList.add("active-question"); renderNavigation(); }
+    function saveAnswer(idx, value) { if(examSubmitted) return; userAnswers[idx] = value; renderNavigation(); autoSaveToLocal(); }
+    function setManualMark(idx, markValue) { if(examSubmitted) return; let num = parseInt(markValue) || 0; let maxMarks = questionsData[idx].marks; num = Math.min(Math.max(num,0), maxMarks); userManualMarks[idx] = num; autoSaveToLocal(); }
+    function toggleMarkScheme(idx) { 
+        if(!questionsData[idx].isGraphical) return;
+        let panel = document.getElementById(`ms-panel-${idx}`); 
+        if(panel) panel.classList.toggle("visible"); 
+    }
+    function handleTextareaInput(idx, value) {
+    saveAnswer(idx, value);
+    }
+    
+    function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            if(idx === 0) card.classList.add("active-question");
+            card.id = `qcard-${idx}`;
+            let inner = `<div class="q-title">Q${idx+1} (${q.topic}) <span class="marks">${q.marks} marks</span>`;
+            
+            if(q.isGraphical) {
+                inner += `<span class="graph-badge">📊 Graph/Diagram Question - Self-Assess</span>`;
+            }
+            inner += `</div><div>${q.text}</div>`;
+            
+            // Answer input based on type
+            if(q.type === "mcq") {
+                inner += `<div class="subquestion">`;
+                (q.options || []).forEach(opt => {
+                    let checked = (userAnswers[idx] === opt) ? "checked" : "";
+                    inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+                });
+                inner += `</div>`;
+            } else if(q.type === "calc") {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, '&quot;')}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+            } else {
+                let val = userAnswers[idx] || "";
+                inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." data-idx="${idx}" 
+                    oninput="handleTextareaInput(${idx}, this.value)" 
+                    onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+            }
+            
+            // AUTO-DETECTED: For graph questions, show Mark Scheme button + self-assess marks
+            if(q.isGraphical === true) {
+                inner += `<div style="margin-top:12px;">
+                            <button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme (for self-assessment)</button>
+                            <div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText || 'No mark scheme provided'}</div>
+                            <div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span>
+                            <select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
+                for(let m=0; m<=q.marks; m++) {
+                    let sel = (userManualMarks[idx] === m) ? "selected" : "";
+                    inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+                }
+                inner += `</select></div></div>`;
+            }
+            
+            // Show placeholder for graph/drawing questions
+            if(q.isGraphical || q.text.toLowerCase().includes('graph') || q.text.toLowerCase().includes('diagram') || q.text.toLowerCase().includes('plot') || q.text.toLowerCase().includes('draw')) {
+                inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
+            }
+            
+            card.innerHTML = inner;
+            container.appendChild(card);
+        });
+    }
+    
+    // Smart marking function (same as original)
+    async function callDEEPSEEKForMark(question, studentAnswer, markScheme, maxMarks) {
+        if(!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "YOUR_DEEPSEEK_API_KEY") {
+            if(!studentAnswer) return { score: 0, feedback: "No answer provided" };
+            let keywords = question.correctKeywords || [];
+            if(keywords.length === 0) return { score: 0, feedback: "No keywords defined for marking" };
+            let ansLower = studentAnswer.toLowerCase();
+            let matched = keywords.filter(kw => ansLower.includes(kw.toLowerCase())).length;
+            let required = question.requiredKeywords || keywords.length;
+            let score = Math.min(matched, required, maxMarks);
+            let feedback = `Matched ${matched}/${required} key terms. Expected: ${keywords.join(", ")}`;
+            return { score: score, feedback: feedback };
+        }
+        
+        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on the mark scheme and provide constructive feedback.
+    Question: "${question.text}"
+    Mark Scheme: "${markScheme}"
+    Maximum marks: ${maxMarks}
+    Student Answer: "${studentAnswer || '[no answer]'}"
+    Return ONLY a JSON object: {"score": number (0-${maxMarks}), "feedback": "brief constructive feedback explaining what was good/missing"}. Do not include any other text.`;
+        
+        try {
+            const response = await fetch("https://api.DEEPSEEK.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEPSEEK_API_KEY}` },
+                body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.1 })
+            });
+            if(!response.ok) throw new Error(`API error ${response.status}`);
+            const data = await response.json();
+            const result = JSON.parse(data.choices[0].message.content);
+            return {
+                score: Math.min(Math.max(0, parseInt(result.score) || 0), maxMarks),
+                feedback: result.feedback || "Smart assessment complete."
+            };
+        } catch(e) { 
+            console.error("DEEPSEEK error:", e); 
+            return { score: 0, feedback: "Smart marking error - please review manually" };
+        }
+    }
+    
+    async function submitAndMarkExam() {
+        if(examSubmitted) return;
+        clearInterval(timerInterval);
+        if(autoSaveTimer) clearInterval(autoSaveTimer);        
+        examSubmitted = true;
+        
+        showToast("🤖 Smart marking for non-graphical questions...", false);
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "loading-overlay";
+        loadingDiv.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Marking in progress...</div>`;
+        document.body.appendChild(loadingDiv);
+        
+        let totalEarned = 0, totalPossible = 0;
+        let questionFeedback = [];
+        
+        for(let i=0; i<questionsData.length; i++) {
+            let q = questionsData[i];
+            let answer = userAnswers[i] || "";
+            let earned = 0;
+            let aiFeedback = "";
+            
+            if(q.isGraphical === true) {
+                earned = (userManualMarks[i] !== null && !isNaN(userManualMarks[i])) ? userManualMarks[i] : 0;
+                earned = Math.min(Math.max(0, earned), q.marks);
+                aiFeedback = "Self-assessed by student (graph/diagram question - compared with mark scheme)";
+            } else if (q.type === "mcq") {
+                let studentAnswer = (answer || "").trim().toLowerCase();
+                let correctOptionLetter = (q.correct || "").trim().toLowerCase();
+                
+                // Extract just the letter from student's answer if it's the full text
+                let studentLetter = studentAnswer.charAt(0);
+                
+                if (studentLetter === correctOptionLetter || 
+                    studentAnswer === correctOptionLetter) {
+                    earned = q.marks;
+                    aiFeedback = `Correct answer: ${q.correct}`;
+                } else {
+                    earned = 0;
+                    // Find the full correct option text for feedback
+                    let correctFullText = "";
+                    if (q.options) {
+                        for (let opt of q.options) {
+                            if (opt.toLowerCase().startsWith(correctOptionLetter)) {
+                                correctFullText = opt;
+                                break;
+                            }
+                        }
+                    }
+                    aiFeedback = `Incorrect. Correct answer is ${q.correct}${correctFullText ? ': ' + correctFullText : ''}. Your answer: ${answer || 'none selected'}`;
+                }
+            } else {
+                const aiResult = await callDEEPSEEKForMark(q, answer, q.msText, q.marks);
+                earned = aiResult.score;
+                aiFeedback = aiResult.feedback;
+            }
+            
+            totalEarned += earned;
+            totalPossible += q.marks;
+            let status = earned === q.marks ? "✓ Full marks" : (earned === 0 ? "✗ No marks" : "⚠ Partial marks");
+            
+            questionFeedback.push({
+                number: i+1, topic: q.topic, question: q.text,
+                studentAnswer: answer || "(blank)", marksEarned: earned,
+                marksTotal: q.marks, status: status, expectedAnswer: q.msText, 
+                aiFeedback: aiFeedback,
+                isGraphical: q.isGraphical
+            });
+        }
+        
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade = percent >=85 ? "9" : percent>=78 ? "8" : percent>=70 ? "7" : percent>=62 ? "6" : percent>=54 ? "5" : percent>=45 ? "4" : percent>=35 ? "3" : percent>=25 ? "2" : "1";
+        let weakTopics = [];
+        let topicAgg = {};
+        questionFeedback.forEach(fb => { if(!topicAgg[fb.topic]) topicAgg[fb.topic]={earned:0,total:0}; topicAgg[fb.topic].earned+=fb.marksEarned; topicAgg[fb.topic].total+=fb.marksTotal; });
+        for(let t in topicAgg) if((topicAgg[t].earned/topicAgg[t].total)*100 < 55) weakTopics.push(t);
+        
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        let html = `<h2>📊 Exam Results</h2><div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+                    <div class="grade-box"><strong>Edexcel Grade: ${grade}</strong></div>
+                    <div class="grade-box" style="background:#e9f0f5;"><strong>📊 Graph Questions:</strong> ${graphQuestionCount} question(s) were self-assessed using mark scheme</div>`;
+        if(weakTopics.length) html += `<div class="weakness-box"><h3>⚠️ Weak areas (&lt;55%)</h3><ul>${weakTopics.map(w=>`<li>${w}</li>`).join('')}</ul></div>`;
+        else html += `<div class="weakness-box" style="background:#e0f2e9;"><h3>✅ Strong performance overall!</h3></div>`;
+        
+        html += `<details open><summary>📋 Detailed Feedback</summary><table class="feedback-table"><thead>`;
+        html += `<tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr>`;
+        html += `</thead><tbody>`;
+        
+        for(let fb of questionFeedback) {
+            let cls = fb.marksEarned === fb.marksTotal ? "correct-highlight" : (fb.marksEarned===0 ? "incorrect-highlight" : "");
+            html += `<tr class="${cls}">`;
+            html += `<td>${fb.number}${fb.isGraphical ? ' 📊' : ''}</td>`;
+            html += `<td>${fb.topic}</td>`;
+            html += `<td>${fb.question}</td>`;
+            html += `<td style="max-width:250px;">${fb.studentAnswer}</td>`;
+            html += `<td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td>`;
+            html += `<td style="max-width:300px;">${fb.aiFeedback || "No feedback available"}</td>`;    
+            html += `<td style="max-width:250px;">${fb.expectedAnswer || "N/A"}</td>`;
+            html += `</tr>`;
+        }
+        
+        html += `</tbody></table></details>`;
+        html += `<p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Questions automatically detected as "graph/drawing/plot" questions (${graphQuestionCount} total) required self-assessment using the mark scheme. All other questions were marked automatically.</p>`;
+        
+        reviewDiv.innerHTML = html;
+        document.body.removeChild(loadingDiv);
+        document.querySelectorAll("input, textarea, button, select").forEach(el => { if(el.id !== "submitBtn") el.disabled = true; });
+        document.getElementById("submitBtn").disabled = true;
+        showToast("Marking complete!", false);
+        localStorage.removeItem("igcse_bio_exam_autosave");
+        
+        try {
+            const emailResultData = {
+                score: totalEarned,
+                totalMarks: totalPossible,
+                percent: percent,
+                grade: grade,
+                weakTopics: weakTopics,
+                details: questionFeedback.map(fb => ({
+                    qNum: fb.number,
+                    earned: fb.marksEarned,
+                    max: fb.marksTotal
+                }))
+            };
+            await sendResultsEmail(emailResultData, "Exam Candidate");
+        } catch(emailError) {
+            console.error("Failed to send email:", emailError);
+        }
+    }
+    
+    // Expose functions globally
+    window.saveAnswer = saveAnswer;
+    window.setManualMark = setManualMark;
+    window.toggleMarkScheme = toggleMarkScheme;
+    window.goToQuestion = goToQuestion;
+    window.handleTextareaInput = handleTextareaInput;
+    
+    window.onload = () => {
+        loadAutoSave();
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        autoSaveTimer = setInterval(() => { if(!examSubmitted) autoSaveToLocal(); }, 30000);
+        document.getElementById("nextBtn").onclick = () => { if(currentQIndex+1 < questionsData.length && !examSubmitted) goToQuestion(currentQIndex+1); };
+        document.getElementById("prevBtn").onclick = () => { if(currentQIndex-1 >=0 && !examSubmitted) goToQuestion(currentQIndex-1); };
+        document.getElementById("submitBtn").onclick = () => { if(confirm("Submit exam? Graph questions require self-assessment; other questions will be Smart-marked.")) submitAndMarkExam(); };
+    };
+</script>
+</body>
+</html>
