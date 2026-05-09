@@ -170,7 +170,7 @@
 
   
     // =======================  EMAIL CONFIGURATION (Google Apps Script) =======================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw50CeVsuEFKzq5p2iHG7fn_t3Ev3msRJ7XX12oxNROkZxIO3UaGTw45De69t80KkEW/exec"; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4UKKr_oYbhrseUvHfEGfzpRn9NlpDqgkTT5wAnlN378C3nXcsRdWXKQQeT3JURBf1/exec"; 
     const DEFAULT_RECIPIENT_EMAIL = "aisha.daray@gmail.com";
     const ASK_STUDENT_EMAIL = false;
 
@@ -389,34 +389,19 @@
     }
 
     // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
-        async function sendResultsViaGoogleScript(recipientEmail, htmlContent, csvContent) {
-        if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
-            console.warn("Google Script URL not configured. Falling back to download.");
-            return false;
-        }
-        try {
-            const formData = new URLSearchParams();
-            formData.append("recipient", recipientEmail);
-            formData.append("subject", `Exam Results: ${EXAM_META.title}`);
-            formData.append("htmlBody", htmlContent);
-            
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: formData.toString()
-            });
-            if (response.ok) {
-                showToast(`✅ Results emailed to ${recipientEmail}`, false);
-                return true;
-            } else {
-                throw new Error(`HTTP ${response.status}`);
-            }
-        } catch (err) {
-            console.error("Email send failed:", err);
-            showToast("⚠️ Email failed – results will be downloaded instead.", true);
-            return false;
-        }
+    async function sendResultsViaGoogleScript(recipientEmail, htmlResults, subject) {
+        const scriptURL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+        const response = await fetch(scriptURL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                recipient: recipientEmail,
+                subject: subject,
+                htmlBody: htmlResults
+            })
+        });
+        showToast("Results sent successfully.", false);
     }
 
     
