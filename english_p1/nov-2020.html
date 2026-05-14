@@ -368,53 +368,25 @@
     }
 
     // AI marking (unchanged)
-     async function getAIFeedback(questionNum, questionText, studentAnswer, maxMarks, markSchemeRef, isTransactional = false, choiceType = null) {
-            if(!USE_AI_MARKING || !DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "DEEPSEEK_API_KEY_PLACEHOLDER") {
-                return { earned: 0, feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.", tips: "Set valid DEEPSEEK_API_KEY.", level: "Not marked" };
-            }
-            // Insert the official Edexcel examiner prompt as requested
-            const systemPrompt = `Act as an experienced Edexcel IGCSE English Language A examiner.
-    
-    You must mark student responses strictly according to:
-    - Edexcel IGCSE English Language A specification
-    - Official Edexcel mark schemes
-    - Assessment Objectives (AO1–AO4)
-    
-    Award a level/band and exact mark.
-    
-    Provide examiner-style feedback using this structure:
-    - Assessment Objectives applied
-    - Level/Band achieved
-    - Mark awarded
-    - Strengths
-    - What limited the mark
-    
-    Be professional, accurate, fair, and encouraging.
-    Provide improvement examples only.
-    
-    Return a JSON object with exactly the following keys:
-    - "earned": integer (the exact mark awarded out of ${maxMarks})
-    - "feedback": string containing the structured feedback formatted with line breaks, including sections: "Assessment Objectives applied:", "Level/Band achieved:", "Strengths:", "What limited the mark:"
-    - "tips": string containing improvement examples only, 3-5 specific actionable tips.
-    
-    Do not include any extra text outside the JSON object.`;
-    
-            let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0,3500)}"""\n${isTransactional ? `Transactional writing (${choiceType === 'article' ? 'article' : 'review'}). Evaluate form, register, organisation, accuracy.` : "Assess using standard reading comprehension/analysis criteria."}`;
-            try {
-                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEPSEEK_API_KEY}` },
-                    body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: 0.2, response_format: { type: "json_object" } })
-                });
-                if(!response.ok) throw new Error(`API error ${response.status}`);
-                const data = await response.json();
-                const result = JSON.parse(data.choices[0].message.content);
-                let earned = Math.min(maxMarks, Math.max(0, Math.round(result.earned)));
-                if(isNaN(earned)) earned = Math.floor(maxMarks*0.6);
-                return { earned, feedback: result.feedback || "Structured examiner feedback unavailable.", tips: result.tips || "Analyse writer's methods, embed quotations, compare explicitly.", level: "Edexcel Examiner" };
-            } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `Smart marking error: ${err.message}. Partial score.`, tips: "Review mark scheme manually.", level: "Fallback" }; }
+    async function getAIFeedback(questionNum, questionText, studentAnswer, maxMarks, markSchemeRef, isTransactional = false, choiceType = null) {
+        if(!USE_AI_MARKING || !DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "your-deepseek-api-key-here") {
+            return { earned: 0, feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.", tips: "Set valid DEEPSEEK_API_KEY.", level: "Not marked" };
         }
+        const systemPrompt = `You are an examiner. Provide a mark (out of ${maxMarks}) and detailed feedback with mark scheme reference. Give 3-5 actionable 'Grade 9 Tips'. Return JSON: { "earned": number, "feedback": "string", "tips": "string" }`;
+        let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0,3500)}"""\n${isTransactional ? `Transactional writing (${choiceType === 'letter' ? 'letter' : 'article'}). Evaluate form, register, organisation, accuracy.` : "Assess using standard criteria."}`;
+        try {
+            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEPSEEK_API_KEY}` },
+                body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: 0.2, response_format: { type: "json_object" } })
+            });
+            if(!response.ok) throw new Error(`API error ${response.status}`);
+            const data = await response.json();
+            const result = JSON.parse(data.choices[0].message.content);
+            let earned = Math.min(maxMarks, Math.max(0, Math.round(result.earned)));
+            if(isNaN(earned)) earned = Math.floor(maxMarks*0.6);
+            return { earned, feedback: result.feedback || "Smart feedback.", tips: result.tips || "Analyse writer's methods, embed quotations, compare explicitly.", level: "Smart Marked" };
+        } catch(err) { console.error(err); return { earned: Math.floor(maxMarks*0.5), feedback: `Smart marking error: ${err.message}. Partial score.`, tips: "Review mark scheme manually.", level: "Fallback" }; }
     }
-
     // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
     async function sendResultsViaGoogleScript(recipientEmail, htmlContent, csvContent) {
         if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
