@@ -384,8 +384,6 @@
     - The exact mark
     
     Provide examiner-style feedback using this structure:
-    
-    Assessment Objectives applied:
     Level/Band achieved:
     Mark awarded:
     Strengths:
@@ -394,24 +392,8 @@
     Be professional, accurate, fair, and encouraging.
     
     Provide:
-    - Improvement examples only
+    - Improvement examples
     - Grade 9 model answers for Questions 3, 4, 5, and 6
-    
-    Return ONLY valid JSON in this exact format:
-    
-    {
-      "earned": 0,
-      "feedback": "",
-      "tips": "",
-      "model_answers": {
-        "q3": "",
-        "q4": "",
-        "q5": "",
-        "q6": ""
-      }
-    }
-    
-    Do not include markdown, explanations, or text outside the JSON object.
     `;
         let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0,3500)}"""\n${isTransactional ? `Transactional writing (${choiceType === 'letter' ? 'letter' : 'article'}). Evaluate form, register, organisation, accuracy.` : "Assess using standard criteria."}`;
         try {
