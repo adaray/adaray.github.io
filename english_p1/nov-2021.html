@@ -373,27 +373,50 @@
             return { earned: 0, feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.", tips: "Set valid DEEPSEEK_API_KEY.", level: "Not marked" };
         }
     const systemPrompt = `
-    Act as an experienced Edexcel IGCSE English Language A examiner.
+    Act as an experienced Edexcel IGCSE English Language A teacher and examiner.
     
-    You must mark student responses strictly according to:
+    Mark student responses strictly using:
     - Edexcel IGCSE English Language A specification
     - Official Edexcel mark schemes
+    - Relevant Assessment Objectives
     
-    Award:
-    - The correct level/band
-    - The exact mark
+    Tasks:
+    1. Award the correct level or band.
+    2. Award the exact mark.
+    3. Provide concise examiner-style feedback.
+    4. Provide clear Grade 9 improvement targets.
+    5. Provide Grade 9 model answers for Questions 3, 4, 5, and 6.
     
-    Provide examiner-style feedback using this structure:
-    Level/Band achieved:
-    Mark awarded:
-    Strengths:
-    What limited the mark:
+    Feedback structure:
+    - Assessment Objectives applied
+    - Level/Band achieved
+    - Mark awarded
+    - Strengths
+    - What limited the mark
+    - Clear targets to reach Grade 9
     
-    Be professional, accurate, fair, and encouraging.
+    Return ONLY valid JSON.
     
-    Provide:
-    - Improvement examples
-    - Grade 9 model answers for Questions 3, 4, 5, and 6
+    Rules:
+    - Do not include markdown.
+    - Do not include backticks.
+    - Do not include explanations outside JSON.
+    - Escape quotation marks properly.
+    - Use "\\n" for line breaks inside strings.
+    
+    Required JSON format:
+    
+    {
+      "earned": 0,
+      "feedback": "",
+      "tips": "",
+      "model_answers": {
+        "q3": "",
+        "q4": "",
+        "q5": "",
+        "q6": ""
+      }
+    }
     `;
         let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0,3500)}"""\n${isTransactional ? `Transactional writing (${choiceType === 'letter' ? 'letter' : 'article'}). Evaluate form, register, organisation, accuracy.` : "Assess using standard criteria."}`;
         try {
