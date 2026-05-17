@@ -1,0 +1,2031 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IHSAN RESINS SOCIETY TRADING LLC - Accounting</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: "#468432",
+                light: "#9AD872",
+                yellow: "#FFEF91",
+                orange: "#FFA02E",
+              },
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              serif: ["Merriweather", "serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Data Parsers (CSV & Excel) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background-color: #f3f4f6;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      @media print {
+        body {
+          background-color: white !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .print-only {
+          display: block !important;
+        }
+        .print-area {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          box-shadow: none;
+          border: none;
+        }
+        @page {
+          margin: 1cm;
+        }
+      }
+      .print-only {
+        display: none;
+      }
+
+      /* Certificate Styling */
+      .certificate-border {
+        border: 15px solid #468432;
+        padding: 2px;
+        position: relative;
+      }
+      .certificate-inner {
+        border: 5px double #ffa02e;
+        padding: 40px;
+        text-align: center;
+        background-color: #fffcf0;
+        background-image: radial-gradient(#ffef91 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const DEFAULT_ACCOUNTS = [
+        {
+          id: "1000",
+          name: "Main Bank Account",
+          type: "Asset",
+          subType: "Bank",
+        },
+        { id: "1010", name: "Petty Cash", type: "Asset", subType: "Cash" },
+        {
+          id: "1200",
+          name: "Accounts Receivable",
+          type: "Asset",
+          subType: "AR",
+        },
+        {
+          id: "1300",
+          name: "Inventory - MARBUSH",
+          type: "Asset",
+          subType: "Inventory",
+        },
+        {
+          id: "1301",
+          name: "Inventory - MUSAFI",
+          type: "Asset",
+          subType: "Inventory",
+        },
+        {
+          id: "1302",
+          name: "Inventory - OPOPONAX",
+          type: "Asset",
+          subType: "Inventory",
+        },
+        {
+          id: "1303",
+          name: "Inventory - MYRRH",
+          type: "Asset",
+          subType: "Inventory",
+        },
+        {
+          id: "1304",
+          name: "Inventory - GARBLINGS",
+          type: "Asset",
+          subType: "Inventory",
+        },
+        {
+          id: "2000",
+          name: "Accounts Payable",
+          type: "Liability",
+          subType: "AP",
+        },
+        {
+          id: "3000",
+          name: "Shareholder - Founder 1",
+          type: "Equity",
+          subType: "Shareholder",
+          shares: 1000,
+        },
+        {
+          id: "4000",
+          name: "Sales - MARBUSH",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "4001",
+          name: "Sales - MUSAFI",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "4002",
+          name: "Sales - OPOPONAX",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "4003",
+          name: "Sales - MYRRH",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        { id: "4004", name: "Sales - FOOX", type: "Revenue", subType: "Sales" },
+        {
+          id: "4005",
+          name: "Sales - SHOOTO",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "4006",
+          name: "Sales - JIBANJIB",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "4007",
+          name: "Sales - GARBLINGS",
+          type: "Revenue",
+          subType: "Sales",
+        },
+        {
+          id: "5000",
+          name: "Cost of Goods Sold (COGS)",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5100",
+          name: "Rent Expense",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5200",
+          name: "Utilities Expense",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5300",
+          name: "Salaries Expense",
+          type: "Expense",
+          subType: "Expense",
+        },
+      ];
+
+      const generateId = () => Math.random().toString(36).substr(2, 9);
+      const formatCurrency = (num) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(num || 0);
+
+      // Icons component helpers
+      const Icon = ({ path, className = "w-5 h-5" }) => (
+        <svg
+          className={className}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d={path}
+          />
+        </svg>
+      );
+
+      const icons = {
+        dashboard:
+          "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
+        book: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+        users:
+          "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z",
+        fileText:
+          "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+        settings:
+          "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z",
+        chart:
+          "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+        plus: "M12 4v16m8-8H4",
+        download:
+          "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4",
+        upload:
+          "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12",
+        log: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+        print:
+          "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z",
+      };
+
+      const AppContext = React.createContext();
+
+      const AppProvider = ({ children }) => {
+        const [data, setData] = React.useState(() => {
+          const saved = localStorage.getItem("ihsan_accounting_data");
+          if (saved) return JSON.parse(saved);
+          return {
+            accounts: DEFAULT_ACCOUNTS,
+            transactions: [],
+            invoices: [],
+            logs: [],
+            companyInfo: {
+              name: "IHSAN RESINS SOCIETY TRADING LLC",
+              address: "Nairobi, Kenya",
+              email: "info@ihsanresins.com",
+            },
+          };
+        });
+
+        const [user, setUser] = React.useState(null);
+        const [notification, setNotification] = React.useState(null);
+
+        React.useEffect(() => {
+          localStorage.setItem("ihsan_accounting_data", JSON.stringify(data));
+        }, [data]);
+
+        const showNotify = (msg, type = "success") => {
+          setNotification({ msg, type });
+          setTimeout(() => setNotification(null), 3000);
+        };
+
+        const logAction = (action, details) => {
+          setData((prev) => ({
+            ...prev,
+            logs: [
+              {
+                id: generateId(),
+                timestamp: new Date().toISOString(),
+                user: user?.name || "System",
+                role: user?.role || "System",
+                action,
+                details,
+              },
+              ...prev.logs,
+            ],
+          }));
+        };
+
+        const addTransaction = (
+          desc,
+          lines,
+          date = new Date().toISOString().split("T")[0],
+        ) => {
+          // Validate Double Entry
+          const totalDebit = lines.reduce(
+            (sum, l) => sum + (Number(l.debit) || 0),
+            0,
+          );
+          const totalCredit = lines.reduce(
+            (sum, l) => sum + (Number(l.credit) || 0),
+            0,
+          );
+
+          if (Math.abs(totalDebit - totalCredit) > 0.01) {
+            showNotify(
+              "Transaction unbalanced! Debits must equal Credits.",
+              "error",
+            );
+            return false;
+          }
+
+          const newTx = {
+            id: generateId(),
+            date,
+            description: desc,
+            lines: lines.map((l) => ({ ...l, id: generateId() })),
+            createdBy: user?.name,
+          };
+
+          setData((prev) => ({
+            ...prev,
+            transactions: [...prev.transactions, newTx],
+          }));
+          logAction(
+            "Recorded Journal Entry",
+            `Desc: ${desc}, Total: ${totalDebit}`,
+          );
+          showNotify("Transaction recorded successfully.");
+          return true;
+        };
+
+        const addInvoice = (invoiceData) => {
+          const newInv = { ...invoiceData, id: generateId() };
+          setData((prev) => ({
+            ...prev,
+            invoices: [...prev.invoices, newInv],
+          }));
+          logAction(
+            "Created Invoice",
+            `${invoiceData.type} - ${invoiceData.customerName}`,
+          );
+          showNotify("Invoice created.");
+          return newInv;
+        };
+
+        const updateInvoice = (id, updates) => {
+          setData((prev) => ({
+            ...prev,
+            invoices: prev.invoices.map((inv) =>
+              inv.id === id ? { ...inv, ...updates } : inv,
+            ),
+          }));
+          logAction("Updated Invoice", `ID: ${id}`);
+          showNotify("Invoice updated.");
+        };
+
+        const addAccount = (acc) => {
+          setData((prev) => ({
+            ...prev,
+            accounts: [...prev.accounts, { ...acc, id: generateId() }],
+          }));
+          logAction("Added Account", `${acc.name} (${acc.type})`);
+          showNotify("Account added.");
+        };
+
+        const getAccountBalance = (accountId) => {
+          let balance = 0;
+          const account = data.accounts.find((a) => a.id === accountId);
+          if (!account) return 0;
+
+          data.transactions.forEach((tx) => {
+            tx.lines.forEach((line) => {
+              if (line.accountId === accountId) {
+                if (["Asset", "Expense"].includes(account.type)) {
+                  balance +=
+                    (Number(line.debit) || 0) - (Number(line.credit) || 0);
+                } else {
+                  balance +=
+                    (Number(line.credit) || 0) - (Number(line.debit) || 0);
+                }
+              }
+            });
+          });
+          return balance;
+        };
+
+        return (
+          <AppContext.Provider
+            value={{
+              data,
+              setData,
+              user,
+              setUser,
+              addTransaction,
+              addInvoice,
+              updateInvoice,
+              addAccount,
+              getAccountBalance,
+              logAction,
+              showNotify,
+            }}
+          >
+            {notification && (
+              <div
+                className={`fixed top-4 right-4 px-6 py-3 rounded shadow-lg text-white z-50 ${notification.type === "error" ? "bg-red-500" : "bg-brand-dark"}`}
+              >
+                {notification.msg}
+              </div>
+            )}
+            {children}
+          </AppContext.Provider>
+        );
+      };
+
+      const Login = () => {
+        const { setUser } = React.useContext(AppContext);
+        const [role, setRole] = React.useState("Admin");
+        const [name, setName] = React.useState("");
+
+        const handleLogin = (e) => {
+          e.preventDefault();
+          if (!name) return;
+          setUser({ name, role });
+        };
+
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="bg-white p-8 rounded-lg shadow-xl w-96 border-t-4 border-brand-dark">
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-brand-dark mb-2">
+                  IHSAN RESINS
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Secure Accounting Portal
+                </p>
+              </div>
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-dark focus:ring-brand-dark p-2 border"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Role
+                  </label>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-dark focus:ring-brand-dark p-2 border"
+                  >
+                    <option value="Admin">Administrator (Full Access)</option>
+                    <option value="Accountant">
+                      Accountant (No settings access)
+                    </option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-dark hover:bg-brand-light transition focus:outline-none"
+                >
+                  Secure Login
+                </button>
+              </form>
+            </div>
+          </div>
+        );
+      };
+
+      const Dashboard = () => {
+        const { data, getAccountBalance } = React.useContext(AppContext);
+
+        const totalCash = data.accounts
+          .filter((a) => ["Bank", "Cash"].includes(a.subType))
+          .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const totalAR = data.accounts
+          .filter((a) => a.subType === "AR")
+          .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const totalAP = data.accounts
+          .filter((a) => a.subType === "AP")
+          .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const totalRevenue = data.accounts
+          .filter((a) => a.type === "Revenue")
+          .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const totalExpenses = data.accounts
+          .filter((a) => a.type === "Expense")
+          .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const netIncome = totalRevenue - totalExpenses;
+
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Financial Overview
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-brand-dark">
+                <p className="text-sm text-gray-500 font-medium">
+                  Total Cash & Bank
+                </p>
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  {formatCurrency(totalCash)}
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-brand-light">
+                <p className="text-sm text-gray-500 font-medium">
+                  Accounts Receivable
+                </p>
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  {formatCurrency(totalAR)}
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-brand-orange">
+                <p className="text-sm text-gray-500 font-medium">
+                  Accounts Payable
+                </p>
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  {formatCurrency(totalAP)}
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-brand-yellow">
+                <p className="text-sm text-gray-500 font-medium">Net Income</p>
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  {formatCurrency(netIncome)}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-gray-700 mb-4">
+                  Recent Transactions
+                </h3>
+                <div className="space-y-3">
+                  {data.transactions
+                    .slice(-5)
+                    .reverse()
+                    .map((tx) => (
+                      <div
+                        key={tx.id}
+                        className="flex justify-between items-center p-3 hover:bg-gray-50 rounded"
+                      >
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">
+                            {tx.description}
+                          </p>
+                          <p className="text-xs text-gray-500">{tx.date}</p>
+                        </div>
+                        <p className="text-sm font-bold text-gray-700">
+                          {formatCurrency(
+                            tx.lines.reduce(
+                              (s, l) => s + (Number(l.debit) || 0),
+                              0,
+                            ),
+                          )}
+                        </p>
+                      </div>
+                    ))}
+                  {data.transactions.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">
+                      No transactions yet.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-gray-700 mb-4">
+                  Income vs Expense (YTD)
+                </h3>
+                <div className="relative h-48 w-full flex items-end justify-around pb-6">
+                  {/* Visual CSS Bar Chart for Simplicity */}
+                  <div className="w-1/3 flex flex-col items-center">
+                    <div
+                      className="w-full bg-brand-light rounded-t-md transition-all"
+                      style={{
+                        height: `${Math.max(10, Math.min(100, (totalRevenue / (Math.max(totalRevenue, totalExpenses) || 1)) * 100))}%`,
+                      }}
+                    ></div>
+                    <p className="text-xs font-bold mt-2">Revenue</p>
+                    <p className="text-xs text-gray-500">
+                      {formatCurrency(totalRevenue)}
+                    </p>
+                  </div>
+                  <div className="w-1/3 flex flex-col items-center">
+                    <div
+                      className="w-full bg-brand-orange rounded-t-md transition-all"
+                      style={{
+                        height: `${Math.max(10, Math.min(100, (totalExpenses / (Math.max(totalRevenue, totalExpenses) || 1)) * 100))}%`,
+                      }}
+                    ></div>
+                    <p className="text-xs font-bold mt-2">Expenses</p>
+                    <p className="text-xs text-gray-500">
+                      {formatCurrency(totalExpenses)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const Transactions = () => {
+        const { data, addTransaction } = React.useContext(AppContext);
+        const [mode, setMode] = React.useState("list"); // list, new_manual, new_sale, new_purchase
+
+        // Manual Entry State
+        const [date, setDate] = React.useState(
+          new Date().toISOString().split("T")[0],
+        );
+        const [desc, setDesc] = React.useState("");
+        const [lines, setLines] = React.useState([
+          { accountId: "", debit: "", credit: "" },
+          { accountId: "", debit: "", credit: "" },
+        ]);
+
+        const handleManualSubmit = (e) => {
+          e.preventDefault();
+          if (addTransaction(desc, lines, date)) {
+            setMode("list");
+            setDesc("");
+            setLines([
+              { accountId: "", debit: "", credit: "" },
+              { accountId: "", debit: "", credit: "" },
+            ]);
+          }
+        };
+
+        const addLine = () =>
+          setLines([...lines, { accountId: "", debit: "", credit: "" }]);
+
+        if (mode === "new_manual") {
+          const totalDebit = lines.reduce(
+            (s, l) => s + Number(l.debit || 0),
+            0,
+          );
+          const totalCredit = lines.reduce(
+            (s, l) => s + Number(l.credit || 0),
+            0,
+          );
+          const diff = totalDebit - totalCredit;
+
+          return (
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold">New Journal Entry</h2>
+                <button
+                  onClick={() => setMode("list")}
+                  className="text-gray-500 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+              </div>
+              <form onSubmit={handleManualSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium">Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">
+                      Description / Reference
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={desc}
+                      onChange={(e) => setDesc(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder="e.g. Purchased office supplies"
+                    />
+                  </div>
+                </div>
+
+                <div className="border border-gray-200 rounded">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="p-2">Account</th>
+                        <th className="p-2 w-32 text-right">Debit ($)</th>
+                        <th className="p-2 w-32 text-right">Credit ($)</th>
+                        <th className="p-2 w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lines.map((line, idx) => (
+                        <tr key={idx} className="border-b">
+                          <td className="p-2">
+                            <select
+                              required
+                              value={line.accountId}
+                              onChange={(e) => {
+                                const newLines = [...lines];
+                                newLines[idx].accountId = e.target.value;
+                                setLines(newLines);
+                              }}
+                              className="w-full p-1 border rounded"
+                            >
+                              <option value="">Select Account...</option>
+                              {data.accounts.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                  {a.name} ({a.type})
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={line.debit}
+                              onChange={(e) => {
+                                const newLines = [...lines];
+                                newLines[idx].debit = e.target.value;
+                                newLines[idx].credit = ""; // Clear other
+                                setLines(newLines);
+                              }}
+                              className="w-full p-1 border rounded text-right"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={line.credit}
+                              onChange={(e) => {
+                                const newLines = [...lines];
+                                newLines[idx].credit = e.target.value;
+                                newLines[idx].debit = ""; // Clear other
+                                setLines(newLines);
+                              }}
+                              className="w-full p-1 border rounded text-right"
+                            />
+                          </td>
+                          <td className="p-2 text-center">
+                            {lines.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setLines(lines.filter((_, i) => i !== idx))
+                                }
+                                className="text-red-500 font-bold"
+                              >
+                                &times;
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex justify-between items-center bg-gray-50 p-3 rounded border">
+                  <button
+                    type="button"
+                    onClick={addLine}
+                    className="text-sm text-brand-dark font-medium"
+                  >
+                    + Add Line
+                  </button>
+                  <div className="text-sm flex space-x-6">
+                    <span>
+                      Total Debit: <strong>{totalDebit.toFixed(2)}</strong>
+                    </span>
+                    <span>
+                      Total Credit: <strong>{totalCredit.toFixed(2)}</strong>
+                    </span>
+                    <span
+                      className={diff === 0 ? "text-green-600" : "text-red-600"}
+                    >
+                      Diff: <strong>{diff.toFixed(2)}</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={diff !== 0 || totalDebit === 0}
+                  className="w-full bg-brand-dark text-white p-2 rounded hover:bg-brand-light disabled:opacity-50"
+                >
+                  Save Journal Entry
+                </button>
+              </form>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Journal & Transactions
+              </h2>
+              <div className="space-x-2">
+                <button
+                  onClick={() => setMode("new_manual")}
+                  className="bg-brand-dark text-white px-4 py-2 rounded shadow hover:bg-brand-light flex items-center"
+                >
+                  <Icon path={icons.plus} className="w-4 h-4 mr-1" /> Manual
+                  Journal
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="p-3 font-medium text-gray-600">Date</th>
+                    <th className="p-3 font-medium text-gray-600">
+                      Description
+                    </th>
+                    <th className="p-3 font-medium text-gray-600">Account</th>
+                    <th className="p-3 font-medium text-gray-600 text-right">
+                      Debit
+                    </th>
+                    <th className="p-3 font-medium text-gray-600 text-right">
+                      Credit
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.transactions
+                    .slice()
+                    .reverse()
+                    .map((tx) => (
+                      <React.Fragment key={tx.id}>
+                        <tr className="border-t bg-gray-50">
+                          <td className="p-3" colSpan="5">
+                            <strong>{tx.date}</strong> - {tx.description}{" "}
+                            <span className="text-xs text-gray-400 ml-2">
+                              (Ref: {tx.id})
+                            </span>
+                          </td>
+                        </tr>
+                        {tx.lines.map((line) => {
+                          const acc = data.accounts.find(
+                            (a) => a.id === line.accountId,
+                          );
+                          return (
+                            <tr
+                              key={line.id}
+                              className="border-b last:border-0"
+                            >
+                              <td className="p-2"></td>
+                              <td className="p-2"></td>
+                              <td className="p-2 text-gray-700">
+                                {acc ? acc.name : "Unknown"}
+                              </td>
+                              <td className="p-2 text-right">
+                                {line.debit ? formatCurrency(line.debit) : ""}
+                              </td>
+                              <td className="p-2 text-right">
+                                {line.credit ? formatCurrency(line.credit) : ""}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
+                    ))}
+                  {data.transactions.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="p-4 text-center text-gray-500">
+                        No transactions recorded.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      };
+
+      const ChartOfAccounts = () => {
+        const { data, addAccount, user } = React.useContext(AppContext);
+        const [newAcc, setNewAcc] = React.useState({
+          name: "",
+          type: "Asset",
+          subType: "Bank",
+        });
+
+        if (user?.role !== "Admin") {
+          return (
+            <div className="p-6 text-red-500 bg-white rounded shadow">
+              Access Denied. Admins only.
+            </div>
+          );
+        }
+
+        const handleAdd = (e) => {
+          e.preventDefault();
+          addAccount(newAcc);
+          setNewAcc({ name: "", type: "Asset", subType: "Bank" });
+        };
+
+        const subTypeMap = {
+          Asset: ["Bank", "Cash", "AR", "Inventory", "Other Asset"],
+          Liability: ["AP", "Other Liability"],
+          Equity: ["Shareholder", "Retained Earnings"],
+          Revenue: ["Sales", "Other Income"],
+          Expense: ["Expense", "COGS"],
+        };
+
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Chart of Accounts Configuration
+            </h2>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border">
+              <h3 className="font-bold mb-4">Add New Account</h3>
+              <form onSubmit={handleAdd} className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Account Name (e.g., Bank of Africa)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newAcc.name}
+                    onChange={(e) =>
+                      setNewAcc({ ...newAcc, name: e.target.value })
+                    }
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </div>
+                <div className="w-48">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Primary Type
+                  </label>
+                  <select
+                    value={newAcc.type}
+                    onChange={(e) =>
+                      setNewAcc({
+                        ...newAcc,
+                        type: e.target.value,
+                        subType: subTypeMap[e.target.value][0],
+                      })
+                    }
+                    className="w-full p-2 border rounded mt-1"
+                  >
+                    {Object.keys(subTypeMap).map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-48">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Sub-Type
+                  </label>
+                  <select
+                    value={newAcc.subType}
+                    onChange={(e) =>
+                      setNewAcc({ ...newAcc, subType: e.target.value })
+                    }
+                    className="w-full p-2 border rounded mt-1"
+                  >
+                    {subTypeMap[newAcc.type].map((st) => (
+                      <option key={st} value={st}>
+                        {st}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-brand-dark text-white px-4 py-2 rounded hover:bg-brand-light h-10"
+                >
+                  Add
+                </button>
+              </form>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {["Asset", "Liability", "Equity", "Revenue", "Expense"].map(
+                (type) => (
+                  <div
+                    key={type}
+                    className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"
+                  >
+                    <h3 className="font-bold text-lg mb-2 text-brand-dark border-b pb-1">
+                      {type}s
+                    </h3>
+                    <ul className="space-y-1 text-sm">
+                      {data.accounts
+                        .filter((a) => a.type === type)
+                        .map((acc) => (
+                          <li
+                            key={acc.id}
+                            className="flex justify-between items-center p-1 hover:bg-gray-50"
+                          >
+                            <span>
+                              {acc.name}{" "}
+                              <span className="text-xs text-gray-400">
+                                ({acc.subType})
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      const Invoicing = () => {
+        const { data, addInvoice, updateInvoice } =
+          React.useContext(AppContext);
+        const [view, setView] = React.useState("list"); // list, new, view
+        const [currentInvoice, setCurrentInvoice] = React.useState(null);
+
+        // New Invoice State
+        const [invType, setInvType] = React.useState("Proforma");
+        const [customerName, setCustomerName] = React.useState("");
+        const [items, setItems] = React.useState([
+          { desc: "", qty: 1, price: 0 },
+        ]);
+
+        const handleSave = () => {
+          const total = items.reduce((s, i) => s + i.qty * i.price, 0);
+          addInvoice({
+            type: invType,
+            date: new Date().toISOString().split("T")[0],
+            customerName,
+            items,
+            total,
+            status: "Draft",
+          });
+          setView("list");
+          setItems([{ desc: "", qty: 1, price: 0 }]);
+          setCustomerName("");
+        };
+
+        const convertToCommercial = (inv) => {
+          updateInvoice(inv.id, { type: "Commercial", status: "Final" });
+        };
+
+        if (view === "new") {
+          return (
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold">Create Invoice</h2>
+                <button
+                  onClick={() => setView("list")}
+                  className="text-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="space-y-4 max-w-2xl">
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium">
+                      Customer Name / AR
+                    </label>
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div className="w-48">
+                    <label className="block text-sm font-medium">Type</label>
+                    <select
+                      value={invType}
+                      onChange={(e) => setInvType(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="Proforma">Proforma Invoice</option>
+                      <option value="Commercial">Commercial Invoice</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="border rounded p-4 bg-gray-50">
+                  <h4 className="font-bold mb-2 text-sm">Line Items</h4>
+                  {items.map((item, idx) => (
+                    <div key={idx} className="flex gap-2 mb-2 items-center">
+                      <select
+                        value={item.desc}
+                        onChange={(e) => {
+                          const newI = [...items];
+                          newI[idx].desc = e.target.value;
+                          setItems(newI);
+                        }}
+                        className="flex-1 p-2 border rounded"
+                      >
+                        <option value="">Select Product...</option>
+                        {data.accounts
+                          .filter((a) => a.subType === "Sales")
+                          .map((a) => (
+                            <option
+                              key={a.id}
+                              value={a.name.replace("Sales - ", "")}
+                            >
+                              {a.name.replace("Sales - ", "")}
+                            </option>
+                          ))}
+                        <option value="Custom">Other Custom Item</option>
+                      </select>
+                      {item.desc === "Custom" && (
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          onChange={(e) => {
+                            const newI = [...items];
+                            newI[idx].customDesc = e.target.value;
+                            setItems(newI);
+                          }}
+                          className="flex-1 p-2 border rounded"
+                        />
+                      )}
+                      <input
+                        type="number"
+                        placeholder="Qty"
+                        value={item.qty}
+                        onChange={(e) => {
+                          const newI = [...items];
+                          newI[idx].qty = Number(e.target.value);
+                          setItems(newI);
+                        }}
+                        className="w-20 p-2 border rounded"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={item.price}
+                        onChange={(e) => {
+                          const newI = [...items];
+                          newI[idx].price = Number(e.target.value);
+                          setItems(newI);
+                        }}
+                        className="w-24 p-2 border rounded"
+                      />
+                      <div className="w-24 text-right font-medium">
+                        {(item.qty * item.price).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() =>
+                      setItems([...items, { desc: "", qty: 1, price: 0 }])
+                    }
+                    className="text-sm text-brand-dark"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleSave}
+                  className="bg-brand-dark text-white px-4 py-2 rounded"
+                >
+                  Save Invoice
+                </button>
+              </div>
+            </div>
+          );
+        }
+
+        if (view === "view" && currentInvoice) {
+          return (
+            <div className="bg-white p-8 rounded-xl shadow-sm relative print-area">
+              <div className="no-print absolute top-4 right-4 space-x-2">
+                {currentInvoice.type === "Proforma" && (
+                  <button
+                    onClick={() => convertToCommercial(currentInvoice)}
+                    className="bg-brand-orange text-white px-3 py-1 rounded text-sm"
+                  >
+                    Convert to Commercial
+                  </button>
+                )}
+                <button
+                  onClick={() => window.print()}
+                  className="bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm flex items-center inline-flex"
+                >
+                  <Icon path={icons.print} className="w-4 h-4 mr-1" /> Print
+                </button>
+                <button
+                  onClick={() => setView("list")}
+                  className="text-gray-500 px-3 py-1 text-sm"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="text-center border-b-2 border-brand-dark pb-6 mb-6">
+                <h1 className="text-3xl font-bold text-brand-dark">
+                  {data.companyInfo.name}
+                </h1>
+                <p className="text-gray-500">
+                  {data.companyInfo.address} | {data.companyInfo.email}
+                </p>
+                <h2 className="text-2xl mt-4 tracking-widest uppercase font-serif text-gray-700">
+                  {currentInvoice.type} INVOICE
+                </h2>
+              </div>
+
+              <div className="flex justify-between mb-8">
+                <div>
+                  <p className="text-sm text-gray-500">Bill To:</p>
+                  <p className="font-bold text-lg">
+                    {currentInvoice.customerName}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p>
+                    <strong>Invoice #:</strong> INV-
+                    {currentInvoice.id.toUpperCase()}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {currentInvoice.date}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {currentInvoice.status}
+                  </p>
+                </div>
+              </div>
+
+              <table className="w-full text-left border-collapse mb-8">
+                <thead>
+                  <tr className="bg-brand-dark text-white">
+                    <th className="p-3 border">Description</th>
+                    <th className="p-3 border text-center">Qty</th>
+                    <th className="p-3 border text-right">Unit Price</th>
+                    <th className="p-3 border text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentInvoice.items.map((it, idx) => (
+                    <tr key={idx} className="border-b">
+                      <td className="p-3 border">
+                        {it.desc === "Custom" ? it.customDesc : it.desc}
+                      </td>
+                      <td className="p-3 border text-center">{it.qty}</td>
+                      <td className="p-3 border text-right">
+                        {formatCurrency(it.price)}
+                      </td>
+                      <td className="p-3 border text-right font-medium">
+                        {formatCurrency(it.qty * it.price)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="3" className="p-3 text-right font-bold border">
+                      Grand Total:
+                    </td>
+                    <td className="p-3 text-right font-bold border text-xl">
+                      {formatCurrency(currentInvoice.total)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div className="text-center text-sm text-gray-500 mt-16 pt-4 border-t">
+                Thank you for your business.
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-800">Invoices</h2>
+              <button
+                onClick={() => setView("new")}
+                className="bg-brand-dark text-white px-4 py-2 rounded shadow hover:bg-brand-light flex items-center"
+              >
+                <Icon path={icons.plus} className="w-4 h-4 mr-1" /> Create
+                Invoice
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="p-3">ID</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3">Customer</th>
+                    <th className="p-3">Type</th>
+                    <th className="p-3 text-right">Total</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.invoices.map((inv) => (
+                    <tr key={inv.id} className="border-b">
+                      <td className="p-3">INV-{inv.id.toUpperCase()}</td>
+                      <td className="p-3">{inv.date}</td>
+                      <td className="p-3 font-medium">{inv.customerName}</td>
+                      <td className="p-3">
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${inv.type === "Proforma" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}`}
+                        >
+                          {inv.type}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right font-bold">
+                        {formatCurrency(inv.total)}
+                      </td>
+                      <td className="p-3 text-center">
+                        <button
+                          onClick={() => {
+                            setCurrentInvoice(inv);
+                            setView("view");
+                          }}
+                          className="text-brand-dark hover:underline"
+                        >
+                          View/Print
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {data.invoices.length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="p-4 text-center text-gray-500">
+                        No invoices generated yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      };
+
+      const Shareholders = () => {
+        const { data, getAccountBalance } = React.useContext(AppContext);
+        const [selectedCert, setSelectedCert] = React.useState(null);
+
+        const shareholders = data.accounts.filter(
+          (a) => a.subType === "Shareholder",
+        );
+
+        if (selectedCert) {
+          const equity = getAccountBalance(selectedCert.id);
+          return (
+            <div className="print-area bg-white p-8">
+              <div className="no-print mb-4">
+                <button
+                  onClick={() => window.print()}
+                  className="bg-brand-dark text-white px-4 py-2 rounded mr-2 inline-flex items-center"
+                >
+                  <Icon path={icons.print} className="w-4 h-4 mr-1" /> Print
+                  Certificate
+                </button>
+                <button
+                  onClick={() => setSelectedCert(null)}
+                  className="text-gray-500"
+                >
+                  Back
+                </button>
+              </div>
+
+              <div className="certificate-border mt-8">
+                <div className="certificate-inner">
+                  <h1 className="text-4xl font-serif text-brand-dark mb-2">
+                    {data.companyInfo.name}
+                  </h1>
+                  <p className="text-sm tracking-widest uppercase mb-10">
+                    Incorporated under the laws of Kenya
+                  </p>
+
+                  <h2 className="text-3xl font-serif text-brand-orange mb-8 border-b-2 border-brand-orange inline-block pb-2">
+                    Share Certificate
+                  </h2>
+
+                  <p className="text-lg mb-6">This is to certify that</p>
+                  <p className="text-3xl font-bold font-serif mb-6">
+                    {selectedCert.name.replace("Shareholder - ", "")}
+                  </p>
+                  <p className="text-lg mb-8">
+                    is the registered holder of <br />
+                    <span className="text-2xl font-bold">
+                      {selectedCert.shares || 1000} Shares
+                    </span>
+                    <br />
+                    representing an equity value of{" "}
+                    <strong>{formatCurrency(equity)}</strong> <br />
+                    in the above-named Company, subject to the Memorandum and
+                    Articles of Association thereof.
+                  </p>
+
+                  <div className="mt-20 flex justify-between px-16">
+                    <div className="text-center">
+                      <div className="w-48 border-b border-gray-800 mb-2"></div>
+                      <p className="text-sm uppercase tracking-widest">
+                        Director
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-48 border-b border-gray-800 mb-2"></div>
+                      <p className="text-sm uppercase tracking-widest">
+                        Secretary
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-8 text-xs text-gray-500">
+                    Issued on: {new Date().toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Shareholder Management
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {shareholders.map((sh) => (
+                <div
+                  key={sh.id}
+                  className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center"
+                >
+                  <div className="w-16 h-16 bg-brand-light text-brand-dark rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon path={icons.users} className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-lg">
+                    {sh.name.replace("Shareholder - ", "")}
+                  </h3>
+                  <p className="text-gray-500 text-sm mb-4">
+                    Equity Value: {formatCurrency(getAccountBalance(sh.id))}
+                  </p>
+                  <button
+                    onClick={() => setSelectedCert(sh)}
+                    className="bg-brand-dark text-white px-4 py-2 rounded text-sm w-full hover:bg-brand-light"
+                  >
+                    Generate Certificate
+                  </button>
+                </div>
+              ))}
+              {shareholders.length === 0 && (
+                <p>No shareholders defined in Chart of Accounts.</p>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      const Reports = () => {
+        const { data, getAccountBalance } = React.useContext(AppContext);
+
+        const calculateTypeTotal = (type) =>
+          data.accounts
+            .filter((a) => a.type === type)
+            .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
+
+        const totalRev = calculateTypeTotal("Revenue");
+        const totalExp = calculateTypeTotal("Expense");
+        const netIncome = totalRev - totalExp;
+
+        const totalAssets = calculateTypeTotal("Asset");
+        const totalLiabilities = calculateTypeTotal("Liability");
+        const totalEquity = calculateTypeTotal("Equity") + netIncome; // Add retained earnings
+
+        return (
+          <div className="space-y-8 print-area">
+            <div className="flex justify-between items-center no-print">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Financial Reports
+              </h2>
+              <button
+                onClick={() => window.print()}
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow flex items-center"
+              >
+                <Icon path={icons.print} className="w-4 h-4 mr-2" /> Print
+                Reports
+              </button>
+            </div>
+
+            {/* P&L */}
+            <div className="bg-white p-8 rounded-xl shadow-sm border">
+              <h3 className="text-xl font-bold text-center border-b-2 border-brand-dark pb-2 mb-4 uppercase">
+                Profit & Loss Statement
+              </h3>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-gray-600 border-b mb-2">
+                    Revenues
+                  </h4>
+                  {data.accounts
+                    .filter((a) => a.type === "Revenue")
+                    .map((a) => (
+                      <div
+                        key={a.id}
+                        className="flex justify-between text-sm py-1"
+                      >
+                        <span>{a.name}</span>{" "}
+                        <span>{formatCurrency(getAccountBalance(a.id))}</span>
+                      </div>
+                    ))}
+                  <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                    <span>Total Revenue</span>{" "}
+                    <span>{formatCurrency(totalRev)}</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-600 border-b mb-2">
+                    Expenses
+                  </h4>
+                  {data.accounts
+                    .filter((a) => a.type === "Expense")
+                    .map((a) => (
+                      <div
+                        key={a.id}
+                        className="flex justify-between text-sm py-1"
+                      >
+                        <span>{a.name}</span>{" "}
+                        <span>{formatCurrency(getAccountBalance(a.id))}</span>
+                      </div>
+                    ))}
+                  <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                    <span>Total Expenses</span>{" "}
+                    <span>{formatCurrency(totalExp)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 text-right text-xl font-bold bg-gray-50 p-4 rounded">
+                Net Income:{" "}
+                <span
+                  className={
+                    netIncome >= 0 ? "text-brand-dark" : "text-red-600"
+                  }
+                >
+                  {formatCurrency(netIncome)}
+                </span>
+              </div>
+            </div>
+
+            {/* Balance Sheet */}
+            <div className="bg-white p-8 rounded-xl shadow-sm border">
+              <h3 className="text-xl font-bold text-center border-b-2 border-brand-dark pb-2 mb-4 uppercase">
+                Balance Sheet
+              </h3>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-gray-600 border-b mb-2">
+                    Assets
+                  </h4>
+                  {data.accounts
+                    .filter((a) => a.type === "Asset")
+                    .map((a) => {
+                      const bal = getAccountBalance(a.id);
+                      if (bal === 0) return null;
+                      return (
+                        <div
+                          key={a.id}
+                          className="flex justify-between text-sm py-1"
+                        >
+                          <span>{a.name}</span>{" "}
+                          <span>{formatCurrency(bal)}</span>
+                        </div>
+                      );
+                    })}
+                  <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                    <span>Total Assets</span>{" "}
+                    <span>{formatCurrency(totalAssets)}</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-600 border-b mb-2">
+                    Liabilities
+                  </h4>
+                  {data.accounts
+                    .filter((a) => a.type === "Liability")
+                    .map((a) => {
+                      const bal = getAccountBalance(a.id);
+                      if (bal === 0) return null;
+                      return (
+                        <div
+                          key={a.id}
+                          className="flex justify-between text-sm py-1"
+                        >
+                          <span>{a.name}</span>{" "}
+                          <span>{formatCurrency(bal)}</span>
+                        </div>
+                      );
+                    })}
+                  <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                    <span>Total Liabilities</span>{" "}
+                    <span>{formatCurrency(totalLiabilities)}</span>
+                  </div>
+
+                  <h4 className="font-bold text-gray-600 border-b mb-2 mt-6">
+                    Equity
+                  </h4>
+                  {data.accounts
+                    .filter((a) => a.type === "Equity")
+                    .map((a) => {
+                      const bal = getAccountBalance(a.id);
+                      if (bal === 0) return null;
+                      return (
+                        <div
+                          key={a.id}
+                          className="flex justify-between text-sm py-1"
+                        >
+                          <span>{a.name}</span>{" "}
+                          <span>{formatCurrency(bal)}</span>
+                        </div>
+                      );
+                    })}
+                  <div className="flex justify-between text-sm py-1">
+                    <span>Retained Earnings (Net Income)</span>{" "}
+                    <span>{formatCurrency(netIncome)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                    <span>Total Equity</span>{" "}
+                    <span>{formatCurrency(totalEquity)}</span>
+                  </div>
+
+                  <div className="flex justify-between font-bold mt-4 pt-2 border-t-4 text-lg">
+                    <span>Total Liab. & Equity</span>{" "}
+                    <span>
+                      {formatCurrency(totalLiabilities + totalEquity)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const Settings = () => {
+        const { data, setData, user, showNotify, logAction } =
+          React.useContext(AppContext);
+
+        if (user?.role !== "Admin") {
+          return (
+            <div className="p-6 text-red-500 bg-white rounded shadow">
+              Access Denied. Admins only.
+            </div>
+          );
+        }
+
+        const exportBackup = () => {
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `IHSAN_Backup_${new Date().toISOString().split("T")[0]}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          logAction("Exported Backup", "JSON format");
+          showNotify("Backup downloaded.");
+        };
+
+        const handleFileUpload = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          if (file.name.endsWith(".json")) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              try {
+                const importedData = JSON.parse(evt.target.result);
+                if (importedData.accounts && importedData.transactions) {
+                  setData(importedData);
+                  logAction("Restored Backup", "JSON file imported");
+                  showNotify("System data restored from backup.");
+                } else {
+                  showNotify("Invalid backup file format.", "error");
+                }
+              } catch (err) {
+                showNotify("Failed to parse file.", "error");
+              }
+            };
+            reader.readAsText(file);
+          } else if (file.name.endsWith(".csv")) {
+            // Simple CSV Import for Journal Entries
+            Papa.parse(file, {
+              header: true,
+              skipEmptyLines: true,
+              complete: function (results) {
+                const rows = results.data;
+                let importedCount = 0;
+                // Expecting: Date, Description, AccountName, Debit, Credit
+                const newTxs = [];
+                // Group by Description & Date
+                const groups = {};
+                rows.forEach((r) => {
+                  const key = r.Date + r.Description;
+                  if (!groups[key])
+                    groups[key] = {
+                      date: r.Date,
+                      desc: r.Description,
+                      lines: [],
+                    };
+                  const acc = data.accounts.find(
+                    (a) =>
+                      a.name.toLowerCase() ===
+                      (r.AccountName || "").toLowerCase(),
+                  );
+                  if (acc) {
+                    groups[key].lines.push({
+                      id: generateId(),
+                      accountId: acc.id,
+                      debit: r.Debit || 0,
+                      credit: r.Credit || 0,
+                    });
+                  }
+                });
+
+                Object.values(groups).forEach((g) => {
+                  if (g.lines.length >= 2) {
+                    newTxs.push({
+                      id: generateId(),
+                      date: g.date,
+                      description: g.desc,
+                      lines: g.lines,
+                      createdBy: "CSV Import",
+                    });
+                    importedCount++;
+                  }
+                });
+
+                setData((prev) => ({
+                  ...prev,
+                  transactions: [...prev.transactions, ...newTxs],
+                }));
+                logAction(
+                  "Imported CSV",
+                  `${importedCount} transactions imported`,
+                );
+                showNotify(
+                  `Successfully imported ${importedCount} transactions.`,
+                );
+              },
+            });
+          }
+        };
+
+        const downloadTemplate = () => {
+          const csvContent =
+            "data:text/csv;charset=utf-8,Date,Description,AccountName,Debit,Credit\n2026-05-17,Opening Balance,Main Bank Account,10000,0\n2026-05-17,Opening Balance,Shareholder - Founder 1,0,10000";
+          const encodedUri = encodeURI(csvContent);
+          const a = document.createElement("a");
+          a.href = encodedUri;
+          a.download = "ihsan_journal_template.csv";
+          document.body.appendChild(a);
+          a.click();
+        };
+
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              System Administration
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <Icon path={icons.download} className="w-5 h-5 mr-2" /> Data
+                  Backup & Export
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Download a complete snapshot of all accounts, transactions,
+                  and settings. Store this securely.
+                </p>
+                <button
+                  onClick={exportBackup}
+                  className="bg-brand-dark text-white px-4 py-2 rounded hover:bg-brand-light w-full"
+                >
+                  Export Complete Backup (JSON)
+                </button>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <Icon path={icons.upload} className="w-5 h-5 mr-2" /> Import
+                  Data
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">
+                  Upload a Backup (JSON) to restore, or a CSV containing journal
+                  entries.
+                </p>
+                <button
+                  onClick={downloadTemplate}
+                  className="text-brand-dark text-xs underline mb-4 block"
+                >
+                  Download CSV Template
+                </button>
+                <input
+                  type="file"
+                  accept=".json,.csv,.xlsx"
+                  onChange={handleFileUpload}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-brand-light file:text-brand-dark hover:file:bg-brand-yellow"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border overflow-hidden">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <Icon path={icons.log} className="w-5 h-5 mr-2" /> Immutable
+                Audit Log
+              </h3>
+              <div className="max-h-64 overflow-y-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="p-2">Time</th>
+                      <th className="p-2">User (Role)</th>
+                      <th className="p-2">Action</th>
+                      <th className="p-2">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.logs.map((l) => (
+                      <tr key={l.id} className="border-t hover:bg-gray-50">
+                        <td className="p-2 text-gray-500 text-xs">
+                          {new Date(l.timestamp).toLocaleString()}
+                        </td>
+                        <td className="p-2 font-medium">
+                          {l.user} ({l.role})
+                        </td>
+                        <td className="p-2 text-brand-dark">{l.action}</td>
+                        <td className="p-2 text-gray-600 truncate max-w-xs">
+                          {l.details}
+                        </td>
+                      </tr>
+                    ))}
+                    {data.logs.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="4"
+                          className="p-2 text-center text-gray-500"
+                        >
+                          No logs generated yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const { user, setUser } = React.useContext(AppContext);
+        const [currentView, setCurrentView] = React.useState("dashboard");
+
+        if (!user) return <Login />;
+
+        const navItems = [
+          { id: "dashboard", label: "Dashboard", icon: icons.dashboard },
+          { id: "transactions", label: "Journal Entries", icon: icons.book },
+          { id: "invoices", label: "Invoices", icon: icons.fileText },
+          { id: "reports", label: "Reports", icon: icons.chart },
+          { id: "shareholders", label: "Shareholders", icon: icons.users },
+          {
+            id: "accounts",
+            label: "Chart of Accounts",
+            icon: icons.settings,
+            adminOnly: true,
+          },
+          {
+            id: "settings",
+            label: "Admin & Backup",
+            icon: icons.log,
+            adminOnly: true,
+          },
+        ];
+
+        const renderView = () => {
+          switch (currentView) {
+            case "dashboard":
+              return <Dashboard />;
+            case "transactions":
+              return <Transactions />;
+            case "invoices":
+              return <Invoicing />;
+            case "reports":
+              return <Reports />;
+            case "shareholders":
+              return <Shareholders />;
+            case "accounts":
+              return <ChartOfAccounts />;
+            case "settings":
+              return <Settings />;
+            default:
+              return <Dashboard />;
+          }
+        };
+
+        return (
+          <div className="flex h-screen overflow-hidden bg-gray-100">
+            {/* Sidebar */}
+            <div className="w-64 bg-brand-dark text-white flex flex-col no-print">
+              <div className="p-6 border-b border-brand-light/30">
+                <h1 className="font-bold text-xl tracking-wide text-brand-yellow">
+                  IHSAN RESINS
+                </h1>
+                <p className="text-xs text-brand-light mt-1">
+                  Accounting System
+                </p>
+              </div>
+              <nav className="flex-1 py-4 space-y-1">
+                {navItems
+                  .filter((item) => !item.adminOnly || user.role === "Admin")
+                  .map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setCurrentView(item.id)}
+                      className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors ${currentView === item.id ? "bg-brand-light/20 border-r-4 border-brand-yellow text-white" : "text-gray-300 hover:bg-brand-light/10 hover:text-white"}`}
+                    >
+                      <Icon
+                        path={item.icon}
+                        className="w-5 h-5 mr-3 opacity-80"
+                      />
+                      {item.label}
+                    </button>
+                  ))}
+              </nav>
+              <div className="p-4 border-t border-brand-light/30 text-sm flex justify-between items-center bg-black/10">
+                <div>
+                  <p className="font-bold">{user.name}</p>
+                  <p className="text-xs text-gray-300">{user.role}</p>
+                </div>
+                <button
+                  onClick={() => setUser(null)}
+                  className="text-brand-yellow hover:text-white"
+                  title="Logout"
+                >
+                  <Icon path="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </button>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <header className="bg-white shadow-sm h-16 flex items-center px-8 no-print border-b z-10">
+                <h2 className="text-lg font-medium text-gray-800 capitalize">
+                  {currentView.replace(/([A-Z])/g, " $1").trim()}
+                </h2>
+              </header>
+              <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-8">
+                <div className="max-w-6xl mx-auto">{renderView()}</div>
+              </main>
+            </div>
+          </div>
+        );
+      };
+
+      const Root = () => (
+        <AppProvider>
+          <App />
+        </AppProvider>
+      );
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<Root />);
+    </script>
+  </body>
+</html>
