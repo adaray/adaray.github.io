@@ -1,0 +1,1543 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Edexcel IGCSE Exam Platform | Smart Marking Enabled</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", "Roboto", "Georgia", serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 20px;
+        color: #1e2a3e;
+      }
+      .exam-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        padding: 20px 30px 40px;
+      }
+      .header {
+        border-bottom: 4px solid #003c5f;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f6fa 100%);
+        padding: 15px 20px;
+        border-radius: 28px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: #003c5f;
+        letter-spacing: -0.5px;
+      }
+      .title p {
+        margin: 5px 0 0;
+        color: #0077b6;
+        font-weight: 500;
+      }
+      .timer-area {
+        background: #003c5f;
+        padding: 6px 20px;
+        border-radius: 60px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .timer {
+        font-size: 2rem;
+        font-family: monospace;
+        font-weight: bold;
+        letter-spacing: 2px;
+      }
+      .info-bar {
+        background: #e9f0f9;
+        padding: 12px 20px;
+        border-radius: 28px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        font-weight: 500;
+      }
+      .question-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #cbdde9;
+        padding-bottom: 15px;
+        max-height: 130px;
+        overflow-y: auto;
+      }
+      .nav-btn {
+        background: #eef2f8;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 44px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.15s;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .nav-btn.active {
+        background: #0077b6;
+        color: white;
+      }
+      .nav-btn.answered {
+        background: #52b788;
+        color: white;
+      }
+      .question-card {
+        display: none;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 20px 24px;
+        margin-bottom: 30px;
+        border: 1px solid #dce5ef;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+      .question-card.active-question {
+        display: block;
+        animation: fade 0.2s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0.5;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .q-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 18px;
+        background: #eef2fa;
+        padding: 8px 16px;
+        border-radius: 40px;
+        display: inline-block;
+        color: #003c5f;
+      }
+      .marks {
+        font-size: 0.8rem;
+        background: #cbdde9;
+        border-radius: 30px;
+        padding: 3px 12px;
+        margin-left: 12px;
+        font-weight: normal;
+      }
+      .reading-text {
+        background: #fdf8e7;
+        border-left: 6px solid #d4a373;
+        padding: 16px 20px;
+        margin: 20px 0;
+        border-radius: 20px;
+        font-family: "Georgia", serif;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+      .subquestion {
+        margin: 20px 0 20px 12px;
+        border-left: 3px solid #cbdde9;
+        padding-left: 20px;
+      }
+      textarea,
+      input[type="text"] {
+        padding: 12px 16px;
+        border-radius: 20px;
+        border: 1px solid #b9c7d9;
+        width: 100%;
+        max-width: 100%;
+        font-family: inherit;
+        font-size: 0.95rem;
+        background: #fefefe;
+      }
+      textarea {
+        min-height: 120px;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      button {
+        background: #0077b6;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: 0.1s;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.warning {
+        background: #bc6c25;
+      }
+      .review-section {
+        background: #fef9e3;
+        padding: 24px;
+        border-radius: 28px;
+        margin-top: 30px;
+      }
+      .hidden {
+        display: none;
+      }
+      .score-badge {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #1e466e;
+      }
+      .grade-box {
+        background: #d9e6f2;
+        padding: 14px;
+        border-radius: 28px;
+        margin: 15px 0;
+      }
+      .feedback-card {
+        background: white;
+        border-radius: 24px;
+        margin-bottom: 24px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-left: 10px solid #0077b6;
+      }
+      .feedback-header {
+        font-weight: 800;
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .mark-badge {
+        background: #003c5f;
+        color: white;
+        border-radius: 60px;
+        padding: 2px 12px;
+        font-size: 0.8rem;
+      }
+      .ai-tips {
+        background: #e9f5e9;
+        padding: 16px;
+        border-radius: 20px;
+        margin-top: 15px;
+        border-left: 5px solid #2e7d32;
+      }
+      .ai-badge {
+        background: #0077b6;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 30px;
+        padding: 3px 12px;
+        margin-left: 12px;
+        vertical-align: middle;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(4px);
+      }
+      .loading-spinner {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 40px;
+        text-align: center;
+        font-weight: bold;
+        max-width: 400px;
+      }
+      .spinner {
+        border: 4px solid #e9f0f5;
+        border-top: 4px solid #0077b6;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .ms-panel {
+        background: #f0f4fa;
+        border-left: 5px solid #bc6c25;
+        padding: 12px 18px;
+        margin-top: 18px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .ms-panel.visible {
+        display: block;
+      }
+      .choice-buttons {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+      .choice-card {
+        background: #f8fafc;
+        border: 2px solid #cbdde9;
+        border-radius: 24px;
+        padding: 20px;
+        flex: 1;
+        min-width: 260px;
+        cursor: pointer;
+        transition: 0.1s;
+      }
+      .choice-card.selected {
+        border-color: #0077b6;
+        background: #eef4ff;
+        box-shadow: 0 4px 12px rgba(0, 119, 182, 0.2);
+      }
+      .choice-card h3 {
+        margin-top: 0;
+        color: #003c5f;
+      }
+      @media (max-width: 700px) {
+        .exam-container {
+          padding: 12px;
+        }
+        .choice-buttons {
+          flex-direction: column;
+        }
+      }
+      .status-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c7da0;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 40px;
+        font-size: 0.9rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="exam-container" id="examApp">
+      <div class="header">
+        <div class="title">
+          <h1 id="examTitle">Loading exam...</h1>
+          <p id="examSubtitle"></p>
+          <p>
+            <span id="examDateBadge"></span> |
+            <span class="ai-badge">🤖 Smart Marking Enabled</span>
+          </p>
+        </div>
+        <div class="timer-area">
+          <div>⏱️ Time Remaining</div>
+          <div class="timer" id="timerDisplay">--:--:--</div>
+        </div>
+      </div>
+      <div class="info-bar">
+        <span id="totalMarksLabel">📖 Total marks: --</span>
+        <span id="answeredCounter">📝 Questions answered: 0 / 0</span>
+      </div>
+      <div id="navContainer" class="question-nav"></div>
+      <div id="questionsContainer"></div>
+      <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">✅ Submit Exam</button>
+      </div>
+      <div id="reviewPanel" class="review-section hidden"></div>
+      <div id="statusToast" class="status-toast"></div>
+    </div>
+
+    <script>
+      // =======================  ONLY THIS BLOCK NEEDS TO BE MODIFIED FOR ANY NEW EXAM  =======================
+      const questionsData = [
+        {
+          _examMeta: {
+            title: "Pearson Edexcel International GCSE Biology (4BI1) Paper 2B",
+            subtitle: "Biology Paper 2B",
+            dateInfo: "June 2019",
+            durationSeconds: 5400,
+            defaultTotalMarksText: "Total marks: 70",
+          },
+        },
+        {
+          type: "standard",
+          text: "What is meant by the term 'ecosystem' (line 3)?",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An answer that makes reference to the following points: (all) living organisms / community / (different / all) species (1) and environment / area / habitat / abiotic factors / non-living factors / physical factors (1). Ignore animals and plants for MP1.",
+          topic: "Ecology / Definitions",
+        },
+        {
+          type: "standard",
+          text: "Suggest how the mutualistic relationship between the small animals and the algae inside them is of benefit to both species (lines 6 and 7).",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An explanation that makes reference to the following points: (animals get) glucose / oxygen / energy (1); (algae get) carbon dioxide / protection / shelter / safety / cannot be eaten (1). Ignore food / nutrients for MP1. Ignore place to live for MP2.",
+          topic: "Ecology / Mutualism",
+        },
+        {
+          type: "standard",
+          text: "(i) Explain why coral grows best in shallow, clear water (lines 3 and 4).",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An explanation that makes reference to the following points: (sun)light (1); photosynthesis (1).",
+          topic: "Ecology / Coral reefs",
+        },
+        {
+          type: "standard",
+          text: "(ii) Suggest why coral grows best in moving water (lines 3 and 4).",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An answer that makes reference to two of the following points: supply food / algae / plankton (1); supply minerals / ions / named mineral (1); supply oxygen (1); supply carbon dioxide (1); remove waste / faeces / carbon dioxide (1); distribute gametes (1). Ignore nutrients / clean water / remove bacteria / cooling.",
+          topic: "Ecology / Coral reefs",
+        },
+        {
+          type: "standard",
+          text: "Suggest how scientists are able to find the percentage of coral that has died in a section of the reef.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An answer that makes reference to the following points: quadrat (1); repeat (1); random / random number (1); count / measure / number of / percentage cover of coral (1); calculate percentage by dead ÷ total × 100 / dead ÷ living + dead × 100 (1). Allow quadrats for MP1 and MP2. Allow bleached / white as equivalent to dead.",
+          topic: "Ecology / Sampling methods",
+        },
+        {
+          type: "standard",
+          text: "Give one reason why coral that survives higher sea temperatures is under increased threat from predators (lines 22 to 24).",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An answer that makes reference to the following point: there is less food / less coral to eat (1). Ignore 'only source of food' / 'only coral available'.",
+          topic: "Ecology / Predation",
+        },
+        {
+          type: "standard",
+          text: "Suggest what recommendations should be included in the sustainability plan for the coral reef (lines 26 and 27).",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Text One (Global warming and the Great Barrier Reef)</strong>",
+          msText:
+            "An answer that makes reference to three of the following points: reduce greenhouse gas / greenhouse effect (1); reduce carbon dioxide / CFCs / methane / N₂O / ozone / HCFCs / HFCs emissions (1); use less fossil fuel / fewer cars / fewer vehicles / less deforestation / use renewable sources of energy / solar / wind / hydroelectric / farm fewer cattle / cycle more / fewer aerosols / equivalent (1); control/reduce predators / starfish / snails (1); reduce tourism / fishing / diving / restrict access / cordon reef / equivalent (1); reintroduce coral / plant more coral / grow coral in lab and place on coral / supply other surfaces for coral to grow (1).",
+          topic: "Ecology / Conservation",
+        },
+        {
+          type: "standard",
+          text: "Describe how you would test a leaf to show that it contains starch.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 2 (leaf starch test)</strong>",
+          msText:
+            "A description that makes reference to the following points: use warm/hot ethanol/alcohol / use ethanol in water bath (1); use iodine (1); blue black / blue / black (1). Add Benedict's and blue black = 1 mark.",
+          topic: "Plant biology / Photosynthesis",
+        },
+        {
+          type: "standard",
+          text: "Explain the differences between the palisade mesophyll and the spongy mesophyll.",
+          marks: 4,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 2 (leaf diagram)</strong>",
+          msText:
+            "An explanation that makes reference to four of the following points: (position) palisade at top / (just) beneath upper epidermis OR spongy in middle/near(er) lower surface (1); (structure) palisade closely packed / long / rectangular / elongated / column / packed together / dense / fixed together / no air spaces / no gaps OR spongy have air spaces / gaps / rounded (1); (chloroplasts) palisade have more/many chloroplasts / chlorophyll OR spongy have fewer chloroplasts / less chlorophyll (1); (palisade cells) absorb (sun)light (1); spongy allow diffusion / gas exchange / gases to move / movement of water vapour / movement of carbon dioxide / movement of oxygen / transpiration (1). Ignore 'palisade closer to surface' for MP1. Palisade have more and spongy have none = 0 for MP3.",
+          topic: "Plant biology / Leaf structure",
+        },
+        {
+          type: "standard",
+          text: "Evaluate the student's conclusion that transpiration occurs mainly from the upper surface of leaves.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 2 (transpiration experiment)</strong>",
+          msText:
+            "An answer that makes reference to three of the following points: mass is lost from lower surface / mass is lost when upper surface covered / OR little/least mass lost from upper surface / little/least mass lost when lower surface is covered (1); stomata in lower surface / few/no stomata on upper surface (1); disagrees with conclusion (1). Ignore 'change in mass' for MP1.",
+          topic: "Plant biology / Transpiration",
+        },
+        {
+          type: "multiple-choice",
+          text: "Which of these is a feature of fungi?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (fungi)</strong>",
+          msText:
+            "The only correct answer is C (thread-like hyphae). A is incorrect because fungi lack chloroplasts; B is incorrect because fungi do not store starch; D is incorrect because fungi walls are made of chitin.",
+          topic: "Microbiology / Fungi",
+          choices: [
+            "A chloroplasts in the cytoplasm",
+            "B starch stored in the cytoplasm",
+            "C thread-like hyphae",
+            "D walls made of cellulose",
+          ],
+          correctChoice: "C",
+        },
+        {
+          type: "multiple-choice",
+          text: "The soil fungi release an enzyme called amylase that digests the bag. What is the product of this digestion?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (amylase)</strong>",
+          msText:
+            "The only correct answer is D (maltose). A is incorrect because amino acids are products of protease digestion; B is incorrect because fatty acids are products of lipase digestion; C is incorrect because glycerol is a product of lipase digestion.",
+          topic: "Biochemistry / Enzymes",
+          choices: [
+            "A amino acids",
+            "B fatty acids",
+            "C glycerol",
+            "D maltose",
+          ],
+          correctChoice: "D",
+        },
+        {
+          type: "standard",
+          text: "Amylase is a protein. Describe how protein is made in a cell.",
+          marks: 5,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (protein synthesis)</strong>",
+          msText:
+            "A description that makes reference to five of the following points: transcription / transcripts / transcribes (1); mRNA/messenger RNA and leaves nucleus / mRNA/messenger RNA and enters cytoplasm (1); ribosomes (1); tRNA/transfer RNA (brings) attached amino acids (1); codons / anticodons / complementary bases (1); translation / translated / translates / amino acid chain / polypeptide chain (1).",
+          topic: "Cell biology / Protein synthesis",
+        },
+        {
+          type: "standard",
+          text: "Calculate the percentage loss in mass shown by the square in pH 9.0 soil.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (soil pH experiment)</strong>",
+          msText: "70.475 to 70.5",
+          topic: "Mathematics / Percentage calculation",
+        },
+        {
+          type: "standard",
+          text: "Calculate the difference between the percentage loss in mass for the two squares.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (soil pH experiment)</strong>",
+          msText:
+            "(70.5 – 50 =) 20.5. Allow answer from 3(b)(i) – 50, e.g., 70.4 – 50 = 20.4.",
+          topic: "Mathematics / Subtraction",
+        },
+        {
+          type: "standard",
+          text: "Explain how the student could improve her method so that she can obtain more accurate results.",
+          marks: 4,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 3 (soil pH experiment)</strong>",
+          msText:
+            "An answer that makes reference to four of the following points: same surface area / mass / thickness / area / size (1); remove soil from square (before weighing) (1); control temperature / oxygen / moisture / water (1); (soil) same mass / same amount / same volume / same type / same soil / decomposers / bacteria / fungi (1); repeat / use more squares / obtain average / remove anomalies (1); increase range of pH / use different pHs / more pHs (1). Ignore 'more time'. Ignore 'light / carbon dioxide' for MP3. Ignore 'sterile soil' for MP4.",
+          topic: "Scientific method / Experimental design",
+        },
+        {
+          type: "multiple-choice",
+          text: "Where does ultrafiltration take place?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (nephron diagram)</strong>",
+          msText:
+            "The only correct answer is A (glomerulus). B is incorrect because ultrafiltration does not take place at the proximal convoluted tubule; C is incorrect because ultrafiltration does not take place at the loop of Henle; D is incorrect because ultrafiltration does not take place at the collecting duct.",
+          topic: "Human biology / Kidney function",
+          choices: [
+            "A Glomerulus",
+            "B Proximal convoluted tubule",
+            "C Loop of Henle",
+            "D Collecting duct",
+          ],
+          correctChoice: "A",
+        },
+        {
+          type: "multiple-choice",
+          text: "Where does reabsorption of glucose take place?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (nephron diagram)</strong>",
+          msText:
+            "The only correct answer is B (Proximal convoluted tubule). A is incorrect because reabsorption of glucose does not take place at the glomerulus; C is incorrect because reabsorption of glucose does not take place at the loop of Henle; D is incorrect because reabsorption of glucose does not take place at the collecting duct.",
+          topic: "Human biology / Kidney function",
+          choices: [
+            "A Glomerulus",
+            "B Proximal convoluted tubule",
+            "C Loop of Henle",
+            "D Collecting duct",
+          ],
+          correctChoice: "B",
+        },
+        {
+          type: "multiple-choice",
+          text: "Which part responds to a change in ADH?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (nephron diagram)</strong>",
+          msText:
+            "The only correct answer is D (Collecting duct). A is incorrect because the proximal convoluted tubule does not respond to ADH; B is incorrect because ultrafiltration does not respond to ADH; C is incorrect because ultrafiltration does not respond to ADH.",
+          topic: "Human biology / Kidney function",
+          choices: [
+            "A Proximal convoluted tubule",
+            "B Glomerulus",
+            "C Loop of Henle",
+            "D Collecting duct",
+          ],
+          correctChoice: "D",
+        },
+        {
+          type: "standard",
+          text: "In kangaroo rats, the tissue surrounding the collecting duct contains a high concentration of ions. Explain how this feature enables kangaroo rats to survive in the desert.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (kangaroo rat)</strong>",
+          msText:
+            "An explanation that makes reference to the three following points: water reabsorbed / water into blood (1); osmosis (1); concentrated urine / less water in urine / less urine (1).",
+          topic: "Human biology / Osmoregulation",
+        },
+        {
+          type: "standard",
+          text: "Kangaroo rats stay underground during the day and only come out to feed at night. Explain how this behaviour enables kangaroo rats to survive in the desert.",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (kangaroo rat)</strong>",
+          msText:
+            "An explanation that makes reference to the following points: hot/higher temperature during day / cool(er)/lower temperature at night / cool(er)/lower temperature underground (1); less water loss / less dehydration (1); hide from predators / less visible to predators / less chance of being hunted (1). Allow 'less sweating' for MP2. Allow converse for MPs 2 and 3.",
+          topic: "Animal behaviour / Adaptations",
+        },
+        {
+          type: "standard",
+          text: "Kangaroo rats rarely drink water. Suggest where they get their water from.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 4 (kangaroo rat)</strong>",
+          msText:
+            "An answer that makes reference to one of the following: respiration (1); food / cacti / plants / seeds (1); condensation (1). Ignore 'rain' / 'other water source'.",
+          topic: "Animal physiology / Water balance",
+        },
+        {
+          type: "standard",
+          text: "Give the sex chromosomes in the body cell of a human male.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 5 (sex chromosomes)</strong>",
+          msText: "XY / X and Y / YX / Y and X.",
+          topic: "Genetics / Sex determination",
+        },
+        {
+          type: "multiple-choice",
+          text: "What are the sex chromosomes in the body cell of a male bird?",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 5 (birds sex chromosomes)</strong>",
+          msText:
+            "The only correct answer is D (ZZ). A is incorrect because XY are the sex chromosomes of a human male; B is incorrect because ZW are the sex chromosomes of a female bird; C is incorrect because ZY are not the sex chromosomes of a male bird.",
+          topic: "Genetics / Sex determination",
+          choices: ["A XY", "B ZW", "C ZY", "D ZZ"],
+          correctChoice: "D",
+        },
+        {
+          type: "standard",
+          text: "A male and female bird have four offspring. Calculate the probability that these offspring will all be female.",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 5 (probability)</strong>",
+          msText:
+            "Determine probability of having one female (0.5); raise to the power of 4; = 0.0625 / 6.25% / 1/16. Award full marks for correct numerical answer without working. p of one female = 0.5; (0.5)⁴. Allow one mark for 0.5 / ½ / 50% / 1 in 2 in working.",
+          topic: "Genetics / Probability",
+        },
+        {
+          type: "standard",
+          text: "Complete the table giving the missing information for the four hormones involved in controlling the menstrual cycle.",
+          marks: 4,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 5 (menstrual cycle hormones)</strong>",
+          msText:
+            "Hormone – Source – Function: FSH – pituitary – (stimulate follicle growth); LH – pituitary – ovulation / egg release / release of oestrogen / release of progesterone / develop corpus luteum; oestrogen – ovary / ovaries / corpus luteum / placenta – (repair uterus lining); progesterone – ovary – maintain uterus lining/wall / prevents shedding of uterus lining/wall / inhibit FSH / inhibit LH / inhibit lactation. Two answers must be correct for the mark, e.g., (LH) ovulation and inhibits oestrogen = 0. Ignore 'maintains pregnancy'.",
+          topic: "Human biology / Menstrual cycle",
+        },
+        {
+          type: "standard",
+          text: "Give the correct letter (P, Q, R or S) for each hormone from the chart showing changes in hormone levels during the menstrual cycle.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 5 (hormone chart)</strong>",
+          msText:
+            "FSH = Q; LH = R; oestrogen = P; progesterone = S. Three or four correct = 3; two correct = 2; one correct = 1; more than one letter on a line = 0.",
+          topic: "Human biology / Menstrual cycle",
+        },
+        {
+          type: "standard",
+          text: "Complete the table giving the missing information for the cube model (side length 1 cm).",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 6 (cube model)</strong>",
+          msText:
+            "For 1 cm cube: Surface area of one cube = 6 cm²; Total surface area = 48,000 cm²; Volume of one cube = 1 cm³; Total volume = 8000 cm³. (6 x 8000 = 48,000). Allow if not in table but in working.",
+          topic: "Mathematics / Surface area and volume",
+        },
+        {
+          type: "standard",
+          text: "Calculate the ratio of the total surface area of the small cubes to the surface area of the large cube.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 6 (cube model)</strong>",
+          msText:
+            "20 : 1. Award the mark for error carried forward from table. Allow their number for total surface area : 2400, e.g., 48,000 : 2400 / 6 : 2400 / 1 : 400.",
+          topic: "Mathematics / Ratio",
+        },
+        {
+          type: "standard",
+          text: "Evaluate the student's model as a representation of the lungs.",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 6 (cube model)</strong>",
+          msText:
+            "An answer that makes reference to two of the following points: One from: (number) reference to many cubes / many alveoli / (alveoli) not one large cube; (surface) reference to SA:Vol / surface area (1). One from: (shape) alveoli are not cubes / alveoli are round/spherical / alveoli have different shape / lungs are not cubes / equivalent (1); alveoli surfaces touch / not all surfaces of alveoli are exposed (1); reference to bronchioles (1). e.g., alveoli have large SA:Vol / alveoli have large SA.",
+          topic: "Human biology / Lung structure",
+        },
+        {
+          type: "standard",
+          text: "Explain three other ways that alveoli are adapted to maximise gas exchange.",
+          marks: 3,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 6 (alveoli adaptations)</strong>",
+          msText:
+            "An explanation that makes reference to the following points: thin (walls) / one cell thick / close to capillaries and short diffusion distance / not far to diffuse (1); wet / water / moist and gases dissolve / in solution (1); capillaries / blood supply / blood flow and concentration/diffusion gradient (1). Ignore 'faster diffusion' for MP1. Ignore 'liquid' for MP2.",
+          topic: "Human biology / Gas exchange",
+        },
+        {
+          type: "standard",
+          text: "Give a method that could be used to sterilise the explants in stage 2.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 7 (micropropagation)</strong>",
+          msText:
+            "An answer that makes reference to one of the following: bleach/hypochlorite/disinfectant/antiseptic/chlorine (1); alcohol/ethanol (1); radiation/uv/gamma rays/X-rays (1). Reject 'boil/steam' or any method that kills cells. Reject 'acid/alkali/antibacterial wash/antibiotic/sterilising solution'. Boiling in ethanol = 0.",
+          topic: "Biotechnology / Micropropagation",
+        },
+        {
+          type: "standard",
+          text: "Give the name of one of the nutrients that should be added to the agar plate in stage 3.",
+          marks: 1,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 7 (micropropagation)</strong>",
+          msText:
+            "An answer that makes reference to one of the following: nitrate / ammonium / magnesium / calcium / sulphate / potassium / phosphate / iron (1); amino acids (1); sucrose / glucose / fructose / sugar / starch (1). Ignore 'water / phosphorus / nitrogen / minerals'.",
+          topic: "Biotechnology / Micropropagation",
+        },
+        {
+          type: "standard",
+          text: "Scientists produce large numbers of genetically identical plants using micropropagation. The diagram shows some of the stages. Explain why cells from an adult plant are not all able to divide and differentiate to form any new plant.",
+          marks: 2,
+          readingText:
+            "📖 <strong>Refer to Source Booklet: Question 7 (micropropagation)</strong>",
+          msText:
+            "An explanation that makes reference to two of the following points: cells are differentiated / specialised / can only form one cell type / cells unable to differentiate / specialise / form other cell types (1); no / fewer stem cells (1); stem cells found in embryo / bone marrow / umbilical cord (1). Ignore references to plant tissue.",
+          topic: "Cell biology / Differentiation",
+        },
+      ];
+      // =======================  END OF USER-EDITABLE SECTION =======================
+
+      // =======================  EMAIL CONFIGURATION (Google Apps Script) =======================
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyHrPhTjUxbfEviywjdlBs5W0E7H8J1aQAji85pyXG2V5z9y5IC-45Pboc86SH59GFL/exec";
+      const DEFAULT_RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+      const ASK_STUDENT_EMAIL = false;
+
+      // Extract exam metadata
+      let EXAM_META = {
+        title: "Smart Exam",
+        subtitle: "Smart-Powered Assessment",
+        dateInfo: "",
+        durationSeconds: 135 * 60,
+        defaultTotalMarksText: "",
+      };
+      let actualQuestions = [];
+      if (questionsData.length > 0 && questionsData[0]._examMeta) {
+        EXAM_META = { ...EXAM_META, ...questionsData[0]._examMeta };
+        actualQuestions = questionsData.slice(1);
+      } else {
+        actualQuestions = questionsData;
+      }
+      document.getElementById("examTitle").innerText = EXAM_META.title;
+      document.getElementById("examSubtitle").innerText = EXAM_META.subtitle;
+      document.getElementById("examDateBadge").innerHTML =
+        EXAM_META.dateInfo || "📅 Timed Examination";
+
+      // ---------- DeepSeek AI config ----------
+      const DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY_PLACEHOLDER";
+      const DEEPSEEK_MODEL = "deepseek-v4-pro";
+      const USE_AI_MARKING = true;
+
+      // IndexedDB for progress
+      const DB_NAME = "IGCSE_English_Exam_DB";
+      const DB_VERSION = 1;
+      const PROGRESS_STORE = "exam_progress";
+      let db = null;
+
+      function initDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+          };
+          request.onupgradeneeded = (event) => {
+            const dbEvent = event.target.result;
+            if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE))
+              dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+          };
+        });
+      }
+      async function saveProgressToDB(
+        answers,
+        timeLeft,
+        transactionalStateMap,
+      ) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([PROGRESS_STORE], "readwrite");
+          const store = tx.objectStore(PROGRESS_STORE);
+          store.put({
+            id: "current_progress",
+            answers: answers,
+            timeRemaining: timeLeft,
+            transactionalState: transactionalStateMap,
+            timestamp: new Date().toISOString(),
+          });
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+      async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([PROGRESS_STORE], "readonly");
+          const store = tx.objectStore(PROGRESS_STORE);
+          const req = store.get("current_progress");
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+      function showToast(msg, isErr = false) {
+        const toast = document.getElementById("statusToast");
+        toast.textContent = msg;
+        toast.style.background = isErr ? "#bc6c25" : "#0077b6";
+        toast.style.opacity = "1";
+        setTimeout(() => (toast.style.opacity = "0"), 3000);
+      }
+
+      // Global state
+      let userAnswers = new Array(actualQuestions.length).fill("");
+      let transactionalDataMap = {};
+      let currentQIndex = 0;
+      let examSubmitted = false;
+      let timeSeconds = EXAM_META.durationSeconds;
+      let timerInterval, autoSaveInterval;
+
+      function getTotalMarks() {
+        return actualQuestions.reduce((sum, q) => sum + q.marks, 0);
+      }
+      function formatTime(sec) {
+        let h = Math.floor(sec / 3600),
+          m = Math.floor((sec % 3600) / 60),
+          s = sec % 60;
+        return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+      function updateTimerDisplay() {
+        document.getElementById("timerDisplay").innerText =
+          formatTime(timeSeconds);
+        if (timeSeconds <= 0 && !examSubmitted) autoSubmit();
+      }
+      function autoSubmit() {
+        if (!examSubmitted) submitAndMarkExam();
+      }
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          if (!examSubmitted && timeSeconds > 0) {
+            timeSeconds--;
+            updateTimerDisplay();
+            if (timeSeconds % 30 === 0) saveAutoProgress();
+          } else if (timeSeconds <= 0 && !examSubmitted) autoSubmit();
+        }, 1000);
+      }
+      function saveAutoProgress() {
+        if (!examSubmitted)
+          saveProgressToDB(userAnswers, timeSeconds, transactionalDataMap);
+      }
+
+      function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        actualQuestions.forEach((_, idx) => {
+          const btn = document.createElement("button");
+          btn.innerText = idx + 1;
+          btn.classList.add("nav-btn");
+          let isAnswered = false;
+          if (actualQuestions[idx].type === "transactional") {
+            const tdata = transactionalDataMap[idx] || {
+              choice: null,
+              content: "",
+            };
+            isAnswered =
+              tdata.choice !== null && tdata.content.trim().length > 30;
+          } else {
+            isAnswered = userAnswers[idx] && userAnswers[idx].trim() !== "";
+          }
+          if (isAnswered) btn.classList.add("answered");
+          if (idx === currentQIndex) btn.classList.add("active");
+          btn.onclick = () => {
+            if (!examSubmitted) goToQuestion(idx);
+          };
+          navDiv.appendChild(btn);
+        });
+        let answeredCount = 0;
+        for (let i = 0; i < actualQuestions.length; i++) {
+          if (actualQuestions[i].type === "transactional") {
+            const tdata = transactionalDataMap[i] || {
+              choice: null,
+              content: "",
+            };
+            if (tdata.choice && tdata.content.trim().length > 30)
+              answeredCount++;
+          } else {
+            if (userAnswers[i] && userAnswers[i].trim() !== "") answeredCount++;
+          }
+        }
+        document.getElementById("answeredCounter").innerHTML =
+          `📝 Questions answered: ${answeredCount} / ${actualQuestions.length}`;
+        document.getElementById("totalMarksLabel").innerHTML =
+          `📖 ${EXAM_META.defaultTotalMarksText || `Total marks: ${getTotalMarks()}`}`;
+      }
+
+      function goToQuestion(idx) {
+        if (examSubmitted) return;
+        document
+          .querySelectorAll(".question-card")
+          .forEach((c) => c.classList.remove("active-question"));
+        currentQIndex = idx;
+        const target = document.getElementById(`qcard-${idx}`);
+        if (target) target.classList.add("active-question");
+        renderNavigation();
+      }
+      function saveReadingAnswer(idx, value) {
+        if (examSubmitted) return;
+        userAnswers[idx] = value;
+        renderNavigation();
+        saveAutoProgress();
+      }
+      function updateTransactionalChoice(qIdx, choice) {
+        if (examSubmitted) return;
+        if (!transactionalDataMap[qIdx])
+          transactionalDataMap[qIdx] = { choice: null, content: "" };
+        transactionalDataMap[qIdx].choice = choice;
+        renderNavigation();
+        saveAutoProgress();
+        const card = document.getElementById(`qcard-${qIdx}`);
+        if (card) {
+          const choiceDivs = card.querySelectorAll(".choice-card");
+          choiceDivs.forEach((div) => {
+            const val = div.getAttribute("data-choice-value");
+            if (val === choice) div.classList.add("selected");
+            else div.classList.remove("selected");
+          });
+        }
+      }
+      function updateTransactionalContent(qIdx, content) {
+        if (examSubmitted) return;
+        if (!transactionalDataMap[qIdx])
+          transactionalDataMap[qIdx] = { choice: null, content: "" };
+        transactionalDataMap[qIdx].content = content;
+        renderNavigation();
+        saveAutoProgress();
+      }
+
+      function buildQuestionCards() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        actualQuestions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          if (idx === 0) card.classList.add("active-question");
+          card.id = `qcard-${idx}`;
+          let inner = `<div class="q-title">Question ${idx + 1} <span class="marks">${q.marks} marks</span> ${q.type === "transactional" ? "✍️ Transactional Writing" : ""}</div>`;
+          if (q.readingText)
+            inner += `<div class="reading-text">${q.readingText}</div>`;
+          inner += `<div class="subquestion">${q.text}</div>`;
+          if (q.type === "transactional") {
+            const tdata = transactionalDataMap[idx] || {
+              choice: null,
+              content: "",
+            };
+            inner += `<div class="choice-buttons">`;
+            q.transactionalOptions.forEach((opt) => {
+              const isSelected = tdata.choice === opt.value;
+              inner += `<div class="choice-card ${isSelected ? "selected" : ""}" data-choice-value="${opt.value}" onclick="updateTransactionalChoice(${idx}, '${opt.value}')">
+                                <h3>${opt.title}</h3>
+                                <p><strong>${opt.description}</strong></p>
+                                <ul>${opt.promptBullets.map((b) => `<li>${b}</li>`).join("")}</ul>
+                                <p><em>${opt.formatNote}</em></p>
+                              </div>`;
+            });
+            inner += `</div>
+                <div style="margin-top: 20px;">
+                    <label><strong>✍️ Your written response (approx 350-450 words):</strong></label>
+                    <textarea id="transContent_${idx}" rows="12" placeholder="Write your letter or article here..." oninput="updateTransactionalContent(${idx}, this.value)">${tdata.content.replace(/</g, "&lt;")}</textarea>
+                </div>
+                <div class="ms-panel" style="margin-top:20px; background:#eef2fa; display:block;">
+                    <strong>📌 Marking Criteria (AO4 & AO5):</strong><br>• Communicate effectively, adapt form/tone/register.<br>• Wide vocabulary, sentence structures, paragraphing, accurate SP&G.<br>• Follow conventions of chosen format.
+                </div>`;
+          } else {
+            let answerVal = userAnswers[idx] || "";
+            inner += `<textarea rows="6" placeholder="Write your answer in detail..." onchange="saveReadingAnswer(${idx}, this.value)">${answerVal.replace(/</g, "&lt;")}</textarea>`;
+            inner += `<div><button type="button" style="background:#bc6c25; margin-top:8px; padding:5px 12px;" onclick="toggleMarkScheme(${idx})">📘 Show Mark Scheme (self-review)</button></div>`;
+            inner += `<div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme Reference:</strong><br>${q.msText}</div>`;
+          }
+          card.innerHTML = inner;
+          container.appendChild(card);
+        });
+        window.saveReadingAnswer = saveReadingAnswer;
+        window.updateTransactionalChoice = updateTransactionalChoice;
+        window.updateTransactionalContent = updateTransactionalContent;
+        window.toggleMarkScheme = (idx) => {
+          let panel = document.getElementById(`ms-panel-${idx}`);
+          if (panel) panel.classList.toggle("visible");
+        };
+      }
+
+      // AI marking (unchanged)
+      async function getAIFeedback(
+        questionNum,
+        questionText,
+        studentAnswer,
+        maxMarks,
+        markSchemeRef,
+        isTransactional = false,
+        choiceType = null,
+      ) {
+        if (
+          !USE_AI_MARKING ||
+          !DEEPSEEK_API_KEY ||
+          DEEPSEEK_API_KEY === "your-deepseek-api-key-here"
+        ) {
+          return {
+            earned: 0,
+            feedback: "⚠️ DeepSeek API key missing. Smart marking disabled.",
+            tips: "Set valid DEEPSEEK_API_KEY.",
+            level: "Not marked",
+          };
+        }
+        const systemPrompt = `You are an examiner. Provide a mark (out of ${maxMarks}) and detailed feedback with mark scheme reference. Give 3-5 actionable 'Grade 9 Tips'. Return JSON: { "earned": number, "feedback": "string", "tips": "string" }`;
+        let userPrompt = `Question ${questionNum}: ${questionText}\nMark scheme: ${markSchemeRef}\nStudent answer: """${studentAnswer.substring(0, 3500)}"""\n${isTransactional ? `Transactional writing (${choiceType === "letter" ? "letter" : "article"}). Evaluate form, register, organisation, accuracy.` : "Assess using standard criteria."}`;
+        try {
+          const response = await fetch(
+            "https://api.deepseek.com/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+              },
+              body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [
+                  { role: "system", content: systemPrompt },
+                  { role: "user", content: userPrompt },
+                ],
+                temperature: 0.2,
+                response_format: { type: "json_object" },
+              }),
+            },
+          );
+          if (!response.ok) throw new Error(`API error ${response.status}`);
+          const data = await response.json();
+          const result = JSON.parse(data.choices[0].message.content);
+          let earned = Math.min(
+            maxMarks,
+            Math.max(0, Math.round(result.earned)),
+          );
+          if (isNaN(earned)) earned = Math.floor(maxMarks * 0.6);
+          return {
+            earned,
+            feedback: result.feedback || "Smart feedback.",
+            tips:
+              result.tips ||
+              "Analyse writer's methods, embed quotations, compare explicitly.",
+            level: "Smart Marked",
+          };
+        } catch (err) {
+          console.error(err);
+          return {
+            earned: Math.floor(maxMarks * 0.5),
+            feedback: `Smart marking error: ${err.message}. Partial score.`,
+            tips: "Review mark scheme manually.",
+            level: "Fallback",
+          };
+        }
+      }
+
+      // ---------- Email sending via Google Apps Script with responsive HTML and mark scheme reference ----------
+      async function sendResultsViaGoogleScript(
+        recipientEmail,
+        htmlContent,
+        csvContent,
+      ) {
+        if (
+          !GOOGLE_SCRIPT_URL ||
+          GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"
+        ) {
+          console.warn(
+            "Google Script URL not configured. Falling back to download.",
+          );
+          return false;
+        }
+        try {
+          const formData = new URLSearchParams();
+          formData.append("recipient", recipientEmail);
+          formData.append("subject", `Exam Results: ${EXAM_META.title}`);
+          formData.append("htmlBody", htmlContent);
+
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "cors", // still cors, but now simple request
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+          });
+          if (response.ok) {
+            showToast(`✅ Results emailed to ${recipientEmail}`, false);
+            return true;
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (err) {
+          console.error("Email send failed:", err);
+          showToast(
+            "⚠️ Email failed – results will be downloaded instead.",
+            true,
+          );
+          return false;
+        }
+      }
+
+      function downloadAsHTML(htmlContent) {
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `exam_results_${new Date().toISOString().slice(0, 19)}.html`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast("📁 Results downloaded as HTML file.", false);
+      }
+
+      // Helper to build a full email HTML with the same CSS as on-screen results,
+      // including mark scheme reference, and made responsive for desktop/mobile.
+      function buildEmailHtml(reviewHtmlContent) {
+        // CSS that is fully responsive – includes a container with max-width and media query.
+        const cssForEmail = `
+            body {
+                font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
+                background-color: #f4f7fc;
+                margin: 0;
+                padding: 20px;
+                color: #1e2a3e;
+            }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 32px;
+                padding: 30px 20px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+            .score-badge {
+                font-size: 2rem;
+                font-weight: bold;
+                color: #1e466e;
+                word-break: break-word;
+            }
+            .grade-box {
+                background: #d9e6f2;
+                padding: 14px;
+                border-radius: 28px;
+                margin: 15px 0;
+            }
+            .feedback-card {
+                background: white;
+                border-radius: 24px;
+                margin-bottom: 24px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                border-left: 10px solid #0077b6;
+            }
+            .feedback-header {
+                font-weight: 800;
+                font-size: 1.2rem;
+                margin-bottom: 12px;
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            .mark-badge {
+                background: #003c5f;
+                color: white;
+                border-radius: 60px;
+                padding: 2px 12px;
+                font-size: 0.8rem;
+            }
+            .ai-tips {
+                background: #e9f5e9;
+                padding: 16px;
+                border-radius: 20px;
+                margin-top: 15px;
+                border-left: 5px solid #2e7d32;
+            }
+            .weakness-box {
+                background: #f0f7ff;
+                padding: 16px;
+                border-radius: 20px;
+                margin-top: 20px;
+            }
+            h2, h3 {
+                color: #003c5f;
+            }
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                body {
+                    padding: 10px;
+                }
+                .container {
+                    padding: 20px 15px;
+                }
+                .score-badge {
+                    font-size: 1.5rem;
+                }
+                .feedback-header {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .feedback-card {
+                    padding: 15px;
+                }
+                .mark-badge {
+                    align-self: flex-start;
+                }
+            }
+        `;
+        return `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+            <title>Exam Results - ${EXAM_META.title}</title>
+            <style>${cssForEmail}</style>
+        </head>
+        <body>
+            <div class="container">
+                ${reviewHtmlContent}
+            </div>
+        </body>
+        </html>`;
+      }
+
+      async function submitAndMarkExam() {
+        if (examSubmitted) return;
+        clearInterval(timerInterval);
+        clearInterval(autoSaveInterval);
+        examSubmitted = true;
+        showToast("🤖 Marking in progress...", false);
+        const loading = document.createElement("div");
+        loading.className = "loading-overlay";
+        loading.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>🧠 Marking in progress...</p></div>`;
+        document.body.appendChild(loading);
+
+        let feedbackItems = [];
+        let totalEarned = 0,
+          totalPossible = 0;
+
+        for (let i = 0; i < actualQuestions.length; i++) {
+          const q = actualQuestions[i];
+          totalPossible += q.marks;
+          let answerText = "";
+          let result = { earned: 0, feedback: "No answer provided.", tips: "" };
+          if (q.type === "transactional") {
+            const tdata = transactionalDataMap[i] || {
+              choice: null,
+              content: "",
+            };
+            answerText = tdata.content;
+            if (tdata.choice && tdata.content.trim().length > 80) {
+              const choiceLabel =
+                tdata.choice === "letter" ? "Letter" : "Article";
+              result = await getAIFeedback(
+                i + 1,
+                `Transactional: ${choiceLabel} - ${q.text}`,
+                tdata.content,
+                q.marks,
+                q.msText,
+                true,
+                tdata.choice,
+              );
+            } else if (tdata.content.trim().length > 20) {
+              result = {
+                earned: Math.min(15, Math.floor(tdata.content.length / 15)),
+                feedback: "Partial response. Develop full letter/article.",
+                tips: "Write 300+ words with clear structure.",
+                level: "Partial",
+              };
+            } else {
+              result = {
+                earned: 0,
+                feedback: "No substantial transactional response.",
+                tips: "Select an option and write a developed response.",
+              };
+            }
+          } else {
+            answerText = userAnswers[i] || "";
+            if (answerText.trim().length > 15) {
+              result = await getAIFeedback(
+                i + 1,
+                q.text,
+                answerText,
+                q.marks,
+                q.msText,
+                false,
+              );
+            } else {
+              result = {
+                earned: 0,
+                feedback:
+                  "❌ Answer too short or missing. Refer to mark scheme.",
+                tips: "Provide detailed analysis with textual references.",
+              };
+            }
+          }
+          totalEarned += result.earned;
+          feedbackItems.push({
+            num: i + 1,
+            topic: q.topic || `Question ${i + 1}`,
+            answerExcerpt: answerText,
+            earned: result.earned,
+            max: q.marks,
+            feedback: result.feedback,
+            tips: result.tips,
+            markSchemeRef: q.msText,
+          });
+        }
+
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade =
+          percent >= 85
+            ? "9"
+            : percent >= 78
+              ? "8"
+              : percent >= 70
+                ? "7"
+                : percent >= 62
+                  ? "6"
+                  : percent >= 54
+                    ? "5"
+                    : percent >= 45
+                      ? "4"
+                      : percent >= 35
+                        ? "3"
+                        : "U";
+
+        // Build the same HTML for on‑screen display, now including mark scheme reference (as originally)
+        let reviewHtml = `<h2>✨ Results | ${EXAM_META.title}: ${EXAM_META.dateInfo}</h2>
+        <div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div>
+        <div class="grade-box"><strong>🎓 Predicted Grade (9-1): ${grade}</strong> (based on mark scheme alignment)</div>
+        <div><h3>📌 Detailed Feedback & Grade 9 Pointers</h3>`;
+        for (let fb of feedbackItems) {
+          reviewHtml += `<div class="feedback-card">
+                <div class="feedback-header"><span>Q${fb.num}: ${fb.topic}</span><span class="mark-badge">${fb.earned}/${fb.max}</span></div>
+                <div><strong>📝 Your answer (full):</strong><br><div style="white-space:pre-wrap;">${(fb.answerExcerpt || "---").replace(/</g, "&lt;")}</div></div>
+                <div><strong>🤖 Feedback:</strong><br>${fb.feedback.replace(/\n/g, "<br>")}</div>
+                <div class="ai-tips"><strong>🌟 GRADE 9 TIPS:</strong><br>${fb.tips}</div>
+                <div style="margin-top: 12px; font-size: 0.85rem; background: #f0f4fa; padding: 8px; border-radius: 12px;"><strong>📖 Mark scheme reference:</strong><br>${fb.markSchemeRef.substring(0, 300)}</div>
+            </div>`;
+        }
+        reviewHtml += `<div class="weakness-box"><h3>🎯 What to do for Grade 9 (Summary)</h3><ul>
+        <li>Use precise terminology: metaphor, juxtaposition, anecdote, single-story effect.</li>
+        <li>Compare both texts explicitly: "Whereas Text One focuses on sport stereotypes, Text Two broadens to cultural prejudice."</li>
+        <li>Transactional writing: adopt confident register, include counterargument, advanced punctuation.</li>
+        <li>Always embed brief quotations to support analysis.</li>
+        <li>Structure comparison answers using 'both writers... however...' + 'furthermore' for depth.</li>
+        </ul><p>✅ This marking references official Edexcel IGCSE English Language A mark schemes (AO1-AO5).</p></div>`;
+
+        // Display on screen
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        reviewDiv.innerHTML = reviewHtml;
+        document.body.removeChild(loading);
+        document.querySelectorAll("input, textarea, button").forEach((el) => {
+          if (el.id !== "submitBtn") el.disabled = true;
+        });
+        document.getElementById("submitBtn").disabled = true;
+
+        // Prepare email version with full styling, now includes mark scheme reference and responsive design
+        const reviewHtmlForEmail = removeEmojis(reviewHtml);
+        const emailHtml = buildEmailHtml(reviewHtmlForEmail);
+
+        // ----- Email sending -----
+        let recipient = DEFAULT_RECIPIENT_EMAIL;
+        if (ASK_STUDENT_EMAIL) {
+          let userEmail = prompt(
+            "Enter your email address to receive detailed results (or cancel to download):",
+            recipient,
+          );
+          if (userEmail && userEmail.includes("@")) recipient = userEmail;
+          else {
+            downloadAsHTML(emailHtml);
+            showToast("No valid email provided. Results downloaded.", false);
+            return;
+          }
+        }
+
+        const emailSent = await sendResultsViaGoogleScript(
+          recipient,
+          emailHtml,
+          "",
+        );
+        if (!emailSent) {
+          downloadAsHTML(emailHtml);
+        }
+      }
+
+      async function loadSavedProgress() {
+        const saved = await loadProgressFromDB();
+        if (
+          saved &&
+          saved.answers &&
+          saved.answers.length === actualQuestions.length
+        ) {
+          if (confirm("📀 Resume previous exam progress?")) {
+            for (let i = 0; i < actualQuestions.length; i++) {
+              if (
+                actualQuestions[i].type === "transactional" &&
+                saved.transactionalState &&
+                saved.transactionalState[i]
+              ) {
+                transactionalDataMap[i] = saved.transactionalState[i];
+                userAnswers[i] = JSON.stringify(saved.transactionalState[i]);
+              } else {
+                userAnswers[i] = saved.answers[i] || "";
+                if (
+                  actualQuestions[i].type === "transactional" &&
+                  saved.transactionalState &&
+                  saved.transactionalState[i]
+                ) {
+                  transactionalDataMap[i] = saved.transactionalState[i];
+                }
+              }
+            }
+            if (saved.transactionalState)
+              transactionalDataMap = saved.transactionalState;
+            timeSeconds = saved.timeRemaining || timeSeconds;
+            updateTimerDisplay();
+            buildQuestionCards();
+            renderNavigation();
+          } else {
+            buildQuestionCards();
+            renderNavigation();
+          }
+        } else {
+          buildQuestionCards();
+          renderNavigation();
+        }
+      }
+      // Remove emoji characters (icons) from a string
+      function removeEmojis(text) {
+        const emojisToRemove = [
+          "📖",
+          "✨",
+          "🎓",
+          "📝",
+          "🤖",
+          "🌟",
+          "📌",
+          "✅",
+          "📘",
+          "✍️",
+          "📩",
+          "📰",
+          "⏱️",
+          "🧠",
+          "📂",
+          "🔍",
+          "◀",
+          "▶",
+          "📀",
+          "🎯",
+          "💡",
+          "🔔",
+          "⚠️",
+          "❌",
+        ];
+        let result = text;
+        for (const emoji of emojisToRemove) {
+          result = result.split(emoji).join("");
+        }
+        return result;
+      }
+
+      window.onload = async () => {
+        await initDatabase();
+        await loadSavedProgress();
+        startTimer();
+        autoSaveInterval = setInterval(saveAutoProgress, 30000);
+        document.getElementById("nextBtn").onclick = () => {
+          if (currentQIndex + 1 < actualQuestions.length && !examSubmitted)
+            goToQuestion(currentQIndex + 1);
+        };
+        document.getElementById("prevBtn").onclick = () => {
+          if (currentQIndex - 1 >= 0 && !examSubmitted)
+            goToQuestion(currentQIndex - 1);
+        };
+        document.getElementById("submitBtn").onclick = () => {
+          submitAndMarkExam();
+        };
+      };
+    </script>
+  </body>
+</html>
