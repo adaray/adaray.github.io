@@ -1270,6 +1270,39 @@
           "",
         );
       }
+      function removeEmojis(text) {
+        const emojisToRemove = [
+          "📖",
+          "✨",
+          "🎓",
+          "📝",
+          "🤖",
+          "🌟",
+          "📌",
+          "✅",
+          "📘",
+          "✍️",
+          "📩",
+          "📰",
+          "⏱️",
+          "🧠",
+          "📂",
+          "🔍",
+          "◀",
+          "▶",
+          "📀",
+          "🎯",
+          "💡",
+          "🔔",
+          "⚠️",
+          "❌",
+        ];
+        let result = text;
+        for (const emoji of emojisToRemove) {
+          result = result.split(emoji).join("");
+        }
+        return result;
+      }
 
       window.onload = async () => {
         await initDatabase();
