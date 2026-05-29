@@ -397,9 +397,6 @@
 
     <script>
       // ======================= BIOLOGY PAPER 2B JUNE 2019 - EDEXCEL IGCSE =======================
-      // Deduplicated reading text constant
-      const READING_GBR =
-        "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>";
 
       const questionsData = [
         {
@@ -416,7 +413,8 @@
           type: "standard",
           text: "1(a) What is meant by the term <strong>'ecosystem'</strong> (line 3)?",
           marks: 2,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme: (all) living organisms / community / (different / all) species (1) AND environment / area / habitat / abiotic factors / non-living factors / physical factors (1).",
           topic: "Ecosystem definition",
@@ -426,7 +424,8 @@
           type: "standard",
           text: "1(b) Suggest how the mutualistic relationship between the small animals and the algae inside them is of benefit to both species (lines 6 and 7).",
           marks: 2,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme: (animals get) glucose / oxygen / energy (1); (algae get) carbon dioxide / protection / shelter / safety / cannot be eaten (1). Ignore 'place to live/food' for algae.",
           topic: "Mutualism",
@@ -436,7 +435,8 @@
           type: "standard",
           text: "1(c)(i) Explain why coral grows best in shallow, clear water (lines 3 and 4).",
           marks: 2,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme: (sun)light (1) and photosynthesis (1). Light penetrates shallow water for algae photosynthesis.",
           topic: "Coral adaptation",
@@ -446,7 +446,8 @@
           type: "standard",
           text: "1(c)(ii) Suggest why coral grows best in moving water (line 3 and 4).",
           marks: 2,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme (any two): supply food / algae / plankton (1); supply minerals / ions / named mineral (1); supply oxygen (1); supply carbon dioxide (1); remove waste / faeces / carbon dioxide (1); distribute gametes (1).",
           topic: "Coral & water flow",
@@ -466,7 +467,8 @@
           type: "standard",
           text: "1(e) Give one reason why coral that survives higher sea temperatures is under increased threat from predators (lines 22 to 24).",
           marks: 1,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme: there is less food / less coral to eat (1). Ignore 'only source of food / only coral available'.",
           topic: "Predator-prey",
@@ -476,7 +478,8 @@
           type: "standard",
           text: "1(f) Suggest what recommendations should be included in the sustainability plan for the coral reef (lines 26 to 27).",
           marks: 3,
-          readingText: READING_GBR,
+          readingText:
+            "📖 <strong>Refer to the passage: Global warming and the Great Barrier Reef</strong>",
           msText:
             "Mark scheme (any three): reduce greenhouse gas / greenhouse effect (1); reduce carbon dioxide / CFCs / methane / N2O emissions (1); use less fossil fuel / renewable energy / less deforestation / farm fewer cattle (1); control/reduce predators / starfish / snails (1); reduce tourism / fishing / restrict access (1); reintroduce coral / grow coral in lab and place on reef (1).",
           topic: "Conservation",
@@ -807,6 +810,7 @@
       document.getElementById("examDateBadge").innerHTML = EXAM_META.dateInfo;
 
       const DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY_PLACEHOLDER";
+      const DEEPSEEK_MODEL = "deepseek-v4-pro";
       const USE_AI_MARKING = true;
       const DB_NAME = "IGCSE_Biology_Exam_DB";
       const DB_VERSION = 1;
@@ -995,7 +999,7 @@
                 Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
               },
               body: JSON.stringify({
-                model: "deepseek-chat",
+                model: "DEEPSEEK_MODEL",
                 messages: [
                   {
                     role: "system",
