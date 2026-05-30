@@ -409,457 +409,352 @@
       // ============================================================
       // ⚡ ONLY MODIFY THE OBJECT BELOW FOR A NEW EXAM ⚡
       // ============================================================
-      const questionDataRaw = {
-        examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
-        examSubtitle: "Paper 2B | January 2021",
-        durationMinutes: 75,
-        questions: [
-          {
-            id: "q1ai",
-            type: "mcq",
-            text: "1(a)(i) Which organism named in the passage is a producer?",
-            options: [
-              "A crustaceans",
-              "B microscopic plankton",
-              "C sea birds",
-              "D turtles",
-            ],
-            correct: "B",
-            marks: 1,
-            topic: "Ecology/Food chains",
-            msText: "The only correct answer is B microscopic plankton",
-          },
-          {
-            id: "q1aii",
-            type: "mcq",
-            text: "1(a)(ii) Which organism named in the passage is a tertiary consumer?",
-            options: [
-              "A crustaceans",
-              "B fin whale",
-              "C human",
-              "D whale shark",
-            ],
-            correct: "C",
-            marks: 1,
-            topic: "Ecology/Food chains",
-            msText: "The only correct answer is C human",
-          },
-          {
-            id: "q1b",
-            type: "written",
-            text: "1(b) Explain how blocked tubes leading from the mouth can lead to death in some animals.",
-            correctKeywords: [
-              "less food taken in",
-              "starve",
-              "food cannot be digested",
-              "less digestion",
-              "fewer amino acids",
-              "less glucose",
-              "less gas exchange",
-              "less air taken in",
-              "cannot breathe",
-              "suffocate",
-              "less oxygen",
-              "less carbon dioxide removed",
-              "less aerobic respiration",
-              "more anaerobic respiration",
-              "less energy",
-              "less ATP",
-              "more lactic acid",
-            ],
-            marks: 5,
-            topic: "Human biology/Digestion and gas exchange",
-            msText:
-              "(less) food taken in / eaten / taken in (to stomach) / starve (1) food cannot be digested / less digestion (1) fewer amino acids / less glucose / fatty acids / glycerol (1) less gas exchange / less air taken in / can't breathe / air cannot flow through trachea / bronchi / suffocate (1) less oxygen (in blood) / less oxygen (to lungs) (1) less carbon dioxide removed / eq (1) less (aerobic) respiration / more anaerobic respiration (1) less energy / ATP / more lactic acid (1)",
-          },
-          {
-            id: "q1c",
-            type: "written",
-            text: "1(c) Suggest why bioaccumulation of microplastics is a problem for humans.",
-            correctKeywords: [
-              "plastic concentrate along food chain",
-              "more plastic in higher trophic levels",
-              "plastic builds up",
-              "humans at end of food chain",
-              "humans gain plastic from eating fish",
-              "less catch of fish",
-              "less food for humans",
-            ],
-            marks: 2,
-            topic: "Ecology/Bioaccumulation",
-            msText:
-              "plastic concentrate (along food chain) / plastic increases in bodies (along food chain) / more plastic in higher trophic levels / plastic works along food chain / plastic builds up / eq (1) humans at end of food chain / humans eat plastic when eating fish / eq / humans gain plastic from the fish (1) less catch of fish / less food for humans (if fish populations decrease) (1)",
-          },
-          {
-            id: "q1d",
-            type: "calc",
-            text: "1(d) Calculate the difference between the number of plastic particles ingested in a year by a fin whale (2000 per day) and a whale shark (200 per day). Give your answer in standard form.",
-            correctValue: 657000,
-            tolerance: 3000,
-            marks: 3,
-            topic: "Maths/Calculations",
-            msText:
-              "2000 – 200 = 1800; 1800 × 365 = 657 000 or 660 000; = 6.57 × 10^5 or 6.6 × 10^5",
-          },
-          {
-            id: "q1e",
-            type: "written",
-            text: "1(e) Explain the effects of reduced reproduction on biodiversity.",
-            correctKeywords: [
-              "reduced biodiversity",
-              "fewer species",
-              "lower populations",
-              "fewer food sources",
-              "fewer niches",
-              "extinction",
-              "food chain disruption",
-            ],
-            marks: 2,
-            topic: "Ecology/Biodiversity",
-            msText:
-              "reduced biodiversity / eq (1) fewer species / lower populations (1) fewer food sources / eq / fewer niches (1)",
-          },
-          {
-            id: "q2a",
-            type: "mcq",
-            text: "2(a) Which part of the urinary system contains nephrons? (Refer to diagram with labels A, B, C, D)",
-            options: ["A kidney", "B ureter", "C bladder", "D urethra"],
-            correct: "A",
-            marks: 1,
-            topic: "Human biology/Excretory system",
-            msText: "The only correct answer is A",
-          },
-          {
-            id: "q2b",
-            type: "written",
-            text: "2(b) Name a substance found in urine.",
-            correctKeywords: ["water", "urea", "ions", "salts", "named ion"],
-            marks: 1,
-            topic: "Human biology/Excretion",
-            msText: "water (1) urea (1) ions / named ion / salts (1)",
-          },
-          {
-            id: "q2ci",
-            type: "written",
-            text: "2(c)(i) Explain the scientist's results (more urine after drinking water, less after salt solution).",
-            correctKeywords: [
-              "more urine when drinking water",
-              "less urine when drinking salt solution",
-              "lower blood concentration when drinking water",
-              "higher blood concentration when drinking salt solution",
-              "detected by hypothalamus",
-              "osmoreceptors",
-              "less ADH released with water",
-              "more ADH released with salt",
-              "collecting ducts less permeable with water",
-              "collecting ducts more permeable with salt",
-              "less water reabsorbed with water",
-              "more water reabsorbed with salt",
-            ],
-            marks: 5,
-            topic: "Human biology/Osmoregulation",
-            msText:
-              "more urine produced when drinking water / less urine when drinking salt solution (1) lower blood concentration (when drinking water) / higher blood concentration (when drinking salt solution) (1) detected by hypothalamus / osmoreceptors (1) less / no ADH released by (pituitary) (with water) / (more) ADH released (with salt) (1) collecting ducts are less permeable (with water) / collecting ducts are more permeable (with salt) (1) less water reabsorbed / absorbed into blood (with water) / (more) water reabsorbed / absorbed into blood (with salt) (1)",
-          },
-          {
-            id: "q2cii",
-            type: "written",
-            text: "2(c)(ii) Give two other factors that affect the volume of urine produced.",
-            correctKeywords: [
-              "exercise",
-              "sweating",
-              "activity",
-              "volume of fluid consumed",
-              "what they drank",
-              "temperature",
-              "food eaten",
-              "diet",
-            ],
-            marks: 2,
-            topic: "Human biology/Osmoregulation",
-            msText:
-              "exercise / sweating / activity (1) volume of fluid consumed before investigation / what they drank (1) temperature / eq (1) food eaten / diet (1)",
-          },
-          {
-            id: "q3a",
-            type: "written",
-            text: "3(a) State what is meant by the term in vitro.",
-            correctKeywords: ["in glass", "in test tube", "in Petri dish"],
-            marks: 1,
-            topic: "Biotechnology/Micropropagation",
-            msText: "in glass / in test tube / in (Petri) dish (1)",
-          },
-          {
-            id: "q3bi",
-            type: "written",
-            text: "3(b)(i) Explain the relationship between pH and the mean number of shoots per explant.",
-            correctKeywords: [
-              "increases up to pH 6",
-              "decreases above pH 6",
-              "enzymes",
-              "optimum pH is 6",
-              "enzymes denature at high pH",
-              "enzymes denature at low pH",
-            ],
-            marks: 2,
-            topic: "Enzymes/Effect of pH",
-            msText:
-              "increases up to pH 6 and decreases above pH 6 (1) enzymes (1) optimum pH is 6 / (enzymes) denature at high / low pH / eq (1)",
-          },
-          {
-            id: "q3bii",
-            type: "written",
-            text: "3(b)(ii) Describe a procedure the student could use to obtain explants and produce these results.",
-            correctKeywords: [
-              "use forceps/scalpel/knife to remove explants",
-              "wash in bleach/hypochlorite/ethanol/alcohol",
-              "grow on agar",
-              "add nutrients/minerals/carbohydrates/amino acids",
-              "add growth factors/hormones",
-              "add acid/alkali/buffer",
-              "use several explants",
-              "repeat",
-              "control temperature/CO2/light",
-              "sterile agar/sterile tubes",
-              "same age plant/same plant/same size of explants",
-              "count number of shoots after same time",
-            ],
-            marks: 5,
-            topic: "Scientific method/Experimental procedure",
-            msText:
-              "use forceps / scalpel / knife / eq to remove explants / pieces from plant (1) wash in bleach / hypochlorite / ethanol / alcohol / sterile wipes / eq (1) (grow on) agar (1) nutrients / minerals / carbohydrates / amino acids / named mineral / eq / growth factors / hormones (1) add acid / alkali / buffer (1) use several / multiple explants / repeat (1) control temperature / carbon dioxide / light (1) sterile agar / sterile tubes (1) same age plant / same plant / same size of explants / eq (1) count number of shoots after same / stated time (1)",
-          },
-          {
-            id: "q3c",
-            type: "written",
-            text: "3(c) Give two benefits of using micropropagation to produce new plants rather than using seeds.",
-            correctKeywords: [
-              "lots produced",
-              "genetically identical",
-              "no variation",
-              "clones",
-              "can grow GM plants",
-              "faster",
-              "quicker",
-              "any time of year",
-              "can be used for plants that are hard to germinate",
-            ],
-            marks: 2,
-            topic: "Plant biology/Micropropagation",
-            msText:
-              "lots produced (1) genetically identical / no variation / all same type / identical / same characteristics / guaranteed plant / they are clones (1) can grow GM plants / eq (1) faster / quicker (1) any time of year (1) can be used for plants that are hard to germinate / grow from seed (1)",
-          },
-          {
-            id: "q4a",
-            type: "written",
-            text: "4(a) Explain how layer A (upper epidermis) is adapted for its role.",
-            correctKeywords: [
-              "few chloroplasts",
-              "no chloroplasts",
-              "thin layer",
-              "thin cells",
-              "one cell thick",
-              "transparent",
-              "lets light through",
-              "allows light to reach palisade layer",
-              "waxy cuticle reduces water loss",
-              "prevents evaporation",
-              "waterproof",
-              "protects against infection",
-            ],
-            marks: 2,
-            topic: "Plant biology/Leaf structure",
-            msText:
-              "few / no chloroplasts / thin layer / thin cells / one cell thick (1) transparent / lets light through / allows light to reach palisade layer (1) (waxy cuticle) reduces water loss / evaporation / waterproof layer / barrier to water / eq (1) protects against infection / eq (1)",
-          },
-          {
-            id: "q4c",
-            type: "written",
-            text: "4(c) Explain how layer D (guard cells) is able to regulate gas exchange.",
-            correctKeywords: [
-              "guard cells",
-              "open stomata",
-              "close stomata",
-              "let carbon dioxide in during day",
-              "when light",
-            ],
-            marks: 2,
-            topic: "Plant biology/Stomata",
-            msText:
-              "guard cells (1) open / close stomata (1) let carbon dioxide in during day / when light (1)",
-          },
-          {
-            id: "q4d",
-            type: "written",
-            text: "4(d) The spray is impermeable to water vapour but allows other gases to pass through. Discuss whether an anti-transpirant spray will promote plant growth.",
-            correctKeywords: [
-              "reduces transpiration",
-              "reduces water loss",
-              "plant does not wilt",
-              "prevents wilting",
-              "allows CO2 to enter",
-              "photosynthesis can occur",
-              "can still make glucose",
-              "less absorption of mineral ions",
-              "less cooling",
-              "plant may overheat",
-            ],
-            marks: 4,
-            topic: "Plant biology/Transpiration",
-            msText:
-              "reduce / stop transpiration / water loss (from plant) (1) so plant does not wilt / go flaccid (1) (but) allows absorption of carbon dioxide / CO2 can still get in / can still pass through (1) photosynthesis can occur / can (still) make glucose / carbohydrates / starch (1) but less absorption / transport of mineral ions / named mineral ions (1) less cooling / plant may overheat / eq (1)",
-          },
-          {
-            id: "q5ai",
-            type: "mcq",
-            text: "5(a)(i) A DNA strand has this sequence of bases: CATTCAAATTCATTTC. How many amino acids does this sequence of bases code for?",
-            options: ["A 1", "B 3", "C 5", "D 15"],
-            correct: "C",
-            marks: 1,
-            topic: "Genetics/Genetic code",
-            msText: "The only correct answer is C 5",
-          },
-          {
-            id: "q5aii",
-            type: "written",
-            text: "5(a)(ii) Write down the complementary mRNA code for this sequence of bases: CATTCAAATTCATTTC.",
-            correctKeywords: ["GUA AGU UAA GUA AAG"],
-            marks: 2,
-            topic: "Molecular biology/Transcription",
-            msText: "GUA AGU UAA GUA AAG (2) One error scores 1",
-          },
-          {
-            id: "q5aiii",
-            type: "written",
-            text: "5(a)(iii) A student reads that DNA codons are non-overlapping. Suggest what is meant by the term non-overlapping. You should refer to the sequence of bases in your answer.",
-            correctKeywords: [
-              "each triplet codes for one amino acid",
-              "codons are discrete",
-              "independent of each other",
-              "nucleotides not shared between codons",
-              "example of triplet reading frames",
-            ],
-            marks: 2,
-            topic: "Genetics/Genetic code",
-            msText:
-              "each triplet / codon codes for one amino acid / eq (1) codons are discrete / independent of each other / nucleotides / bases are not shared between codons / eq (1) example of triplet reading frames, e.g. CAT TCA / eq (1)",
-          },
-          {
-            id: "q5b",
-            type: "written",
-            text: "5(b) Describe what happens in the translation stage of protein synthesis.",
-            correctKeywords: [
-              "mRNA arrives at ribosome",
-              "mRNA has codons",
-              "ribosome moves along mRNA strand",
-              "tRNA brings amino acids",
-              "anticodon binds with codon",
-              "amino acid chain produced",
-              "polypeptide formed",
-            ],
-            marks: 4,
-            topic: "Molecular biology/Translation",
-            msText:
-              "mRNA arrives at) ribosome (1) mRNA has codons / is a template (1) ribosome moves along mRNA strand (1) tRNA brings amino acids (to ribosome) (1) anticodon (on tRNA) binds with codon (on mRNA) / tRNA binds with mRNA (1) amino acid chain produced / amino acid joined / polypeptide (1)",
-          },
-          {
-            id: "q5c",
-            type: "written",
-            text: "5(c) State what is meant by the genome of an organism.",
-            correctKeywords: ["the genes", "DNA", "genetic material"],
-            marks: 1,
-            topic: "Genetics/Genome",
-            msText: "the / its genes / DNA / genetic material (1)",
-          },
-          {
-            id: "q6a",
-            type: "written",
-            text: "6(a) Give the expected relationship between the named independent variable (enzyme concentration/number of discs) and the named dependent variable (volume of oxygen produced) in this demonstration.",
-            correctKeywords: [
-              "increasing enzyme concentration increases rate of oxygen production",
-              "increasing number of discs increases volume of oxygen produced",
-            ],
-            marks: 2,
-            topic: "Enzymes/Factors affecting rate",
-            msText:
-              "increasing enzyme concentration increases the rate of oxygen production / eq (2) one mark for naming the enzyme concentration / number of potato discs as independent variable and the oxygen production as the dependent variable (1)",
-          },
-          {
-            id: "q6b",
-            type: "written",
-            text: "6(b) Give two factors that the teacher should control to make the investigation valid.",
-            correctKeywords: [
-              "pH",
-              "volume of buffer",
-              "volume of hydrogen peroxide",
-              "time",
-              "duration of reaction",
-              "size of disc",
-              "volume of disc",
-              "mass of disc",
-              "shape of disc",
-              "surface area of disc",
-              "temperature",
-            ],
-            marks: 2,
-            topic: "Scientific method/Control variables",
-            msText:
-              "pH / volume of buffer (1) volume of hydrogen peroxide / substrate (1) time / duration of reaction (1) size / volume / mass / shape / surface area of each disc (1) temperature (1)",
-          },
-          {
-            id: "q6ci",
-            type: "calc",
-            text: "6(c)(i) Calculate the mean volume of oxygen produced in one minute using 5 potato discs.",
-            correctValue: 1.4,
-            tolerance: 0.05,
-            marks: 2,
-            topic: "Maths/Mean",
-            msText: "4.2 ÷ 3 = 1.4",
-          },
-          {
-            id: "q6cii",
-            type: "calc",
-            text: "6(c)(ii) Calculate the percentage increase in mean volume of oxygen produced in one minute as the concentration of enzyme changes from 15 to 20 discs.",
-            correctValue: 13.7,
-            tolerance: 0.5,
-            marks: 2,
-            topic: "Maths/Percentage change",
-            msText: "(8.3 - 7.3) ÷ 7.3 × 100 = 13.7",
-          },
-          {
-            id: "q6ciii",
-            type: "written",
-            text: "6(c)(iii) Explain the relationship between the concentration of enzyme and mean volume of oxygen produced in one minute.",
-            correctKeywords: [
-              "increasing enzyme concentration increases volume of oxygen",
-              "more active sites",
-              "more collisions",
-              "more enzyme-substrate complexes",
-              "more enzymes combine with substrates",
-            ],
-            marks: 2,
-            topic: "Enzymes/Concentration effect",
-            msText:
-              "increasing enzyme concentration /number of discs increases volume of oxygen produced (1) more active sites (1) (increase in enzyme concentration) means more collisions / more enzyme substrate complexes / more enzymes combine with substrates / eq (1)",
-          },
-          {
-            id: "q6d",
-            type: "written",
-            text: "6(d) Suggest why the teacher measures the volume of oxygen after the first minute of the reaction rather than after 10 minutes.",
-            correctKeywords: [
-              "to measure initial rate",
-              "to measure fastest rate",
-              "reaction will slow down",
-              "hydrogen peroxide used up",
-              "substrate concentration falls",
-            ],
-            marks: 2,
-            topic: "Enzymes/Measuring rate",
-            msText:
-              "to measure initial / fastest rate (1) the rate of oxygen production / bubbles produced will slow (as time increases) / hydrogen peroxide / substrate concentration falls / hydrogen peroxide breaks down / concentration is used up (1)",
-          },
-        ],
-      };
+const questionDataRaw = {
+  examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
+  examSubtitle: "Paper 2B | January 2021",
+  durationMinutes: 75,
+  questions: [
+    {
+      id: "q1ai",
+      type: "mcq",
+      text: "1(a)(i) Which organism named in the passage is a producer?",
+      options: ["A crustaceans", "B microscopic plankton", "C sea birds", "D turtles"],
+      correct: "B",
+      marks: 1,
+      topic: "Ecology/Food chains",
+      msText: "The only correct answer is B microscopic plankton"
+    },
+    {
+      id: "q1aii",
+      type: "mcq",
+      text: "1(a)(ii) Which organism named in the passage is a tertiary consumer?",
+      options: ["A crustaceans", "B fin whale", "C human", "D whale shark"],
+      correct: "C",
+      marks: 1,
+      topic: "Ecology/Food chains",
+      msText: "The only correct answer is C human"
+    },
+    {
+      id: "q1b",
+      type: "written",
+      text: "1(b) Explain how blocked tubes leading from the mouth can lead to death in some animals.",
+      correctKeywords: [
+        "less food taken in / starve",
+        "food cannot be digested / less digestion",
+        "fewer amino acids / less glucose",
+        "less gas exchange / cannot breathe / suffocate",
+        "less oxygen",
+        "less carbon dioxide removed",
+        "less aerobic respiration / more anaerobic respiration",
+        "less energy / ATP / more lactic acid"
+      ],
+      marks: 5,
+      topic: "Human biology/Digestion and gas exchange",
+      msText: "(less) food taken in / eaten / taken in (to stomach) / starve (1) food cannot be digested / less digestion (1) fewer amino acids / less glucose / fatty acids / glycerol (1) less gas exchange / less air taken in / can't breathe / air cannot flow through trachea / bronchi / suffocate (1) less oxygen (in blood) / less oxygen (to lungs) (1) less carbon dioxide removed / eq (1) less (aerobic) respiration / more anaerobic respiration (1) less energy / ATP / more lactic acid (1)"
+    },
+    {
+      id: "q1c",
+      type: "written",
+      text: "1(c) Suggest why bioaccumulation of microplastics is a problem for humans.",
+      correctKeywords: [
+        "plastic concentrates along food chain",
+        "more plastic in higher trophic levels",
+        "humans at end of food chain",
+        "humans gain plastic from eating fish",
+        "less catch of fish / less food for humans"
+      ],
+      marks: 2,
+      topic: "Ecology/Bioaccumulation",
+      msText: "plastic concentrate (along food chain) / plastic increases in bodies (along food chain) / more plastic in higher trophic levels / plastic works along food chain / plastic builds up / eq (1) humans at end of food chain / humans eat plastic when eating fish / eq / humans gain plastic from the fish (1) less catch of fish / less food for humans (if fish populations decrease) (1)"
+    },
+    {
+      id: "q1d",
+      type: "calc",
+      text: "1(d) Calculate the difference between the number of plastic particles ingested in a year by a fin whale (2000 per day) and a whale shark (200 per day). Give your answer in standard form.",
+      correctValue: 657000,
+      tolerance: 3000,
+      marks: 3,
+      topic: "Maths/Standard form",
+      msText: "2000 – 200 = 1800; 1800 × 365 = 657 000 or 660 000; = 6.57 × 10^5 or 6.6 × 10^5"
+    },
+    {
+      id: "q1e",
+      type: "written",
+      text: "1(e) Explain the effects of reduced reproduction on biodiversity.",
+      correctKeywords: [
+        "reduced biodiversity",
+        "fewer species",
+        "lower populations",
+        "fewer food sources",
+        "extinction",
+        "food chain disruption"
+      ],
+      marks: 2,
+      topic: "Ecology/Biodiversity",
+      msText: "reduced biodiversity / eq (1) fewer species / lower populations (1) fewer food sources / eq / fewer niches (1)"
+    },
+    {
+      id: "q1f",
+      type: "written",
+      text: "1(f) Suggest two ways that the use of biodegradable plastic bags could reduce the harmful effects of plastic pollution.",
+      correctKeywords: [
+        "less microplastic produced",
+        "fewer animals harmed / killed",
+        "broken down / digested / decomposed",
+        "by microorganisms / bacteria / fungi",
+        "less bioaccumulation / less toxin passed along food chains"
+      ],
+      marks: 2,
+      topic: "Environmental science/Pollution",
+      msText: "less microplastic produced (1) fewer animals harmed / suffocated / killed / damaged / not eaten by animals (1) broken down / digested / decomposed (1) by microorganisms / bacteria / fungi (1) Allow less bioaccumulation / less toxin passed along food chains / eq"
+    },
+    {
+      id: "q2a",
+      type: "mcq",
+      text: "2(a) Which part of the urinary system contains nephrons?",
+      options: ["A", "B", "C", "D"],
+      correct: "A",
+      marks: 1,
+      topic: "Human biology/Excretory system",
+      msText: "The only correct answer is A"
+    },
+    {
+      id: "q2b",
+      type: "written",
+      text: "2(b) Name a substance found in urine.",
+      correctKeywords: ["water", "urea", "ions", "named ion", "salts"],
+      marks: 1,
+      topic: "Human biology/Excretion",
+      msText: "water (1) urea (1) ions / named ion / salts (1)"
+    },
+    {
+      id: "q2ci",
+      type: "written",
+      text: "2(c)(i) Explain the scientist's results (more urine after drinking water, less after salt solution).",
+      correctKeywords: [
+        "more urine with water / less with salt",
+        "lower blood concentration with water / higher with salt",
+        "detected by hypothalamus / osmoreceptors",
+        "less ADH with water / more with salt",
+        "collecting ducts less permeable with water / more with salt",
+        "less water reabsorbed with water / more with salt"
+      ],
+      marks: 5,
+      topic: "Human biology/Osmoregulation",
+      msText: "more urine produced when drinking water / less urine when drinking salt solution (1) lower blood concentration (when drinking water) / higher blood concentration (when drinking salt solution) (1) detected by hypothalamus / osmoreceptors (1) less / no ADH released by (pituitary) (with water) / (more) ADH released (with salt) (1) collecting ducts are less permeable (with water) / collecting ducts are more permeable (with salt) (1) less water reabsorbed / absorbed into blood (with water) / (more) water reabsorbed / absorbed into blood (with salt) (1)"
+    },
+    {
+      id: "q2cii",
+      type: "written",
+      text: "2(c)(ii) Give two other factors that affect the volume of urine produced.",
+      correctKeywords: ["exercise / sweating", "volume of fluid consumed", "temperature", "food eaten / diet"],
+      marks: 2,
+      topic: "Human biology/Osmoregulation",
+      msText: "exercise / sweating / activity (1) volume of fluid consumed before investigation / what they drank (1) temperature / eq (1) food eaten / diet (1)"
+    },
+    {
+      id: "q3a",
+      type: "written",
+      text: "3(a) State what is meant by the term in vitro.",
+      correctKeywords: ["in glass", "in test tube", "in Petri dish"],
+      marks: 1,
+      topic: "Biotechnology/Micropropagation",
+      msText: "in glass / in test tube / in (Petri) dish (1)"
+    },
+    {
+      id: "q3bi",
+      type: "written",
+      text: "3(b)(i) Explain the relationship between pH and the mean number of shoots per explant.",
+      correctKeywords: ["increases up to pH 6 and decreases above pH 6", "enzymes", "optimum pH is 6", "denature at high/low pH"],
+      marks: 2,
+      topic: "Enzymes/pH effect",
+      msText: "increases up to pH 6 and decreases above pH 6 (1) enzymes (1) optimum pH is 6 / (enzymes) denature at high / low pH / eq (1)"
+    },
+    {
+      id: "q3bii",
+      type: "written",
+      text: "3(b)(ii) Describe a procedure the student could use to obtain explants and produce these results.",
+      correctKeywords: [
+        "use forceps/scalpel to remove explants",
+        "wash in bleach/ethanol/alcohol",
+        "grow on agar",
+        "add nutrients/minerals/carbohydrates/hormones",
+        "add acid/alkali/buffer",
+        "use several explants/repeat",
+        "control temperature/CO2/light",
+        "sterile conditions",
+        "same age/size of explants",
+        "count number of shoots after same time"
+      ],
+      marks: 5,
+      topic: "Scientific method/Experimental procedure",
+      msText: "use forceps / scalpel / knife / eq to remove explants / pieces from plant (1) wash in bleach / hypochlorite / ethanol / alcohol / sterile wipes / eq (1) (grow on) agar (1) nutrients / minerals / carbohydrates / amino acids / named mineral / eq / growth factors / hormones (1) add acid / alkali / buffer (1) use several / multiple explants / repeat (1) control temperature / carbon dioxide / light (1) sterile agar / sterile tubes (1) same age plant / same plant / same size of explants / eq (1) count number of shoots after same / stated time (1)"
+    },
+    {
+      id: "q3c",
+      type: "written",
+      text: "3(c) Give two benefits of using micropropagation to produce new plants rather than using seeds.",
+      correctKeywords: ["lots produced", "genetically identical / clones", "can grow GM plants", "faster/quicker", "any time of year", "can use for plants hard to germinate"],
+      marks: 2,
+      topic: "Plant biology/Micropropagation",
+      msText: "lots produced (1) genetically identical / no variation / all same type / identical / same characteristics / guaranteed plant / they are clones (1) can grow GM plants / eq (1) faster / quicker (1) any time of year (1) can be used for plants that are hard to germinate / grow from seed (1)"
+    },
+    {
+      id: "q4a",
+      type: "written",
+      text: "4(a) Explain how layer A (upper epidermis) is adapted for its role.",
+      correctKeywords: ["few/no chloroplasts", "thin / one cell thick", "transparent / lets light through", "allows light to reach palisade layer", "waxy cuticle reduces water loss", "protects against infection"],
+      marks: 2,
+      topic: "Plant biology/Leaf structure",
+      msText: "few / no chloroplasts / thin layer / thin cells / one cell thick (1) transparent / lets light through / allows light to reach palisade layer (1) (waxy cuticle) reduces water loss / evaporation / waterproof layer / barrier to water / eq (1) protects against infection / eq (1)"
+    },
+    {
+      id: "q4c",
+      type: "written",
+      text: "4(c) Explain how layer D (guard cells) is able to regulate gas exchange.",
+      correctKeywords: ["guard cells", "open/close stomata", "let carbon dioxide in during day / when light"],
+      marks: 2,
+      topic: "Plant biology/Stomata",
+      msText: "guard cells (1) open / close stomata (1) let carbon dioxide in during day / when light (1)"
+    },
+    {
+      id: "q4d",
+      type: "written",
+      text: "4(d) Discuss whether an anti-transpirant spray will promote plant growth.",
+      correctKeywords: [
+        "reduces transpiration / water loss",
+        "prevents wilting",
+        "allows CO2 to enter",
+        "photosynthesis can still occur",
+        "less absorption of mineral ions",
+        "less cooling / plant may overheat"
+      ],
+      marks: 4,
+      topic: "Plant biology/Transpiration",
+      msText: "reduce / stop transpiration / water loss (from plant) (1) so plant does not wilt / go flaccid (1) (but) allows absorption of carbon dioxide / CO2 can still get in / can still pass through (1) photosynthesis can occur / can (still) make glucose / carbohydrates / starch (1) but less absorption / transport of mineral ions / named mineral ions (1) less cooling / plant may overheat / eq (1)"
+    },
+    {
+      id: "q5ai",
+      type: "mcq",
+      text: "5(a)(i) How many amino acids does this DNA sequence code for? (CATTCAAATTCATTTC)",
+      options: ["A 1", "B 3", "C 5", "D 15"],
+      correct: "C",
+      marks: 1,
+      topic: "Genetics/Genetic code",
+      msText: "The only correct answer is C 5"
+    },
+    {
+      id: "q5aii",
+      type: "written",
+      text: "5(a)(ii) Write down the complementary mRNA code for CATTCAAATTCATTTC.",
+      correctKeywords: ["GUA AGU UAA GUA AAG"],
+      marks: 2,
+      topic: "Molecular biology/Transcription",
+      msText: "GUA AGU UAA GUA AAG (2) One error scores 1"
+    },
+    {
+      id: "q5aiii",
+      type: "written",
+      text: "5(a)(iii) Suggest what is meant by the term non-overlapping codons.",
+      correctKeywords: ["each triplet codes for one amino acid", "codons are discrete / independent", "nucleotides not shared between codons", "example of triplet reading frames"],
+      marks: 2,
+      topic: "Genetics/Genetic code",
+      msText: "each triplet / codon codes for one amino acid / eq (1) codons are discrete / independent of each other / nucleotides / bases are not shared between codons / eq (1) example of triplet reading frames, e.g. CAT TCA / eq (1)"
+    },
+    {
+      id: "q5b",
+      type: "written",
+      text: "5(b) Describe what happens in the translation stage of protein synthesis.",
+      correctKeywords: [
+        "mRNA arrives at ribosome",
+        "mRNA has codons",
+        "ribosome moves along mRNA",
+        "tRNA brings amino acids",
+        "anticodon binds with codon",
+        "amino acid chain / polypeptide produced"
+      ],
+      marks: 4,
+      topic: "Molecular biology/Translation",
+      msText: "mRNA arrives at) ribosome (1) mRNA has codons / is a template (1) ribosome moves along mRNA strand (1) tRNA brings amino acids (to ribosome) (1) anticodon (on tRNA) binds with codon (on mRNA) / tRNA binds with mRNA (1) amino acid chain produced / amino acid joined / polypeptide (1)"
+    },
+    {
+      id: "q5c",
+      type: "written",
+      text: "5(c) State what is meant by the genome of an organism.",
+      correctKeywords: ["the genes", "DNA", "genetic material"],
+      marks: 1,
+      topic: "Genetics/Genome",
+      msText: "the / its genes / DNA / genetic material (1)"
+    },
+    {
+      id: "q6a",
+      type: "written",
+      text: "6(a) Give the expected relationship between the independent variable (enzyme concentration) and dependent variable (oxygen volume).",
+      correctKeywords: [
+        "increasing enzyme concentration increases rate of oxygen production",
+        "increasing number of discs increases volume of oxygen"
+      ],
+      marks: 2,
+      topic: "Enzymes/Concentration effect",
+      msText: "increasing enzyme concentration increases the rate of oxygen production / eq (2) one mark for naming the independent and dependent variables correctly"
+    },
+    {
+      id: "q6b",
+      type: "written",
+      text: "6(b) Give two factors the teacher should control.",
+      correctKeywords: ["pH / volume of buffer", "volume of hydrogen peroxide", "time", "size/volume/mass of discs", "temperature"],
+      marks: 2,
+      topic: "Scientific method/Control variables",
+      msText: "pH / volume of buffer (1) volume of hydrogen peroxide / substrate (1) time / duration of reaction (1) size / volume / mass / shape / surface area of each disc (1) temperature (1)"
+    },
+    {
+      id: "q6ci",
+      type: "calc",
+      text: "6(c)(i) Calculate the mean volume of oxygen using 5 potato discs.",
+      correctValue: 1.4,
+      tolerance: 0.05,
+      marks: 2,
+      topic: "Maths/Mean",
+      msText: "4.2 ÷ 3 = 1.4"
+    },
+    {
+      id: "q6cii",
+      type: "calc",
+      text: "6(c)(ii) Calculate the percentage increase from 15 to 20 discs.",
+      correctValue: 13.7,
+      tolerance: 0.5,
+      marks: 2,
+      topic: "Maths/Percentage change",
+      msText: "(8.3 - 7.3) ÷ 7.3 × 100 = 13.7"
+    },
+    {
+      id: "q6ciii",
+      type: "written",
+      text: "6(c)(iii) Explain the relationship between enzyme concentration and oxygen volume.",
+      correctKeywords: [
+        "increasing enzyme concentration increases volume",
+        "more active sites",
+        "more collisions / more enzyme-substrate complexes"
+      ],
+      marks: 2,
+      topic: "Enzymes/Concentration effect",
+      msText: "increasing enzyme concentration /number of discs increases volume of oxygen produced (1) more active sites (1) more collisions / more enzyme substrate complexes / more enzymes combine with substrates / eq (1)"
+    },
+    {
+      id: "q6d",
+      type: "written",
+      text: "6(d) Suggest why the teacher measures volume after the first minute rather than after 10 minutes.",
+      correctKeywords: [
+        "to measure initial / fastest rate",
+        "reaction slows as substrate is used up",
+        "hydrogen peroxide concentration falls"
+      ],
+      marks: 2,
+      topic: "Enzymes/Measuring rate",
+      msText: "to measure initial / fastest rate (1) the rate of oxygen production / bubbles produced will slow (as time increases) / hydrogen peroxide / substrate concentration falls / hydrogen peroxide breaks down / concentration is used up (1)"
+    }
+  ]
+};
       // ============================================================
       // END OF MODIFIABLE SECTION – everything below is fully automatic
       // ============================================================
