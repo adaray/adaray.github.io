@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Pearson Edexcel IGCSE Biology | Paper 2 Practice Hub (4BI1/2B)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #eef2fa 0%, #e4e9f2 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #132a3b;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+    }
+
+    /* main container */
+    .exam-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0,0,0,0.05);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    /* header area — distinctive for Biology Paper 2 (teal & navy gradient) */
+    .hero {
+      background: linear-gradient(135deg, #0a2f44 0%, #1c5e7a 100%);
+      padding: 2.5rem 2rem 2rem 2rem;
+      color: white;
+      border-bottom: 5px solid #7bc5ae;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero h1 span {
+      font-weight: 500;
+      background: rgba(123, 197, 174, 0.25);
+      padding: 0.1rem 0.4rem;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .hero .code {
+      font-size: 1rem;
+      background: rgba(255,255,255,0.15);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      margin-top: 0.75rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .subhead {
+      margin-top: 1rem;
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 85%;
+      border-left: 3px solid #7bc5ae;
+      padding-left: 1rem;
+    }
+
+    /* instruction panel */
+    .info-panel {
+      background: white;
+      margin: 1.8rem 2rem 0 2rem;
+      padding: 1.2rem 1.8rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid rgba(19,42,59,0.1);
+    }
+
+    .instruction-text {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      color: #1c5e7a;
+    }
+
+    .instruction-text .badge {
+      background: #7bc5ae20;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #146b54;
+    }
+
+    .start-hint {
+      background: #eef3fa;
+      padding: 0.4rem 1.2rem;
+      border-radius: 80px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #0a2f44;
+    }
+
+    /* series section */
+    .series-section {
+      padding: 2rem 2rem 2.5rem 2rem;
+    }
+
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border-bottom: 2px solid #d4dfe8;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title small {
+      font-size: 0.85rem;
+      font-weight: normal;
+      background: #eef2f8;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      color: #2a6c7c;
+    }
+
+    .exam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.6rem;
+      margin-top: 1.8rem;
+    }
+
+    /* card design */
+    .exam-card {
+      background: white;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid #dce5ec;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exam-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 30px -10px rgba(12, 52, 72, 0.25);
+      border-color: #bdd1de;
+    }
+
+    /* dynamic color header (set via inline style per year) */
+    .card-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      transition: background 0.2s;
+      border-radius: 1.5rem 1.5rem 0 0;
+    }
+
+    .exam-series {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f3b4d;
+      letter-spacing: -0.2px;
+    }
+
+    .exam-date {
+      font-size: 0.75rem;
+      color: #3d5e6e;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .card-body {
+      padding: 0.8rem 1.2rem 1.2rem 1.2rem;
+      flex-grow: 1;
+    }
+
+    .paper-code {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #ecf3f8;
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      color: #146b78;
+      margin-bottom: 1rem;
+    }
+
+    .btn-start-exam {
+      display: block;
+      width: 100%;
+      background: linear-gradient(100deg, #0a2f44, #1f6d8a);
+      border: none;
+      padding: 0.85rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      text-decoration: none;
+      font-family: inherit;
+      margin-top: 0.7rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-start-exam:hover {
+      background: linear-gradient(100deg, #052338, #115d78);
+      transform: scale(0.98);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-footer {
+      background: #e6edf2;
+      margin: 0 2rem 2rem 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #1f5c6e;
+    }
+
+    .info-footer a {
+      color: #0a2f44;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .year-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 30px;
+      padding: 0.2rem 0.65rem;
+      margin-left: 6px;
+      letter-spacing: -0.2px;
+      background: rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 1rem;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .hero {
+        padding: 1.5rem;
+      }
+      .info-panel {
+        margin: 1rem 1rem 0 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .series-section {
+        padding: 1.5rem;
+      }
+      .info-footer {
+        margin: 0 1rem 1.5rem 1rem;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+      .subhead {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="exam-container">
+  <div class="hero">
+    <h1>Pearson Edexcel International GCSE <span>Biology (4BI1)</span><br>Paper 2B Practice Hub</h1>
+    <div class="code">🔬 Exam code: 4BI1 | Paper 2B (Higher Tier) | Biology Paper 2</div>
+    <div class="subhead">
+      🧬 Navigate through real past papers for Paper 2. Each card is colour‑coded by exam year for quick visual differentiation — distinct from Paper 1 and English Language.
+    </div>
+  </div>
+
+  <div class="info-panel">
+    <div class="instruction-text">
+      <span class="badge">🧪 Biology Paper 2 Navigator</span>
+      <span>🔍 Click <strong>“Start the exam”</strong> to open the official past paper.</span>
+    </div>
+    <div class="start-hint">
+      🎨 <strong>Year‑unique colours</strong> — each academic year features its own header style.
+    </div>
+  </div>
+
+  <div class="series-section">
+    <div class="section-title">
+      📅 Complete past paper series — Paper 2 (4BI1/2B)
+      <small>chronological order (oldest → newest)</small>
+    </div>
+    <div class="exam-grid" id="examSeriesGrid">
+      <!-- dynamic cards will be injected here -->
+    </div>
+  </div>
+
+  <div class="info-footer">
+    <span>📖 Pearson Edexcel IGCSE Biology (4BI1) — Paper 2 exam practice hub</span>
+    <span>✨ Each button opens the corresponding .html file. Colour headers differentiate between years and help distinguish from Paper 1 & English.</span>
+  </div>
+</div>
+
+<script>
+  // ---------- BIOLOGY PAPER 2: FILE NAMES (EXACT LIST PROVIDED) ----------
+  const rawFilenames = [
+    "jan-2020.html", "jan-2021.html", "jan-2022.html", "jan-2023.html",
+    "june-2019.html", "june-2020.html", "june-2021.html", "june-2022.html",
+    "june-2023.html", "june-2024.html", "june-2025.html",
+    "nov-2021.html", "nov-2023.html", "nov-2024.html"
+  ];
+
+  // Helper: parse filename into { year, monthKey, monthFull, sortOrder }
+  function parseExamFile(filename) {
+    const nameWithoutExt = filename.replace('.html', '');
+    const parts = nameWithoutExt.split('-');
+    if (parts.length !== 2) return null;
+    const monthKey = parts[0].toLowerCase(); // jan, june, nov
+    const year = parseInt(parts[1], 10);
+    let monthFull = "";
+    if (monthKey === "jan") monthFull = "January";
+    else if (monthKey === "june") monthFull = "June";
+    else if (monthKey === "nov") monthFull = "November";
+    else monthFull = monthKey.charAt(0).toUpperCase() + monthKey.slice(1);
+    
+    // numeric month for sorting (jan=1, june=6, nov=11)
+    let monthNum = 0;
+    if (monthKey === "jan") monthNum = 1;
+    else if (monthKey === "june") monthNum = 6;
+    else if (monthKey === "nov") monthNum = 11;
+    
+    return { year, monthKey, monthFull, monthNum, original: filename };
+  }
+
+  // Build items and sort chronologically (by year then month)
+  let examItems = rawFilenames.map(f => parseExamFile(f)).filter(item => item !== null);
+  examItems.sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return a.monthNum - b.monthNum;
+  });
+
+  // Create final series list for rendering
+  const examSeriesList = examItems.map(item => {
+    let seriesLabel = `${item.monthFull} ${item.year}`;
+    let dateContext = `${item.monthFull} series ${item.year}`;
+    if (item.monthFull === "January") dateContext = `January examination ${item.year}`;
+    else if (item.monthFull === "June") dateContext = `Summer session ${item.year}`;
+    else if (item.monthFull === "November") dateContext = `Autumn resit ${item.year}`;
+    
+    return {
+      id: `${item.monthKey}-${item.year}`,
+      series: seriesLabel,
+      paperRef: "Biology Paper 2 (4BI1/2B)",
+      dateContext: dateContext,
+      link: item.original,
+      fullLabel: `${seriesLabel} — Biology Paper 2`,
+      year: item.year,
+      monthKey: item.monthKey
+    };
+  });
+
+  // ---------- DISTINCT COLOR PALETTE FOR BIOLOGY PAPER 2 (different from English & Paper 1) ----------
+  // Rich, academic tones: indigo, slate, deep teal, blue-grey, muted violet, warm plum, ocean.
+  // Each year gets a unique header background & accent colour.
+  function getYearColorScheme(year) {
+    const colourMap = {
+      2019: { bg: "#e0eafc", borderAccent: "#5a7d9a", textDark: "#2a4b6e", tagBg: "#5a7d9a20" },   // soft cadet
+      2020: { bg: "#e8ecfa", borderAccent: "#6f5ea0", textDark: "#4a3b72", tagBg: "#6f5ea020" },   // muted periwinkle
+      2021: { bg: "#e0f0f5", borderAccent: "#2f8b8c", textDark: "#1a6667", tagBg: "#2f8b8c20" },   // teal mist
+      2022: { bg: "#ede7f6", borderAccent: "#8e6bb2", textDark: "#5a3e7c", tagBg: "#8e6bb220" },   // lavender grey
+      2023: { bg: "#ffe7f0", borderAccent: "#d sixteen6a5", textDark: "#a1415e", tagBg: "#d66a5f20" },  // dusty rose
+      2024: { bg: "#daf1f0", borderAccent: "#489c9a", textDark: "#2b6b69", tagBg: "#489c9a20" },   // aqua shadow
+      2025: { bg: "#f3e2f0", borderAccent: "#b5779e", textDark: "#7e4a6a", tagBg: "#b5779e20" }    // orchid bloom
+    };
+    // fallback for any unexpected year (like if 2026 appears)
+    return colourMap[year] || { bg: "#eef2f5", borderAccent: "#608b9e", textDark: "#2c6a7e", tagBg: "#608b9e20" };
+  }
+
+  // Start exam handler: opens the actual .html file (real past paper)
+  function startExam(seriesObj) {
+    const targetLink = seriesObj.link;
+    const seriesName = seriesObj.series;
+    const paperInfo = "Biology Paper 2 (4BI1/2B)";
+    
+    const userConfirmed = confirm(`🔬 Pearson Edexcel IGCSE Biology (Paper 2)\n\n📌 Series: ${seriesName}\n📄 Component: ${paperInfo}\n\n✅ Click OK to open the past paper in a new tab and begin your exam practice.`);
+    
+    if (userConfirmed) {
+      if (targetLink && targetLink !== "#" && targetLink.trim() !== "") {
+        window.open(targetLink, "_blank");
+        console.log(`[Biology Paper 2] Launched: ${seriesName} → ${targetLink}`);
+      } else {
+        alert(`⚠️ Exam paper file "${targetLink}" not found. Please ensure the file exists in the same directory as this hub.`);
+      }
+    } else {
+      console.log("Exam start cancelled by student.");
+    }
+  }
+
+  // Render dynamic exam cards with year‑based distinct colours
+  function renderExamGrid() {
+    const gridContainer = document.getElementById("examSeriesGrid");
+    if (!gridContainer) return;
+    gridContainer.innerHTML = "";
+
+    examSeriesList.forEach(series => {
+      const year = series.year;
+      const colors = getYearColorScheme(year);
+      
+      const card = document.createElement("div");
+      card.className = "exam-card";
+      
+      // Header with distinct background per year
+      const cardHeader = document.createElement("div");
+      cardHeader.className = "card-header";
+      cardHeader.style.backgroundColor = colors.bg;
+      cardHeader.style.borderLeft = `6px solid ${colors.borderAccent}`;
+      
+      // Year tag for extra clarity
+      const yearTagHtml = `<span class="year-tag" style="background: ${colors.tagBg}; color: ${colors.textDark};">📆 ${year}</span>`;
+      
+      cardHeader.innerHTML = `
+        <div class="exam-series" style="color: ${colors.textDark};">${escapeHtml(series.series)}</div>
+        <div class="exam-date">
+          <span>📅 ${escapeHtml(series.dateContext)}</span>
+          ${yearTagHtml}
+        </div>
+      `;
+      
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body";
+      cardBody.innerHTML = `
+        <div class="paper-code">🧬 ${escapeHtml(series.paperRef)}</div>
+        <button class="btn-start-exam" data-id="${escapeHtml(series.id)}">🔬 Start the exam</button>
+      `;
+      
+      card.appendChild(cardHeader);
+      card.appendChild(cardBody);
+      
+      const startBtn = cardBody.querySelector(".btn-start-exam");
+      startBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        startExam(series);
+      });
+      
+      gridContainer.appendChild(card);
+    });
+  }
+  
+  // simple XSS protection helper
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  
+  // Add extra style for consistent year tag and button focus
+  const extraStyles = document.createElement('style');
+  extraStyles.textContent = `
+    .year-tag {
+      font-weight: 600;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 30px;
+      display: inline-block;
+      line-height: 1.2;
+    }
+    .btn-start-exam:focus-visible {
+      outline: 3px solid #7bc5ae;
+      outline-offset: 2px;
+    }
+    .card-header {
+      transition: background 0.2s;
+    }
+  `;
+  document.head.appendChild(extraStyles);
+  
+  // After DOM ready
+  window.addEventListener("DOMContentLoaded", () => {
+    renderExamGrid();
+    console.log("✅ Biology Paper 2 hub ready — papers sorted chronologically, distinct year colours active.");
+    // Optional: log mapping for teachers
+    console.table(examSeriesList.map(s => ({ series: s.series, file: s.link, year: s.year })));
+  });
+</script>
+
+<noscript>
+  <div style="background:#f8d7da; margin:2rem; padding:1rem; border-radius:1rem; text-align:center;">
+    ⚠️ Please enable JavaScript to use the interactive exam series buttons. This hub requires JavaScript to load past paper cards.
+  </div>
+</noscript>
+</body>
+</html>
