@@ -1,0 +1,1550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>
+      Interactive Exam System | Auto Graph Detection & Smart Marking
+    </title>
+    <!-- EmailJS script removed - replaced by Google Apps Script -->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 20px;
+        color: #1e2a3e;
+      }
+      .exam-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 20px 30px 40px;
+      }
+      .header {
+        border-bottom: 3px solid #2c7da0;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 1.7rem;
+        color: #0b3b4f;
+      }
+      .title p {
+        margin: 5px 0 0;
+        color: #2c7da0;
+        font-weight: 500;
+      }
+      .timer-area {
+        background: #1e2a3e;
+        padding: 8px 18px;
+        border-radius: 60px;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+      }
+      .timer {
+        font-size: 2rem;
+        font-family: monospace;
+        letter-spacing: 2px;
+      }
+      .info-bar {
+        background: #e9f0f5;
+        padding: 10px 20px;
+        border-radius: 28px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .question-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #cbd5e1;
+        padding-bottom: 15px;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+      .nav-btn {
+        background: #eef2f6;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 42px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.1s;
+        font-size: 0.9rem;
+      }
+      .nav-btn.active {
+        background: #2c7da0;
+        color: white;
+      }
+      .nav-btn.answered {
+        background: #61a5c2;
+        color: white;
+      }
+      .question-card {
+        display: none;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+      }
+      .question-card.active-question {
+        display: block;
+      }
+      .q-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        background: #f0f6fa;
+        padding: 6px 12px;
+        border-radius: 30px;
+        display: inline-block;
+      }
+      .marks {
+        font-size: 0.8rem;
+        background: #cbd5e1;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 12px;
+      }
+      .subquestion {
+        margin: 20px 0 20px 12px;
+        border-left: 3px solid #cbd5e1;
+        padding-left: 18px;
+      }
+      .placeholder-img {
+        background: #eef2f9;
+        border: 1px dashed #8ba0bc;
+        padding: 20px;
+        text-align: center;
+        border-radius: 16px;
+        margin: 15px 0;
+        font-style: italic;
+        color: #2c3e66;
+      }
+      .mcq-option {
+        margin: 10px 0;
+      }
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        padding: 10px 14px;
+        border-radius: 14px;
+        border: 1px solid #b9c7d9;
+        width: 100%;
+        max-width: 550px;
+        font-family: inherit;
+      }
+      textarea {
+        max-width: 100%;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        background: #2c7da0;
+        border: none;
+        padding: 10px 26px;
+        border-radius: 40px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.warning {
+        background: #b23c1c;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .review-section {
+        background: #fef9e3;
+        padding: 20px;
+        border-radius: 20px;
+        margin-top: 30px;
+      }
+      .hidden {
+        display: none;
+      }
+      .score-badge {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #1e2a3e;
+      }
+      .grade-box {
+        background: #d9e6f2;
+        padding: 12px;
+        border-radius: 24px;
+        margin: 15px 0;
+      }
+      .weakness-box {
+        background: #ffe6e6;
+        padding: 16px;
+        border-radius: 20px;
+        margin-top: 20px;
+        border-left: 8px solid #c7362b;
+      }
+      .feedback-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      .feedback-table th,
+      .feedback-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        vertical-align: top;
+        text-align: left;
+      }
+      .feedback-table th {
+        background: #2c7da0;
+        color: white;
+      }
+      .feedback-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+      .correct-highlight {
+        background: #d4edda;
+      }
+      .incorrect-highlight {
+        background: #f8d7da;
+      }
+      details summary {
+        cursor: pointer;
+        font-weight: 600;
+        margin: 15px 0;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.8rem;
+        margin-top: 30px;
+        color: #6c757d;
+      }
+      .status-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c7da0;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: 1000;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(3px);
+      }
+      .loading-spinner {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 30px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+      .spinner {
+        border: 4px solid #e9f0f5;
+        border-top: 4px solid #2c7da0;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 700px) {
+        .exam-container {
+          padding: 15px;
+        }
+        .timer {
+          font-size: 1.4rem;
+        }
+        .feedback-table {
+          font-size: 0.8rem;
+        }
+      }
+      .ai-badge {
+        background: #4a6fa5;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+      .ms-badge {
+        background: #f4a261;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+      .ms-panel {
+        background: #f8f9fc;
+        border-left: 5px solid #f4a261;
+        padding: 12px 16px;
+        margin-top: 15px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .ms-panel.visible {
+        display: block;
+      }
+      .marks-earned-row {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .marks-earned-row select {
+        padding: 6px 12px;
+        border-radius: 30px;
+        background: white;
+        border: 1px solid #b9c7d9;
+        font-weight: bold;
+      }
+      button.small {
+        background: #e76f51;
+        padding: 5px 12px;
+        font-size: 0.7rem;
+        border: none;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+      }
+      .graph-badge {
+        background: #f4a261;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="exam-container" id="examApp">
+      <div class="header">
+        <div class="title">
+          <h1 id="examTitle">Loading Exam...</h1>
+          <p id="examSubtitle"></p>
+        </div>
+        <div class="timer-area">
+          <div>Time Remaining</div>
+          <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+      </div>
+      <div class="info-bar">
+        <span id="durationTotalSpan">⏱️ -- hours | 📝 Total marks: --</span>
+        <span id="answeredCounter">📋 Questions answered: 0 / --</span>
+        <span id="graphCounter">📊 Graph/Practical questions: 0</span>
+      </div>
+      <div id="navContainer" class="question-nav"></div>
+      <div id="questionsContainer"></div>
+      <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">Submit Exam</button>
+      </div>
+      <div id="reviewPanel" class="review-section hidden"></div>
+      <div id="statusToast" class="status-toast"></div>
+    </div>
+
+    <script>
+      // ============================================================
+      // ⚡ ONLY MODIFY THE OBJECT BELOW FOR A NEW EXAM ⚡
+      // ============================================================
+      const questionDataRaw = {
+        examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
+        examSubtitle: "Paper 2B | January 2023",
+        durationMinutes: 75,
+        questions: [
+          {
+            id: "q1a",
+            type: "calc",
+            text: "1(a) In 2021, the world's population was 7 900 000 000. Calculate the number of people in the world who have chronic kidney disease (approximately 12% of the population). Give your answer in standard form.",
+            correctValue: 9.5e8,
+            tolerance: 0.05e8,
+            marks: 2,
+            topic: "Maths/Percentages",
+            msText:
+              "9.5 × 10^8 (2) Allow 9.48 × 10^8, Allow 950 000 000 or 948 000 000",
+          },
+          {
+            id: "q1b",
+            type: "written",
+            text: "1(b) Urea is an excretory product that is released by the kidneys. Give the name of an excretory product that is released by the lungs.",
+            correctKeywords: ["carbon dioxide", "CO2", "water vapour", "H2O"],
+            marks: 1,
+            topic: "Human biology/Excretion",
+            msText: "carbon dioxide / CO2 / water (vapour) / H2O (1)",
+          },
+          {
+            id: "q1c",
+            type: "written",
+            text: "1(c) Explain two ways that the dialyser is designed to increase the rate of removal of urea from the blood.",
+            correctKeywords: [
+              "40°C temperature",
+              "more particle movement / kinetic energy / faster diffusion",
+              "long tubing / coiled tubing",
+              "increase surface area",
+              "thin wall / thin membrane",
+              "decrease diffusion path / short diffusion distance",
+              "circulating / moving dialysis fluid",
+              "maintain diffusion gradient",
+              "no urea in dialysis fluid",
+              "creates concentration gradient",
+            ],
+            marks: 4,
+            topic: "Medical technology/Dialysis",
+            msText:
+              "40°C (temperature) (1) more particle movement / more (kinetic) energy / faster diffusion / eq (1) OR long tubing / coiled tubing / eq (1) to increase / large surface area / eq (1) OR thin wall / thin membrane / eq (1) to decrease diffusion path / short diffusion distance / eq (1) OR circulating / moving dialysis fluid / eq (1) to maintain diffusion gradient / concentration gradient / eq (1) OR no urea (in dialysis fluid) (1) (so there is a) concentration / diffusion gradient / eq (1)",
+          },
+          {
+            id: "q1di",
+            type: "mcq",
+            text: "1(d)(i) Where does ultrafiltration occur in a nephron?",
+            options: [
+              "A Bowman's capsule",
+              "B collecting duct",
+              "C distal convoluted tubule",
+              "D loop of Henle",
+            ],
+            correct: "A",
+            marks: 1,
+            topic: "Human biology/Kidney function",
+            msText: "A (Bowman's capsule) is the only correct answer",
+          },
+          {
+            id: "q1dii",
+            type: "written",
+            text: "1(d)(ii) Describe how the nephron absorbs glucose back into the blood from the filtrate.",
+            correctKeywords: [
+              "selective reabsorption",
+              "in proximal convoluted tubule",
+              "active transport",
+              "uses energy / ATP",
+              "against concentration gradient",
+            ],
+            marks: 2,
+            topic: "Human biology/Kidney function",
+            msText:
+              "selective reabsorption (1) in proximal (convoluted) tubule / PCT (1) active transport / uses energy / uses ATP (1) against (concentration) gradient (1)",
+          },
+          {
+            id: "q1diii",
+            type: "mcq",
+            text: "1(d)(iii) Which row of the table is correct for the blood vessel bringing blood into the bioartificial kidney and the tube transporting urine to the bladder?",
+            options: [
+              "A renal artery, ureter",
+              "B renal artery, urethra",
+              "C renal vein, ureter",
+              "D renal vein, urethra",
+            ],
+            correct: "A",
+            marks: 1,
+            topic: "Human biology/Excretory system",
+            msText: "A (renal artery / ureter) is the only correct answer",
+          },
+          {
+            id: "q1e",
+            type: "written",
+            text: "1(e) Explain how the pituitary gland and the nephron cells in the bioreactor will respond in a patient who is dehydrated.",
+            correctKeywords: [
+              "osmoreceptors detect high salt concentration",
+              "hypothalamus detects lower water potential",
+              "pituitary releases more ADH",
+              "collecting duct cells become more permeable",
+              "more water reabsorbed into blood",
+              "urine becomes more concentrated",
+              "lower volume of urine",
+            ],
+            marks: 3,
+            topic: "Human biology/Osmoregulation",
+            msText:
+              "osmoreceptors / hypothalamus, detects high salt concentration in blood / lower water potential in blood / eq (1) (pituitary) releases (more) ADH (1) (nephron) cells / collecting duct more permeable (1) (more) water is reabsorbed / (more) water absorbed into blood / eq (1) urine becomes more concentrated / lower volume of urine / eq (1)",
+          },
+          {
+            id: "q2ai",
+            type: "mcq",
+            text: "2(a)(i) Which labelled structure is the cornea?",
+            options: ["A", "B", "C", "D"],
+            correct: "C",
+            marks: 1,
+            topic: "Human biology/Senses",
+            msText: "C is the only correct answer",
+          },
+          {
+            id: "q2aii",
+            type: "written",
+            text: "2(a)(ii) Explain the changes in structure X (the pupil/iris) as a person moves from a room where the light is dim to a room where the light is bright.",
+            correctKeywords: [
+              "circular muscles contract",
+              "radial muscles relax",
+              "pupil narrows",
+              "pupil gets smaller",
+              "pupil constricts",
+              "iris widens",
+            ],
+            marks: 2,
+            topic: "Human biology/Senses",
+            msText:
+              "circular muscles contract (1) radial muscles relax (1) (so) pupil narrows / gets smaller / constricts / iris widens / eq (1)",
+          },
+          {
+            id: "q2bi",
+            type: "written",
+            text: "2(b)(i) Give the independent variable for the student's investigation (judging distance using one eye or two eyes).",
+            correctKeywords: [
+              "using one eye or both eyes",
+              "amount of eyes",
+              "number of eyes",
+            ],
+            marks: 1,
+            topic: "Scientific method/Variables",
+            msText:
+              "using one eye or both eyes / amount of eyes / number of eyes / eq (1)",
+          },
+          {
+            id: "q2bii",
+            type: "written",
+            text: "2(b)(ii) Give one variable that the student should control.",
+            correctKeywords: [
+              "light intensity",
+              "distance from block",
+              "size of pins",
+              "shape of pins",
+              "colour of pins",
+              "sideways distance between pins",
+              "number of pins",
+              "size of block",
+              "angle of block",
+            ],
+            marks: 1,
+            topic: "Scientific method/Control variables",
+            msText:
+              "light intensity / lighting / eq (1) distance (from block) / eq (1) size of pins / shape of pins / colour of pins / sideways distance between pins / number of pins / eq (1) size of block / shape of block / angle of the block / size of grid / eq (1)",
+          },
+          {
+            id: "q2biii",
+            type: "written",
+            text: "2(b)(iii) Complete Table 2 by determining the mode and the median for the data shown in Table 1.",
+            correctKeywords: [
+              "One eye: mode=3, median=2; Both eyes: mode=6, median=6",
+            ],
+            marks: 2,
+            topic: "Maths/Statistics",
+            msText:
+              "Mode: one eye = 3, both eyes = 6; Median: one eye = 2, both eyes = 6",
+          },
+          {
+            id: "q2biv",
+            type: "written",
+            text: "2(b)(iv) Explain why predators, such as cats, have two forward facing eyes. Use the information in the diagram and Table 2 to support your answer.",
+            correctKeywords: [
+              "better distance judgement with two eyes",
+              "better depth perception",
+              "higher mode/median when using two eyes",
+              "large overlapping visual field",
+              "to locate prey",
+              "to catch prey",
+              "do not need wide field of view as not preyed upon",
+            ],
+            marks: 3,
+            topic: "Animal behaviour/Senses",
+            msText:
+              "better distance judgement (with two eyes) / better depth perception / more pins were correct when using two eyes (1) higher mode / median when using two eyes / eq (1) large area seen by both eyes / large overlapping visual field / eq (1) to locate prey / catch prey / chase prey / see prey / eq (1)",
+          },
+          {
+            id: "q3a",
+            type: "written",
+            text: "3(a) State what is meant by the term gene.",
+            correctKeywords: [
+              "section of DNA",
+              "codes for a protein",
+              "codes for a polypeptide",
+              "chain of amino acids",
+            ],
+            marks: 1,
+            topic: "Genetics/DNA",
+            msText:
+              "a section / length of DNA that codes for a protein / polypeptide / chain of amino acids / eq (1)",
+          },
+          {
+            id: "q3bi",
+            type: "written",
+            text: "3(b)(i) Complete the table by giving the genotypes of red cattle, white cattle, and roan cattle. (Alleles: C^R and C^W, codominant)",
+            correctKeywords: [
+              "Red: C^R C^R",
+              "White: C^W C^W",
+              "Roan: C^R C^W",
+            ],
+            marks: 3,
+            topic: "Genetics/Inheritance",
+            msText: "red: C^R C^R, white: C^W C^W, roan: C^R C^W",
+          },
+          {
+            id: "q3bii",
+            type: "written",
+            text: "3(b)(ii) Two roan-coloured cattle are mated. Determine the probability that the calf produced is a male calf with roan-coloured hair. Include a genetic diagram in your answer.",
+            correctKeywords: [
+              "parental genotypes C^R C^W x C^R C^W",
+              "gametes C^R and C^W",
+              "offspring 1 C^R C^R : 2 C^R C^W : 1 C^W C^W",
+              "probability roan = 1/2",
+              "probability male = 1/2",
+              "overall probability = 1/4 or 0.25",
+            ],
+            marks: 4,
+            topic: "Genetics/Probability",
+            msText:
+              "parental genotypes of C^W C^R and C^W C^R (1) parental gametes of C^W or C^R (1) offspring as 1 C^R C^R : 2 C^W C^R : 1 C^W C^W (1) probability calculated as 0.25 / ¼ / 25% (1)",
+          },
+          {
+            id: "q3ci",
+            type: "written",
+            text: "3(c)(i) In the same group, there is a greater variation of heights compared with hair colour. Explain why there is a greater variation in height of the cattle than there is in hair colour.",
+            correctKeywords: [
+              "height is polygenic",
+              "multiple genes control height",
+              "different genes for height",
+              "mixture of dominant and recessive alleles for different genes",
+              "environment/nutrition affects height",
+              "hair colour is monogenic",
+            ],
+            marks: 2,
+            topic: "Genetics/Variation",
+            msText:
+              "height is polygenic (1) so multiple / many / more than one gene / different genes control height / eq (1) animals may get a mixture of dominant and recessive alleles for different genes / eq (1) environment / nutrition may affect height / eq (1)",
+          },
+          {
+            id: "q3cii",
+            type: "written",
+            text: "3(c)(ii) Describe how a farmer could use selective breeding to increase the height of cattle.",
+            correctKeywords: [
+              "select cattle that are taller",
+              "mate them",
+              "select offspring that are taller",
+              "mate them",
+              "repeat through generations",
+            ],
+            marks: 2,
+            topic: "Genetics/Selective breeding",
+            msText:
+              "select cattle that are taller and mate them / eq (1) select offspring (that are taller) and mate them / eq (1) repeat (through generations) / eq (1)",
+          },
+          {
+            id: "q4a",
+            type: "written",
+            text: "4(a) Explain why micropropagation was used to produce copies of the transgenic soya plant.",
+            correctKeywords: [
+              "plants will be genetically identical",
+              "same genes",
+              "all have same trait",
+              "only one plant was made",
+              "no others to breed with",
+              "no need to repeat genetic modification",
+              "fast method",
+              "can be produced any time of year",
+            ],
+            marks: 2,
+            topic: "Plant biology/Micropropagation",
+            msText:
+              "plants will be genetically identical / same genes / will all have the gene / same DNA / eq (1) all have same (saturated) fat / all have less (saturated) fat / eq (1) (only one plant was made) and there were no others to breed with / eq (1) no need to repeat genetic modification / eq (1) fast method (to produce many) / can be produced any time of year / eq (1)",
+          },
+          {
+            id: "q4bi",
+            type: "written",
+            text: "4(b)(i) Describe how the student could use the equipment to make a valid comparison of the energy content of the two types of soya bean.",
+            correctKeywords: [
+              "weigh beans / same mass of beans",
+              "same volume of water",
+              "ignite bean",
+              "hold under test tube / heat water",
+              "burn until completely burnt",
+              "measure temperature rise",
+              "repeats",
+            ],
+            marks: 4,
+            topic: "Practical skills/Energy content",
+            msText:
+              "weigh beans / same mass of beans / (calculate) per gram of food / eq (1) same volume of water / measure volume / same mass of water / stated volume of water / eq (1) ignite bean / set fire, and hold under test tube / water / heat water / eq (1) keep igniting until will no longer burn / burnt completely / eq (1) measure temperature rise / start and end temp / start and highest temp / change in temp / eq (1) repeats (1)",
+          },
+          {
+            id: "q4bii",
+            type: "written",
+            text: "4(b)(ii) Give one safety precaution that the student should take when using the apparatus.",
+            correctKeywords: [
+              "wear eye protection",
+              "wear gloves",
+              "wear lab coat",
+              "tie back long hair",
+              "use heat proof tile",
+              "use tongs",
+              "clamp test tube in stand",
+            ],
+            marks: 1,
+            topic: "Practical skills/Safety",
+            msText:
+              "wear eye protection / gloves / eq (1) wear lab coat / tie back long hair / eq (1) use a heat proof tile / place on safety flame when not using / use tongs / clamp test tube in stand / eq (1)",
+          },
+          {
+            id: "q4biii",
+            type: "written",
+            text: "4(b)(iii) Explain two reasons why this apparatus (bomb calorimeter) will give a more accurate energy value than the apparatus used by the student.",
+            correctKeywords: [
+              "oxygen supply / oxygen gas inlet",
+              "ensures complete combustion / burns fully",
+              "insulated coat / lid / insulation",
+              "prevents heat loss",
+              "stirrer",
+              "provides even temperature / spreads heat",
+              "larger volume of water / smaller surface area:volume ratio",
+              "less heat loss",
+              "ignition coil / no need to move burning bean",
+              "less heat lost",
+              "steel container conducts heat to water",
+              "sample surrounded by water",
+            ],
+            marks: 4,
+            topic: "Practical skills/Experimental design",
+            msText:
+              "oxygen supply / oxygen gas inlet (1) to ensure complete combustion / so burns fully / eq (1) OR insulated coat / lid / insulation / eq (1) to prevent heat loss / keep heat in / not affected by outside temp / eq (1) OR stirrer / eq (1) to provide even temperature / spreads heat around / eq (1) OR large(r) volume of water / smaller surface area : volume ratio of water (1) so less heat loss / eq (1) OR burnt using ignition coil / ignition in the equipment / no need to move the burning bean / no need to relight / eq (1) so less heat is lost / eq (1) OR placed inside a steel container (1) conducts / transfers heat to water / eq (1) OR sample is surrounded by the water (1) so more heat transferred to water / less heat lost / eq (1)",
+          },
+          {
+            id: "q5ai",
+            type: "calc",
+            text: "5(a)(i) Determine the mean rate of decrease of rainforest area, in km² per year, from 1990 to 2015. (Graph shows area decreased from 41,200 to 40,000 km² over 25 years)",
+            correctValue: 48,
+            tolerance: 0.5,
+            marks: 2,
+            topic: "Maths/Rate calculation",
+            msText:
+              "48 (2) One mark for division by 25 or 41200 - 40000 or 1200",
+          },
+          {
+            id: "q5aii",
+            type: "written",
+            text: "5(a)(ii) Loss of rainforests causes an increase in atmospheric carbon dioxide gas. Explain the negative effects of an increase in atmospheric carbon dioxide gas.",
+            correctKeywords: [
+              "greenhouse gas",
+              "causes greenhouse effect",
+              "global warming",
+              "ice cap melting",
+              "glacier melting",
+              "sea level rise",
+              "flooding",
+              "habitat loss",
+              "climate change",
+              "droughts",
+              "extreme weather",
+              "desertification",
+              "extinctions",
+              "migration of species",
+              "ocean acidification",
+              "coral bleaching",
+            ],
+            marks: 3,
+            topic: "Environmental science/Climate change",
+            msText:
+              "carbon dioxide is a greenhouse gas / causes greenhouse effect / increased reflection of radiation / global warming / increased temperature / heat trapped / eq (1) ice cap melting / glacier melting / sea level rise / flooding / habitat loss / eq (1) climate change / weather pattern changes / droughts / storms / extreme weather / desertification / eq (1) extinctions / change in distribution of organisms / migration / pest spread / food chains affected / ecosystem loss / eq (1) ocean acidification / coral reef bleaching / eq (1)",
+          },
+          {
+            id: "q5bi",
+            type: "written",
+            text: "5(b)(i) Describe the role of microorganisms in the conversion of organic waste into nitrate ions in the river.",
+            correctKeywords: [
+              "decomposition",
+              "decomposers",
+              "decomposer bacteria",
+              "fungi",
+              "ammonification",
+              "organic waste to ammonia",
+              "ammonium to nitrite",
+              "nitrite to nitrate",
+              "nitrification",
+              "nitrifying bacteria",
+            ],
+            marks: 3,
+            topic: "Ecology/Nitrogen cycle",
+            msText:
+              "decomposition / decomposers / eq (1) (decomposer) bacteria / fungi (1) (organic waste) to ammonia / ammonification (1) ammonium to nitrite / nitrite converted to nitrate (1) nitrification / nitrifying bacteria (convert ammonium to nitrite / nitrite to nitrate / ammonium to nitrate) (1)",
+          },
+          {
+            id: "q5bii",
+            type: "written",
+            text: "5(b)(ii) The number of different animal species living in the river was recorded as a measure of the biodiversity of animals. Give a reason why this may not be a complete measure of biodiversity.",
+            correctKeywords: [
+              "does not consider plants",
+              "does not consider bacteria",
+              "does not consider fungi",
+              "does not consider population sizes",
+              "does not consider abundance",
+              "some species may be seasonal",
+              "some species may migrate",
+            ],
+            marks: 1,
+            topic: "Ecology/Biodiversity",
+            msText:
+              "does not consider plants / bacteria / fungi / protocists / eq (1) does not take into account the population sizes / numbers of organisms / abundance / some species may have different numbers / eq (1) some species may be seasonal / migrate (1)",
+          },
+          {
+            id: "q5biii",
+            type: "written",
+            text: "5(b)(iii) Explain the change in the biodiversity of animals along the river. Use information from the graphs in your answer.",
+            correctKeywords: [
+              "as nitrate increases, diversity decreases",
+              "eutrophication occurs",
+              "algae grow",
+              "less light penetration",
+              "death of plants",
+              "less photosynthesis",
+              "decomposition of dead algae",
+              "less oxygen",
+              "due to bacterial respiration",
+              "fish die",
+              "loss of food",
+              "disruption of food chains",
+              "loss of habitat",
+            ],
+            marks: 4,
+            topic: "Ecology/Pollution",
+            msText:
+              "as nitrate increases, diversity decreases / eutrophication occurs / algae grow / (river) plants grow / eq (1) less light penetration / eq (1) death of plants / less photosynthesis (1) (dead algae / organic waste) decomposes (1) less oxygen / eq (1) due to (bacterial) respiration (1) fish / animal species die (1) loss of food / disruption of food chains / loss of nesting sites / habitat / eq (1)",
+          },
+          {
+            id: "q6a",
+            type: "mcq",
+            text: "6(a) Which other groups of microorganisms include pathogens?",
+            options: [
+              "A bacteria and fungi only",
+              "B bacteria, fungi, and protocists",
+              "C bacteria and protocists only",
+              "D fungi and protocists only",
+            ],
+            correct: "B",
+            marks: 1,
+            topic: "Microbiology/Pathogens",
+            msText:
+              "B (bacteria, fungi, and prototists) is the only correct answer",
+          },
+          {
+            id: "q6bi",
+            type: "written",
+            text: "6(b)(i) Explain how the rabies vaccine prevents dogs from developing rabies.",
+            correctKeywords: [
+              "weak/inactivated virus",
+              "inactive pathogen",
+              "antigens",
+              "lymphocytes recognise antigens",
+              "memory cells",
+              "faster antibody production",
+              "secondary immune response",
+            ],
+            marks: 3,
+            topic: "Immunity/Vaccination",
+            msText:
+              "weak(er) / inactivated virus / inactive pathogen / microbe / eq (1) antigens (in vaccine) (1) lymphocytes (recognise antigens) (1) memory cells (1) faster / sooner / larger number of antibodies made (when virus encountered again) / secondary immune response occurs (if virus encountered again) (1)",
+          },
+          {
+            id: "q6bii",
+            type: "written",
+            text: "6(b)(ii) Discuss the effects of the use of the rabies vaccine to immunise domestic dogs on the number of cases of rabies in humans. Use information from the graph to support your answer.",
+            correctKeywords: [
+              "rabies cases high before vaccination",
+              "fall after vaccination",
+              "plateau after 1950s",
+              "correlation between dog and human cases",
+              "humans fall after dogs",
+              "still some human cases from wild animals",
+              "data reliable over long time",
+            ],
+            marks: 4,
+            topic: "Health/Immunisation",
+            msText:
+              "rabies cases are high before vaccination / before 1947 / eq (1) (continuous) fall in cases after vaccination / after 1940s / after 1950s (1) cases of rabies plateau / level off (from 1950s / 1960s) (1) correlation between rabies cases in dogs and humans / cases in dogs and humans fall at same times / eq (1) (most) human rabies must have been from dogs / vaccinated dogs do not pass rabies on to humans / eq (1) some human rabies cases from other animal species / wild dogs / wild animals / eq (1) data is reliable as it is for a long time / large area / whole country / eq (1)",
+          },
+          {
+            id: "q6biii",
+            type: "written",
+            text: "6(b)(iii) Describe how the cells use the RNA to produce the viral proteins.",
+            correctKeywords: [
+              "ribosomes bind to RNA",
+              "translation occurs",
+              "codon codes for amino acid",
+              "tRNA binds to RNA",
+              "anticodon binds to codon",
+              "tRNA brings amino acids",
+              "amino acids joined together",
+              "polypeptide formed",
+            ],
+            marks: 4,
+            topic: "Molecular biology/Protein synthesis",
+            msText:
+              "ribosomes (bind to RNA) (1) translation occurs (1) triplet / codon on RNA codes for an amino acid / eq (1) tRNA binds to RNA / anticodon binds to codon / eq (1) tRNA brings amino acids / eq (1) amino acids are joined together (to make protein) / forms a chain of amino acids / peptide bonds form / polypeptide forms / eq (1)",
+          },
+        ],
+      };
+      // ============================================================
+      // END OF MODIFIABLE SECTION – everything below is fully automatic
+      // ============================================================
+
+      // --- Google Apps Script email configuration ---
+      // Replace this URL with the URL of your deployed Google Apps Script Web App
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyHrPhTjUxbfEviywjdlBs5W0E7H8J1aQAji85pyXG2V5z9y5IC-45Pboc86SH59GFL/exec";
+      const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+
+      // Extract exam metadata and questions array
+      const EXAM_META = {
+        title: questionDataRaw.examTitle,
+        subtitle: questionDataRaw.examSubtitle,
+        durationMinutes: questionDataRaw.durationMinutes || 120,
+      };
+      const questionsArrayRaw = questionDataRaw.questions;
+
+      // Auto-detect graph/practical questions (based on type)
+      function isGraphOrPracticalQuestion(question) {
+        return ["graph", "practical", "draw", "diagram"].includes(
+          question.type,
+        );
+      }
+
+      let questionsData = questionsArrayRaw.map((q) => ({
+        ...q,
+        isGraphical: isGraphOrPracticalQuestion(q),
+      }));
+      const TOTAL_MARKS_SUM = questionsData.reduce(
+        (sum, q) => sum + q.marks,
+        0,
+      );
+      const graphQuestionCount = questionsData.filter(
+        (q) => q.isGraphical,
+      ).length;
+      const DURATION_SECONDS = EXAM_META.durationMinutes * 60;
+
+      // Update UI with dynamic metadata
+      document.getElementById("examTitle").innerText = EXAM_META.title;
+      document.getElementById("examSubtitle").innerText = EXAM_META.subtitle;
+      const hoursDisplay = EXAM_META.durationMinutes / 60;
+      const durationStr = Number.isInteger(hoursDisplay)
+        ? `${hoursDisplay} hours`
+        : `${EXAM_META.durationMinutes} minutes`;
+      document.getElementById("durationTotalSpan").innerHTML =
+        `⏱️ ${durationStr} | 📝 Total marks: ${TOTAL_MARKS_SUM}`;
+
+      // Global variables
+      let userAnswers = new Array(questionsData.length).fill("");
+      let userManualMarks = new Array(questionsData.length).fill(null);
+      let currentQIndex = 0;
+      let examSubmitted = false;
+      let timerInterval;
+      let timeSeconds = DURATION_SECONDS;
+      let autoSaveTimer = null;
+
+      // DeepSeek API (unchanged placeholder)
+      const DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY_PLACEHOLDER";
+      const DEEPSEEK_MODEL = "deepseek-v4-pro";
+
+      // IndexedDB (same logic, references exam)
+      const DB_NAME = "IGCSE_Biology_Exam_DB";
+      const DB_VERSION = 2;
+      const PROGRESS_STORE = "exam_progress";
+      const RESULTS_STORE = "exam_results";
+      let db = null;
+      function initDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+          };
+          request.onupgradeneeded = (event) => {
+            const dbEvent = event.target.result;
+            if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE))
+              dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+            if (!dbEvent.objectStoreNames.contains(RESULTS_STORE))
+              dbEvent.createObjectStore(RESULTS_STORE, {
+                keyPath: "id",
+                autoIncrement: true,
+              });
+          };
+        });
+      }
+      async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const record = {
+            id: "current_progress",
+            answers: answers,
+            manualMarks: manualMarks,
+            timeRemaining: timeLeft,
+            timestamp: new Date().toISOString(),
+          };
+          const request = store.put(record);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readonly");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const request = store.get("current_progress");
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([RESULTS_STORE], "readwrite");
+          const store = transaction.objectStore(RESULTS_STORE);
+          const record = { timestamp: new Date().toISOString(), ...resultData };
+          const request = store.add(record);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const request = store.delete("current_progress");
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+      function showToast(message, isError = false) {
+        const toast = document.getElementById("statusToast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => (toast.style.opacity = "0"), 3000);
+      }
+
+      // New email sender using Google Apps Script
+      async function sendResultsEmail(resultData, studentName = "Student") {
+        if (
+          !GOOGLE_SCRIPT_URL ||
+          GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"
+        ) {
+          console.warn("Google Script URL not configured. Email not sent.");
+          showToast("⚠️ Email not sent: Google Script URL not set", true);
+          return false;
+        }
+        try {
+          // Build the HTML email content (same as before)
+          let emailHtml = `<h2>Exam Results | ${EXAM_META.subtitle}</h2>
+      <p><strong>Student:</strong> ${studentName}</p>
+      <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+      <p><strong>Score:</strong> ${resultData.score} / ${resultData.totalMarks} (${resultData.percent.toFixed(1)}%)</p>
+      <p><strong>Grade:</strong> ${resultData.grade}</p>
+      <p><strong>Weak Topics:</strong> ${resultData.weakTopics.join(", ") || "None"}</p>
+      <h3>Detailed Question Feedback</h3>
+      <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead style="background:#2c7da0; color:white;"><tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr></thead>
+        <tbody>`;
+          for (let fb of resultData.details) {
+            emailHtml += `<tr>
+        <td>${fb.qNum}${fb.isGraphical ? " 📊" : ""}</td>
+        <td>${fb.topic}</td>
+        <td>${fb.questionText}</td>
+        <td>${fb.studentAnswer.substring(0, 200)}</td>
+        <td>${fb.earned}/${fb.max}</td>
+        <td>${fb.aiFeedback}</td>
+        <td>${fb.expectedAnswer ? fb.expectedAnswer.substring(0, 200) : "N/A"}</td>
+      </tr>`;
+          }
+          emailHtml += `</tbody><table><p><em>Graph/Diagram questions (📊) were self-assessed using mark schemes.</em></p>`;
+
+          // Prepare form-urlencoded parameters as expected by the Google Script
+          const params = new URLSearchParams();
+          params.append("recipient", RECIPIENT_EMAIL);
+          params.append("subject", `Exam Results: ${EXAM_META.title}`);
+          params.append("htmlBody", emailHtml);
+
+          // Send using form-urlencoded – a simple request, no CORS preflight
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", // avoids CORS errors; response is opaque but request goes through
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
+          });
+
+          // With no-cors we cannot read the response, but the request is sent.
+          // The script will receive the parameters correctly.
+          showToast("✅ Results sent via Google Script", false);
+          return true;
+        } catch (e) {
+          console.error("Google Script email error:", e);
+          showToast("⚠️ Email sending failed – check script URL", true);
+          return false;
+        }
+      }
+      // Timer & helpers
+      function formatTime(sec) {
+        let h = Math.floor(sec / 3600),
+          m = Math.floor((sec % 3600) / 60),
+          s = sec % 60;
+        return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+      function updateTimerDisplay() {
+        document.getElementById("timerDisplay").innerText =
+          formatTime(timeSeconds);
+        if (timeSeconds <= 0 && !examSubmitted) autoSubmitExam();
+      }
+      function autoSubmitExam() {
+        if (!examSubmitted) submitAndMarkExam();
+      }
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          if (!examSubmitted && timeSeconds > 0) {
+            timeSeconds--;
+            updateTimerDisplay();
+            if (timeSeconds % 30 === 0) autoSaveToLocal();
+          } else if (timeSeconds <= 0 && !examSubmitted) autoSubmitExam();
+        }, 1000);
+      }
+      function autoSaveToLocal() {
+        if (examSubmitted) return;
+        localStorage.setItem(
+          "igcse_bio_exam_autosave",
+          JSON.stringify({
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+      function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (data.answers && data.answers.length === userAnswers.length) {
+              userAnswers = data.answers;
+              if (data.manualMarks) userManualMarks = data.manualMarks;
+              if (
+                data.timeRemaining &&
+                data.timeRemaining > 0 &&
+                data.timeRemaining < DURATION_SECONDS
+              )
+                timeSeconds = data.timeRemaining;
+              updateTimerDisplay();
+              return true;
+            }
+          } catch (e) {}
+        }
+        return false;
+      }
+
+      function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+          const btn = document.createElement("button");
+          btn.innerText = idx + 1;
+          btn.classList.add("nav-btn");
+          if (userAnswers[idx] && userAnswers[idx].toString().trim() !== "")
+            btn.classList.add("answered");
+          if (idx === currentQIndex) btn.classList.add("active");
+          btn.onclick = () => {
+            if (!examSubmitted) goToQuestion(idx);
+          };
+          navDiv.appendChild(btn);
+        });
+        let answered = userAnswers.filter(
+          (a) => a && a.toString().trim() !== "",
+        ).length;
+        document.getElementById("answeredCounter").innerHTML =
+          `📋 Questions answered: ${answered} / ${questionsData.length}`;
+        document.getElementById("graphCounter").innerHTML =
+          `📊 Graph/Practical questions: ${graphQuestionCount} (self-assess)`;
+      }
+      function goToQuestion(idx) {
+        if (examSubmitted) return;
+        document
+          .querySelectorAll(".question-card")
+          .forEach((card) => card.classList.remove("active-question"));
+        currentQIndex = idx;
+        const target = document.getElementById(`qcard-${idx}`);
+        if (target) target.classList.add("active-question");
+        renderNavigation();
+      }
+      function saveAnswer(idx, value) {
+        if (examSubmitted) return;
+        userAnswers[idx] = value;
+        renderNavigation();
+        autoSaveToLocal();
+      }
+      function setManualMark(idx, markValue) {
+        if (examSubmitted) return;
+        let num = parseInt(markValue) || 0;
+        num = Math.min(Math.max(num, 0), questionsData[idx].marks);
+        userManualMarks[idx] = num;
+        autoSaveToLocal();
+      }
+      function toggleMarkScheme(idx) {
+        if (!questionsData[idx].isGraphical) return;
+        let panel = document.getElementById(`ms-panel-${idx}`);
+        if (panel) panel.classList.toggle("visible");
+      }
+      function handleTextareaInput(idx, value) {
+        saveAnswer(idx, value);
+      }
+
+      function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          if (idx === 0) card.classList.add("active-question");
+          card.id = `qcard-${idx}`;
+          let inner = `<div class="q-title">Q${idx + 1} (${q.topic}) <span class="marks">${q.marks} marks</span>`;
+          if (q.isGraphical)
+            inner += `<span class="graph-badge">📊 Graph/Diagram Question - Self-Assess</span>`;
+          inner += `</div><div>${q.text}</div>`;
+          if (q.type === "mcq") {
+            inner += `<div class="subquestion">`;
+            (q.options || []).forEach((opt) => {
+              let checked = userAnswers[idx] === opt ? "checked" : "";
+              inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+            });
+            inner += `</div>`;
+          } else if (q.type === "calc") {
+            let val = userAnswers[idx] || "";
+            inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, "&quot;")}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+          } else {
+            let val = userAnswers[idx] || "";
+            inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." data-idx="${idx}" oninput="handleTextareaInput(${idx}, this.value)" onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+          }
+          if (q.isGraphical === true) {
+            inner += `<div style="margin-top:12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme (for self-assessment)</button><div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText || "No mark scheme provided"}</div><div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span><select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
+            for (let m = 0; m <= q.marks; m++) {
+              let sel = userManualMarks[idx] === m ? "selected" : "";
+              inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+            }
+            inner += `</select></div></div>`;
+          }
+          if (
+            q.isGraphical ||
+            q.text.toLowerCase().includes("graph") ||
+            q.text.toLowerCase().includes("diagram")
+          )
+            inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
+          card.innerHTML = inner;
+          container.appendChild(card);
+        });
+      }
+
+      async function callDEEPSEEKForMark(
+        question,
+        studentAnswer,
+        markScheme,
+        maxMarks,
+      ) {
+        if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "YOUR_DEEPSEEK_API_KEY") {
+          if (!studentAnswer)
+            return { score: 0, feedback: "No answer provided" };
+          let keywords = question.correctKeywords || [];
+          if (keywords.length === 0)
+            return { score: 0, feedback: "No keywords defined" };
+          let ansLower = studentAnswer.toLowerCase();
+          let matched = keywords.filter((kw) =>
+            ansLower.includes(kw.toLowerCase()),
+          ).length;
+          let required = question.requiredKeywords || keywords.length;
+          let score = Math.min(matched, required, maxMarks);
+          return {
+            score,
+            feedback: `Matched ${matched}/${required} key terms. Expected: ${keywords.join(", ")}`,
+          };
+        }
+        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on mark scheme. Question: "${question.text}" Mark Scheme: "${markScheme}" Max marks: ${maxMarks} Student Answer: "${studentAnswer || "[no answer]"}" Return ONLY JSON: {"score": number (0-${maxMarks}), "feedback": "brief feedback"}`;
+        try {
+          const response = await fetch(
+            "https://api.DEEPSEEK.com/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+              },
+              body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.1,
+              }),
+            },
+          );
+          if (!response.ok) throw new Error(`API error ${response.status}`);
+          const data = await response.json();
+          const result = JSON.parse(data.choices[0].message.content);
+          return {
+            score: Math.min(Math.max(0, parseInt(result.score) || 0), maxMarks),
+            feedback: result.feedback || "Smart assessment complete.",
+          };
+        } catch (e) {
+          console.error("DEEPSEEK error:", e);
+          return {
+            score: 0,
+            feedback: "Smart marking error - please review manually",
+          };
+        }
+      }
+
+      async function submitAndMarkExam() {
+        if (examSubmitted) return;
+        clearInterval(timerInterval);
+        if (autoSaveTimer) clearInterval(autoSaveTimer);
+        examSubmitted = true;
+        showToast("🤖 Smart marking...", false);
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "loading-overlay";
+        loadingDiv.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Marking in progress...</div>`;
+        document.body.appendChild(loadingDiv);
+        let totalEarned = 0,
+          totalPossible = 0;
+        let questionFeedback = [];
+        for (let i = 0; i < questionsData.length; i++) {
+          let q = questionsData[i];
+          let answer = userAnswers[i] || "";
+          let earned = 0;
+          let aiFeedback = "";
+          if (q.isGraphical === true) {
+            earned =
+              userManualMarks[i] !== null && !isNaN(userManualMarks[i])
+                ? userManualMarks[i]
+                : 0;
+            earned = Math.min(Math.max(0, earned), q.marks);
+            aiFeedback =
+              "Self-assessed by student (graph/diagram - compared with mark scheme)";
+          } else if (q.type === "mcq") {
+            let studentLetter = (answer || "").trim().toLowerCase().charAt(0);
+            let correctOptionLetter = (q.correct || "").trim().toLowerCase();
+            if (studentLetter === correctOptionLetter) earned = q.marks;
+            else earned = 0;
+            let correctFullText = "";
+            if (q.options)
+              for (let opt of q.options)
+                if (opt.toLowerCase().startsWith(correctOptionLetter)) {
+                  correctFullText = opt;
+                  break;
+                }
+            aiFeedback =
+              earned === q.marks
+                ? `Correct answer: ${q.correct}`
+                : `Incorrect. Correct answer is ${q.correct}${correctFullText ? ": " + correctFullText : ""}. Your answer: ${answer || "none"}`;
+          } else {
+            const aiResult = await callDEEPSEEKForMark(
+              q,
+              answer,
+              q.msText,
+              q.marks,
+            );
+            earned = aiResult.score;
+            aiFeedback = aiResult.feedback;
+          }
+          totalEarned += earned;
+          totalPossible += q.marks;
+          let status =
+            earned === q.marks
+              ? "✓ Full marks"
+              : earned === 0
+                ? "✗ No marks"
+                : "⚠ Partial marks";
+          questionFeedback.push({
+            number: i + 1,
+            topic: q.topic,
+            questionText: q.text,
+            studentAnswer: answer || "(blank)",
+            marksEarned: earned,
+            marksTotal: q.marks,
+            status,
+            expectedAnswer: q.msText,
+            aiFeedback,
+            isGraphical: q.isGraphical,
+          });
+        }
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade =
+          percent >= 85
+            ? "9"
+            : percent >= 78
+              ? "8"
+              : percent >= 70
+                ? "7"
+                : percent >= 62
+                  ? "6"
+                  : percent >= 54
+                    ? "5"
+                    : percent >= 45
+                      ? "4"
+                      : percent >= 35
+                        ? "3"
+                        : percent >= 25
+                          ? "2"
+                          : "1";
+        let weakTopics = [];
+        let topicAgg = {};
+        questionFeedback.forEach((fb) => {
+          if (!topicAgg[fb.topic]) topicAgg[fb.topic] = { earned: 0, total: 0 };
+          topicAgg[fb.topic].earned += fb.marksEarned;
+          topicAgg[fb.topic].total += fb.marksTotal;
+        });
+        for (let t in topicAgg)
+          if ((topicAgg[t].earned / topicAgg[t].total) * 100 < 55)
+            weakTopics.push(t);
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        let html = `<h2>📊 Exam Results</h2><div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div><div class="grade-box"><strong>Grade: ${grade}</strong></div><div class="grade-box" style="background:#e9f0f5;"><strong>📊 Graph Questions:</strong> ${graphQuestionCount} question(s) were self-assessed using mark scheme</div>`;
+        if (weakTopics.length)
+          html += `<div class="weakness-box"><h3>⚠️ Weak areas (&lt;55%)</h3><ul>${weakTopics.map((w) => `<li>${w}</li>`).join("")}</ul></div>`;
+        else
+          html += `<div class="weakness-box" style="background:#e0f2e9;"><h3>✅ Strong performance overall!</h3></div>`;
+        html += `<details open><summary>📋 Detailed Feedback</summary><table class="feedback-table"><thead><tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr></thead><tbody>`;
+        for (let fb of questionFeedback) {
+          let cls =
+            fb.marksEarned === fb.marksTotal
+              ? "correct-highlight"
+              : fb.marksEarned === 0
+                ? "incorrect-highlight"
+                : "";
+          html += `<tr class="${cls}"><td>${fb.number}${fb.isGraphical ? " 📊" : ""}</td><td>${fb.topic}</td><td>${fb.questionText}</td><td style="max-width:250px;">${fb.studentAnswer}</td><td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td><td style="max-width:300px;">${fb.aiFeedback || "No feedback"}</td><td style="max-width:250px;">${fb.expectedAnswer || "N/A"}</td></tr>`;
+        }
+        html += `</tbody></table></details><p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Graph/drawing questions (${graphQuestionCount}) were self-assessed. All others marked automatically.</p>`;
+        reviewDiv.innerHTML = html;
+        document.body.removeChild(loadingDiv);
+        document
+          .querySelectorAll("input, textarea, button, select")
+          .forEach((el) => {
+            if (el.id !== "submitBtn") el.disabled = true;
+          });
+        document.getElementById("submitBtn").disabled = true;
+        showToast("Marking complete!", false);
+        localStorage.removeItem("igcse_bio_exam_autosave");
+        try {
+          const emailData = {
+            score: totalEarned,
+            totalMarks: totalPossible,
+            percent,
+            grade,
+            weakTopics,
+            details: questionFeedback.map((fb) => ({
+              qNum: fb.number,
+              topic: fb.topic,
+              questionText: fb.questionText,
+              studentAnswer: fb.studentAnswer,
+              earned: fb.marksEarned,
+              max: fb.marksTotal,
+              aiFeedback: fb.aiFeedback,
+              expectedAnswer: fb.expectedAnswer,
+              isGraphical: fb.isGraphical,
+            })),
+          };
+          await sendResultsEmail(emailData, "Exam Candidate");
+        } catch (e) {
+          console.error("Email sending failed:", e);
+        }
+      }
+
+      window.saveAnswer = saveAnswer;
+      window.setManualMark = setManualMark;
+      window.toggleMarkScheme = toggleMarkScheme;
+      window.goToQuestion = goToQuestion;
+      window.handleTextareaInput = handleTextareaInput;
+
+      window.onload = () => {
+        loadAutoSave();
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        autoSaveTimer = setInterval(() => {
+          if (!examSubmitted) autoSaveToLocal();
+        }, 30000);
+        document.getElementById("nextBtn").onclick = () => {
+          if (currentQIndex + 1 < questionsData.length && !examSubmitted)
+            goToQuestion(currentQIndex + 1);
+        };
+        document.getElementById("prevBtn").onclick = () => {
+          if (currentQIndex - 1 >= 0 && !examSubmitted)
+            goToQuestion(currentQIndex - 1);
+        };
+        document.getElementById("submitBtn").onclick = () => {
+          if (
+            confirm(
+              "Submit exam? Graph questions require self-assessment; other questions will be Smart-marked.",
+            )
+          )
+            submitAndMarkExam();
+        };
+      };
+    </script>
+  </body>
+</html>

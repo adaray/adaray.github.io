@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>
+      Interactive Exam System | Auto Graph Detection & Smart Marking
+    </title>
+    <!-- EmailJS script removed - replaced by Google Apps Script -->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 20px;
+        color: #1e2a3e;
+      }
+      .exam-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 20px 30px 40px;
+      }
+      .header {
+        border-bottom: 3px solid #2c7da0;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 1.7rem;
+        color: #0b3b4f;
+      }
+      .title p {
+        margin: 5px 0 0;
+        color: #2c7da0;
+        font-weight: 500;
+      }
+      .timer-area {
+        background: #1e2a3e;
+        padding: 8px 18px;
+        border-radius: 60px;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+      }
+      .timer {
+        font-size: 2rem;
+        font-family: monospace;
+        letter-spacing: 2px;
+      }
+      .info-bar {
+        background: #e9f0f5;
+        padding: 10px 20px;
+        border-radius: 28px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .question-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #cbd5e1;
+        padding-bottom: 15px;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+      .nav-btn {
+        background: #eef2f6;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 42px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.1s;
+        font-size: 0.9rem;
+      }
+      .nav-btn.active {
+        background: #2c7da0;
+        color: white;
+      }
+      .nav-btn.answered {
+        background: #61a5c2;
+        color: white;
+      }
+      .question-card {
+        display: none;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+      }
+      .question-card.active-question {
+        display: block;
+      }
+      .q-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        background: #f0f6fa;
+        padding: 6px 12px;
+        border-radius: 30px;
+        display: inline-block;
+      }
+      .marks {
+        font-size: 0.8rem;
+        background: #cbd5e1;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 12px;
+      }
+      .subquestion {
+        margin: 20px 0 20px 12px;
+        border-left: 3px solid #cbd5e1;
+        padding-left: 18px;
+      }
+      .placeholder-img {
+        background: #eef2f9;
+        border: 1px dashed #8ba0bc;
+        padding: 20px;
+        text-align: center;
+        border-radius: 16px;
+        margin: 15px 0;
+        font-style: italic;
+        color: #2c3e66;
+      }
+      .mcq-option {
+        margin: 10px 0;
+      }
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        padding: 10px 14px;
+        border-radius: 14px;
+        border: 1px solid #b9c7d9;
+        width: 100%;
+        max-width: 550px;
+        font-family: inherit;
+      }
+      textarea {
+        max-width: 100%;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        background: #2c7da0;
+        border: none;
+        padding: 10px 26px;
+        border-radius: 40px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.warning {
+        background: #b23c1c;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .review-section {
+        background: #fef9e3;
+        padding: 20px;
+        border-radius: 20px;
+        margin-top: 30px;
+      }
+      .hidden {
+        display: none;
+      }
+      .score-badge {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #1e2a3e;
+      }
+      .grade-box {
+        background: #d9e6f2;
+        padding: 12px;
+        border-radius: 24px;
+        margin: 15px 0;
+      }
+      .weakness-box {
+        background: #ffe6e6;
+        padding: 16px;
+        border-radius: 20px;
+        margin-top: 20px;
+        border-left: 8px solid #c7362b;
+      }
+      .feedback-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      .feedback-table th,
+      .feedback-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        vertical-align: top;
+        text-align: left;
+      }
+      .feedback-table th {
+        background: #2c7da0;
+        color: white;
+      }
+      .feedback-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+      .correct-highlight {
+        background: #d4edda;
+      }
+      .incorrect-highlight {
+        background: #f8d7da;
+      }
+      details summary {
+        cursor: pointer;
+        font-weight: 600;
+        margin: 15px 0;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.8rem;
+        margin-top: 30px;
+        color: #6c757d;
+      }
+      .status-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c7da0;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: 1000;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(3px);
+      }
+      .loading-spinner {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 30px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+      .spinner {
+        border: 4px solid #e9f0f5;
+        border-top: 4px solid #2c7da0;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 700px) {
+        .exam-container {
+          padding: 15px;
+        }
+        .timer {
+          font-size: 1.4rem;
+        }
+        .feedback-table {
+          font-size: 0.8rem;
+        }
+      }
+      .ai-badge {
+        background: #4a6fa5;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+      .ms-badge {
+        background: #f4a261;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+      .ms-panel {
+        background: #f8f9fc;
+        border-left: 5px solid #f4a261;
+        padding: 12px 16px;
+        margin-top: 15px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .ms-panel.visible {
+        display: block;
+      }
+      .marks-earned-row {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .marks-earned-row select {
+        padding: 6px 12px;
+        border-radius: 30px;
+        background: white;
+        border: 1px solid #b9c7d9;
+        font-weight: bold;
+      }
+      button.small {
+        background: #e76f51;
+        padding: 5px 12px;
+        font-size: 0.7rem;
+        border: none;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+      }
+      .graph-badge {
+        background: #f4a261;
+        color: white;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="exam-container" id="examApp">
+      <div class="header">
+        <div class="title">
+          <h1 id="examTitle">Loading Exam...</h1>
+          <p id="examSubtitle"></p>
+        </div>
+        <div class="timer-area">
+          <div>Time Remaining</div>
+          <div class="timer" id="timerDisplay">02:00:00</div>
+        </div>
+      </div>
+      <div class="info-bar">
+        <span id="durationTotalSpan">⏱️ -- hours | 📝 Total marks: --</span>
+        <span id="answeredCounter">📋 Questions answered: 0 / --</span>
+        <span id="graphCounter">📊 Graph/Practical questions: 0</span>
+      </div>
+      <div id="navContainer" class="question-nav"></div>
+      <div id="questionsContainer"></div>
+      <div class="action-buttons">
+        <button id="prevBtn" class="secondary">◀ Previous</button>
+        <button id="nextBtn">Next ▶</button>
+        <button id="submitBtn" class="warning">Submit Exam</button>
+      </div>
+      <div id="reviewPanel" class="review-section hidden"></div>
+      <div id="statusToast" class="status-toast"></div>
+    </div>
+
+    <script>
+      // ============================================================
+      // ⚡ ONLY MODIFY THE OBJECT BELOW FOR A NEW EXAM ⚡
+      // ============================================================
+      const questionDataRaw = {
+        examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
+        examSubtitle: "Paper 2B | June 2022",
+        durationMinutes: 75,
+        questions: [
+          {
+            id: "q1ai",
+            type: "written",
+            text: "1(a)(i) Carbon dioxide is a greenhouse gas. State the name of another greenhouse gas.",
+            correctKeywords: [
+              "methane",
+              "nitrous oxides",
+              "CFCs",
+              "water vapour",
+            ],
+            marks: 1,
+            topic: "Environmental science/Greenhouse gases",
+            msText: "methane / nitrous oxides / CFCs / water vapour / eq (1)",
+          },
+          {
+            id: "q1aii",
+            type: "calc",
+            text: "1(a)(ii) Calculate the increase in mass, in kg, of atmospheric carbon dioxide in 2020. (727 gigatonnes from natural processes, 37 gigatonnes from human activities, 746 gigatonnes removed by plants) Give your answer in standard form. [1 gigatonne = 100000000000 kg]",
+            correctValue: 1.8e13,
+            tolerance: 0.1e13,
+            marks: 3,
+            topic: "Maths/Standard form",
+            msText:
+              "1.8 × 10¹³ (3) Accept 18 000 000 000 000 or 18 trillion for two marks",
+          },
+          {
+            id: "q1aiii",
+            type: "written",
+            text: "1(a)(iii) State two consequences of global warming for the environment.",
+            correctKeywords: [
+              "ice caps melt",
+              "glaciers melt",
+              "flooding",
+              "sea level rises",
+              "loss of habitat",
+              "desertification",
+              "droughts",
+              "extinctions",
+              "disrupted food chains",
+              "migration of species",
+              "damaged ecosystems",
+              "decreased plant yields",
+              "coral bleaching",
+              "spread of disease",
+            ],
+            marks: 2,
+            topic: "Environmental science/Global warming",
+            msText:
+              "ice (caps) melt / glaciers melt / eq (1) flooding / sea level rises / eq (1) loss of habitat / desertification / droughts (1) extinctions / disrupted food chains / migration of species / damaged ecosystems / decreased plant yields / decreased productivity / eq (1) destruction of coral reefs / coral bleaching / eq (1) spread of disease / pests / pathogens / eq (1) extreme weather / climate change / changes in weather patterns / eq (1)",
+          },
+          {
+            id: "q1b",
+            type: "written",
+            text: "1(b) Explain why producing genetically engineered plants with additional suberin in their roots could reduce atmospheric carbon dioxide.",
+            correctKeywords: [
+              "plants take in carbon dioxide",
+              "for photosynthesis",
+              "carbon dioxide is converted into suberin",
+              "stored as suberin",
+              "locked up in suberin",
+              "suberin does not decay for long periods",
+              "suberin decomposes slowly",
+              "perennial plants remain for long periods",
+              "do not die off",
+              "less carbon dioxide released from decomposition",
+            ],
+            marks: 4,
+            topic: "Plant biology/Genetic engineering",
+            msText:
+              "plants take in / absorb, carbon dioxide (1) for photosynthesis (1) carbon (dioxide) is converted into / stored as suberin / locked up in suberin / eq (1) suberin does not decay for long periods / suberin decomposes slowly / suberin remains for long period of time / eq (1) perennial plants remain for long periods of time / do not die off / grow for many years / don't die each year / don't have to be replanted / eq (1) slower / less carbon dioxide is released from decomposition / decay / (respiration of) decomposers (1)",
+          },
+          {
+            id: "q1c",
+            type: "mcq",
+            text: "1(c) Which enzyme is used to remove a gene from a section of DNA?",
+            options: ["A amylase", "B ligase", "C lipase", "D restriction"],
+            correct: "D",
+            marks: 1,
+            topic: "Molecular biology/Genetic engineering",
+            msText: "The only correct answer is D",
+          },
+          {
+            id: "q1d",
+            type: "written",
+            text: "1(d) Explain why the additional suberin in the cell walls of the roots will make the transgenic plants tolerant to soil with a high salt concentration.",
+            correctKeywords: [
+              "prevent water loss",
+              "due to osmosis",
+              "water moves from dilute to more concentrated solution",
+              "prevents plant cells becoming flaccid",
+              "prevents wilting",
+              "stays turgid",
+            ],
+            marks: 2,
+            topic: "Plant biology/Osmosis",
+            msText:
+              "prevent water loss (1) (due to) osmosis / water moves from a dilute solution to a more concentrated solution / eq (1) prevents plant cells becoming flaccid / wilting / stay turgid (1)",
+          },
+          {
+            id: "q1e",
+            type: "written",
+            text: "1(e) After successfully producing one plant, they will use micropropagation rather than pollination to produce others. Suggest advantages of using micropropagation.",
+            correctKeywords: [
+              "produce large numbers",
+              "large scale",
+              "fast process",
+              "quicker",
+              "all crops produce suberin",
+              "all plants are genetically identical",
+              "clones",
+              "less risk of cross pollinating with wild plants",
+              "spreading transgene into wild",
+              "can be done at any time of year",
+            ],
+            marks: 3,
+            topic: "Plant biology/Micropropagation",
+            msText:
+              "produce large numbers / large scale / eq (1) fast (process) / quick(er) / eq (1) all crops produce suberin / all plants are (genetically) identical / all clones / eq / (1) less risk of cross pollinating (with wild plants) / pollinating wild plants / spreading (trans)gene into wild / eq (1) can be done at, any time of year / all year / eq (1)",
+          },
+          {
+            id: "q2a",
+            type: "written",
+            text: "2(a) Give the independent variable in the investigation.",
+            correctKeywords: [
+              "sterilised / unsterilised soil",
+              "presence or absence of bacteria",
+              "heated / unheated soil",
+              "soil sample",
+            ],
+            marks: 1,
+            topic: "Scientific method/Variables",
+            msText:
+              "sterilised / unsterilised / eq (1) presence of bacteria / absence of bacteria / eq (1) heated / unheated soil / eq (1) soil sample / soil used (1)",
+          },
+          {
+            id: "q2bi",
+            type: "written",
+            text: "2(b)(i) Suggest why the student poured water through the soil samples for five minutes before adding the ammonium salts.",
+            correctKeywords: [
+              "remove nitrate present",
+              "dissolve nitrate",
+              "wash away nitrate",
+              "get rid of nitrates",
+              "so any nitrate made must have been from the ammonium salt",
+              "so a fair comparison is made",
+              "so test is valid",
+            ],
+            marks: 2,
+            topic: "Scientific method/Experimental design",
+            msText:
+              "remove / dissolve / wash away nitrate present / get rid of nitrates / eq (1) (so any) nitrate made must have been from the ammonium salt / are due to ammonium salts / eq (1) so a fair comparison is made / so the test is valid / so the test is fair (1)",
+          },
+          {
+            id: "q2bii",
+            type: "written",
+            text: "2(b)(ii) Comment on the results of the nitrate tests on the two soil samples three days after adding ammonium salts.",
+            correctKeywords: [
+              "nitrates present in unsterilised soil",
+              "nitrates produced from ammonium",
+              "nitrifying bacteria",
+              "nitrification",
+              "ammonium converted into nitrite",
+              "nitrite converted into nitrate",
+              "nitrates not present in sterilised soil because no bacteria",
+              "bacteria were killed",
+            ],
+            marks: 4,
+            topic: "Ecology/Nitrogen cycle",
+            msText:
+              "nitrates present in unsterilised soil (1) nitrates produced / made from ammonium / ammonia (1) nitrifying bacteria / nitrification (1) ammonium is converted into nitrite / nitrite is converted into nitrate (1) nitrates not present in sterilised soil because there are no bacteria / bacteria were dead / killed / removed (1)",
+          },
+          {
+            id: "q3ai",
+            type: "mcq",
+            text: "3(a)(i) Which of these groups of organisms contains Chlorella?",
+            options: ["A animals", "B bacteria", "C plants", "D protocists"],
+            correct: "D",
+            marks: 1,
+            topic: "Classification",
+            msText: "The only correct answer is D (protectists)",
+          },
+          {
+            id: "q3aii",
+            type: "mcq",
+            text: "3(a)(ii) Which of these labelled structures would also be present in an animal cell?",
+            options: [
+              "A cell membrane and chloroplast",
+              "B cell membrane and mitochondrion",
+              "C cell wall and chloroplast",
+              "D cell wall and mitochondrion",
+            ],
+            correct: "B",
+            marks: 1,
+            topic: "Cell biology",
+            msText:
+              "The only correct answer is B (cell membrane and mitochondrion)",
+          },
+          {
+            id: "q3b",
+            type: "written",
+            text: "3(b) Complete the balanced chemical symbol equation for photosynthesis.",
+            correctKeywords: ["6CO2 + 6H2O -> C6H12O6 + 6O2"],
+            marks: 2,
+            topic: "Plant biology/Photosynthesis",
+            msText:
+              "one mark for 6CO2 + 6H2O (on LHS) (1) one mark for C6H12O6 (on RHS) (1)",
+          },
+          {
+            id: "q3ci",
+            type: "written",
+            text: "3(c)(i) Explain why Chlorella takes in oxygen at light intensities below 10 arbitrary units.",
+            correctKeywords: [
+              "low light",
+              "no light",
+              "dark",
+              "photosynthesis is slower than respiration",
+              "photosynthesis less than respiration",
+              "respiration faster than photosynthesis",
+              "no photosynthesis but respiration occurs",
+            ],
+            marks: 2,
+            topic: "Plant biology/Photosynthesis and respiration",
+            msText:
+              "low / less / no light (1) photosynthesis is slower than respiration / photosynthesis is less than respiration / respiration is faster than photosynthesis / eq (1)",
+          },
+          {
+            id: "q3cii",
+            type: "written",
+            text: "3(c)(ii) Explain the changes in the volume of oxygen released as the light intensity increases from 10 arbitrary units.",
+            correctKeywords: [
+              "increases up to a point",
+              "then levels off",
+              "rate of photosynthesis increases with light intensity",
+              "light becomes limiting factor at low intensities",
+              "at high intensities another factor becomes limiting",
+            ],
+            marks: 3,
+            topic: "Plant biology/Limiting factors",
+            msText:
+              "increases (up to a point) then levels off (1) rate of photosynthesis increases with light intensity (1) at high intensities another factor (temperature/CO2) becomes limiting (1)",
+          },
+          {
+            id: "q3ciii",
+            type: "calc",
+            text: "3(c)(iii) Use the graph to calculate the volume of oxygen produced in five minutes by photosynthesis at a light intensity of 50 arbitrary units. (Graph shows net oxygen released; need to add oxygen taken in during respiration)",
+            correctValue: 48,
+            tolerance: 1,
+            marks: 2,
+            topic: "Maths/Graph reading",
+            msText:
+              "two marks for 48 (2) one mark for correct reading of 38 (1) OR one mark for +10 (1)",
+          },
+          {
+            id: "q3d",
+            type: "written",
+            text: "3(d) Describe how hydrogen-carbonate indicator could be used to investigate the effect of light intensity on carbon dioxide exchange by Chlorella.",
+            correctKeywords: [
+              "move lamp different distances",
+              "place same mass/number/volume/concentration of Chlorella",
+              "same volume/concentration of indicator",
+              "same temperature",
+              "leave for same time",
+              "use a control tube with no Chlorella",
+              "indicator turns yellow with low light (increased CO2)",
+              "turns red/purple with high light (decreased CO2)",
+            ],
+            marks: 3,
+            topic: "Plant biology/Photosynthesis experiment",
+            msText:
+              "move lamp different distances / eq (1) place same mass / number / volume / concentration Chlorella / algae, in (hydrogen-carbonate indicator) (1) same volume / concentration of indicator / same temperature / leave for same or stated time / same starting colour of indicator / use a control tube (with no Chlorella) (1) (indicator turns) yellow with low light / covered tube / and red / purple with high light / uncovered tube (1)",
+          },
+          {
+            id: "q4a",
+            type: "written",
+            text: "4(a) Name the structures labelled A and B on the urinary system diagram.",
+            correctKeywords: ["A: ureter", "B: bladder"],
+            marks: 2,
+            topic: "Human biology/Excretory system",
+            msText: "A: ureter (1) B: bladder (1)",
+          },
+          {
+            id: "q4bi",
+            type: "written",
+            text: "4(b)(i) Explain the difference between the concentration of protein in area X and the concentration of protein in area Y.",
+            correctKeywords: [
+              "protein is large",
+              "does not pass out of glomerulus",
+              "does not pass into Bowman's capsule",
+              "protein not filtered",
+            ],
+            marks: 2,
+            topic: "Human biology/Kidney function",
+            msText:
+              "protein is large (1) (so) does not pass out of glomerulus / capillary / through basement membrane / does not pass into (Bowman's) capsule (1)",
+          },
+          {
+            id: "q4bii",
+            type: "written",
+            text: "4(b)(ii) Explain the difference between the concentration of glucose in area Y and the concentration of glucose in area Z.",
+            correctKeywords: [
+              "glucose is reabsorbed",
+              "into blood",
+              "selectively reabsorbed",
+              "at the proximal convoluted tubule",
+              "PCT",
+            ],
+            marks: 2,
+            topic: "Human biology/Kidney function",
+            msText:
+              "glucose is reabsorbed / absorbed into the blood / selectively reabsorbed (1) at the proximal convoluted tubule / pct / eq (1)",
+          },
+          {
+            id: "q4c",
+            type: "written",
+            text: "4(c) When the body becomes dehydrated, the concentration of urine increases. Explain the changes that occur in the body that lead to the production of concentrated urine.",
+            correctKeywords: [
+              "more ADH released",
+              "collecting duct more permeable",
+              "more water reabsorbed into blood",
+              "by osmosis",
+              "less urine produced",
+              "urine more concentrated",
+            ],
+            marks: 3,
+            topic: "Human biology/Osmoregulation",
+            msText:
+              "more ADH released (1) collecting duct more permeable (1) more water reabsorbed into blood (1) by osmosis (1) less urine produced, urine more concentrated (1)",
+          },
+          {
+            id: "q5ai",
+            type: "calc",
+            text: "5(a)(i) Calculate the mean volume of gelatine digested in cm³. Give your answer to two decimal places. (Values: 0.55, 1.89, 0.54, 0.61)",
+            correctValue: 0.9,
+            tolerance: 0.01,
+            marks: 2,
+            topic: "Maths/Mean",
+            msText: "0.90 (2) (sum = 3.59, /4 = 0.8975 ≈ 0.90)",
+          },
+          {
+            id: "q5aii",
+            type: "written",
+            text: "5(a)(ii) State what substances are produced when the gelatine protein is digested.",
+            correctKeywords: ["amino acids"],
+            marks: 1,
+            topic: "Biochemistry/Digestion",
+            msText: "amino acids (1)",
+          },
+          {
+            id: "q5bi",
+            type: "written",
+            text: "5(b)(i) Give two variables the student should control when repeating the investigation with different pH buffers.",
+            correctKeywords: [
+              "temperature",
+              "concentration of pineapple juice",
+              "volume of pineapple juice",
+              "volume of buffer",
+              "type of gelatine",
+              "mass of gelatine",
+              "time",
+              "size of test tube",
+            ],
+            marks: 2,
+            topic: "Scientific method/Control variables",
+            msText:
+              "temperature (1) volume/concentration of pineapple juice (1) volume of buffer (1) type/mass of gelatine (1) time (1)",
+          },
+          {
+            id: "q5bii",
+            type: "written",
+            text: "5(b)(ii) Explain the effect of changing the pH on the mean volume of gelatine digested.",
+            correctKeywords: [
+              "increases up to pH 5 then decreases",
+              "optimum pH around 5",
+              "enzymes denature at high/low pH",
+              "active site shape changes",
+              "substrate no longer fits",
+            ],
+            marks: 3,
+            topic: "Enzymes/pH effect",
+            msText:
+              "increases up to pH 5 then decreases (1) optimum pH (1) enzymes denature away from optimum pH, active site shape changes, substrate no longer binds (1)",
+          },
+          {
+            id: "q5c",
+            type: "written",
+            text: "5(c) Describe a chemical test to show that pineapple juice contains protein.",
+            correctKeywords: [
+              "biuret reagent",
+              "add biuret A and biuret B",
+              "sodium hydroxide and copper sulfate",
+              "turns lilac/purple/pink/mauve",
+            ],
+            marks: 2,
+            topic: "Biochemistry/Food tests",
+            msText:
+              "add biuret (reagent) / add biuret A and biuret B / sodium hydroxide & copper sulfate (1) turns lilac / purple / pink / mauve / eq (1)",
+          },
+          {
+            id: "q6a",
+            type: "written",
+            text: "6(a) Explain why people with beta thalassaemia may experience severe tiredness.",
+            correctKeywords: [
+              "less oxygen transported",
+              "to muscles",
+              "less respiration",
+              "less ATP",
+              "less energy release",
+              "more anaerobic respiration",
+              "more lactic acid",
+            ],
+            marks: 2,
+            topic: "Human biology/Blood",
+            msText:
+              "less oxygen (transported) (1) to muscles (1) less respiration / less ATP production / less energy release / more lactic acid / more anaerobic respiration (1)",
+          },
+          {
+            id: "q6bi",
+            type: "written",
+            text: "6(b)(i) The strand of RNA used in this treatment is complementary to one strand of the DNA in the haemoglobin gene. Give the base sequence of RNA that is complementary to this sequence of DNA: AATGGCGGCTCA",
+            correctKeywords: ["UUACCGCGGAGU"],
+            marks: 2,
+            topic: "Molecular biology/Transcription",
+            msText:
+              "UUACCGCGGAGU (2) one mark for one incorrect pairing or use of T instead of U",
+          },
+          {
+            id: "q6bii",
+            type: "written",
+            text: "6(b)(ii) Describe the stages of protein synthesis of the modified gene to produce haemoglobin.",
+            correctKeywords: [
+              "transcription occurs in nucleus",
+              "production of mRNA from DNA",
+              "translation occurs on ribosome",
+              "mRNA binds to ribosome",
+              "tRNA brings amino acids",
+              "codon binds to anticodon",
+              "polypeptide produced",
+              "amino acids joined together",
+            ],
+            marks: 4,
+            topic: "Molecular biology/Protein synthesis",
+            msText:
+              "transcription occurs in nucleus (1) production of messenger RNA / mRNA (from DNA) (1) translation occurs on ribosome / mRNA binds to ribosome / mRNA goes to ribosome (1) tRNA brings / has amino acids (1) codon binds to anticodon / codons are complementary to anticodons / (complementary) triplets on tRNA and mRNA bind / eq (1) polypeptide produced / amino acids joined together / amino acid chain produced / eq (1)",
+          },
+          {
+            id: "q6biii",
+            type: "written",
+            text: "6(b)(iii) Evaluate the use of the new treatment compared to weekly blood transfusions. Use information from the results.",
+            correctKeywords: [
+              "Pros: patients produce red blood cells, can exercise, not breathless, more energy, independent life, no transfusions needed, better quality of life, no rejection, less risk of infectious disease, permanent treatment, lasts at least 15 months, cure",
+              "Cons: need long time in isolation, side effects, small sample size (only two patients), needs further testing, could cause mutations/cancer, need longer follow-up, might not work for everyone",
+            ],
+            marks: 4,
+            topic: "Medical treatment/Evaluation",
+            msText:
+              "Pros (max 3): patients produce red blood cells / can exercise / are not breathless / have more energy / eq (1) independent life / transfusions not needed / better quality of life / no need to keep visiting hospitals / eq (1) no rejection (1) less risk of infectious disease (from blood) (1) permanent treatment / long lasting / lasts a lifetime / cure / works for at least 15 months (1) Cons (max 3): need to spend long time in isolation (for treatment) / eq (1) side effects (1) small sample size / only tested on two people / needs further testing / more repeats / eq (1) could cause mutations in DNA / cause cancers (1) need to be tested for more than 15 months / for longer / eq (1)",
+          },
+        ],
+      };
+      // ============================================================
+      // END OF MODIFIABLE SECTION – everything below is fully automatic
+      // ============================================================
+
+      // --- Google Apps Script email configuration ---
+      // Replace this URL with the URL of your deployed Google Apps Script Web App
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyHrPhTjUxbfEviywjdlBs5W0E7H8J1aQAji85pyXG2V5z9y5IC-45Pboc86SH59GFL/exec";
+      const RECIPIENT_EMAIL = "aisha.daray@gmail.com";
+
+      // Extract exam metadata and questions array
+      const EXAM_META = {
+        title: questionDataRaw.examTitle,
+        subtitle: questionDataRaw.examSubtitle,
+        durationMinutes: questionDataRaw.durationMinutes || 120,
+      };
+      const questionsArrayRaw = questionDataRaw.questions;
+
+      // Auto-detect graph/practical questions (based on type)
+      function isGraphOrPracticalQuestion(question) {
+        return ["graph", "practical", "draw", "diagram"].includes(
+          question.type,
+        );
+      }
+
+      let questionsData = questionsArrayRaw.map((q) => ({
+        ...q,
+        isGraphical: isGraphOrPracticalQuestion(q),
+      }));
+      const TOTAL_MARKS_SUM = questionsData.reduce(
+        (sum, q) => sum + q.marks,
+        0,
+      );
+      const graphQuestionCount = questionsData.filter(
+        (q) => q.isGraphical,
+      ).length;
+      const DURATION_SECONDS = EXAM_META.durationMinutes * 60;
+
+      // Update UI with dynamic metadata
+      document.getElementById("examTitle").innerText = EXAM_META.title;
+      document.getElementById("examSubtitle").innerText = EXAM_META.subtitle;
+      const hoursDisplay = EXAM_META.durationMinutes / 60;
+      const durationStr = Number.isInteger(hoursDisplay)
+        ? `${hoursDisplay} hours`
+        : `${EXAM_META.durationMinutes} minutes`;
+      document.getElementById("durationTotalSpan").innerHTML =
+        `⏱️ ${durationStr} | 📝 Total marks: ${TOTAL_MARKS_SUM}`;
+
+      // Global variables
+      let userAnswers = new Array(questionsData.length).fill("");
+      let userManualMarks = new Array(questionsData.length).fill(null);
+      let currentQIndex = 0;
+      let examSubmitted = false;
+      let timerInterval;
+      let timeSeconds = DURATION_SECONDS;
+      let autoSaveTimer = null;
+
+      // DeepSeek API (unchanged placeholder)
+      const DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY_PLACEHOLDER";
+      const DEEPSEEK_MODEL = "deepseek-v4-pro";
+
+      // IndexedDB (same logic, references exam)
+      const DB_NAME = "IGCSE_Biology_Exam_DB";
+      const DB_VERSION = 2;
+      const PROGRESS_STORE = "exam_progress";
+      const RESULTS_STORE = "exam_results";
+      let db = null;
+      function initDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+          };
+          request.onupgradeneeded = (event) => {
+            const dbEvent = event.target.result;
+            if (!dbEvent.objectStoreNames.contains(PROGRESS_STORE))
+              dbEvent.createObjectStore(PROGRESS_STORE, { keyPath: "id" });
+            if (!dbEvent.objectStoreNames.contains(RESULTS_STORE))
+              dbEvent.createObjectStore(RESULTS_STORE, {
+                keyPath: "id",
+                autoIncrement: true,
+              });
+          };
+        });
+      }
+      async function saveProgressToDB(answers, manualMarks, timeLeft) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const record = {
+            id: "current_progress",
+            answers: answers,
+            manualMarks: manualMarks,
+            timeRemaining: timeLeft,
+            timestamp: new Date().toISOString(),
+          };
+          const request = store.put(record);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function loadProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readonly");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const request = store.get("current_progress");
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function saveResultToDB(resultData) {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([RESULTS_STORE], "readwrite");
+          const store = transaction.objectStore(RESULTS_STORE);
+          const record = { timestamp: new Date().toISOString(), ...resultData };
+          const request = store.add(record);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+      async function clearProgressFromDB() {
+        if (!db) await initDatabase();
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([PROGRESS_STORE], "readwrite");
+          const store = transaction.objectStore(PROGRESS_STORE);
+          const request = store.delete("current_progress");
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+      function showToast(message, isError = false) {
+        const toast = document.getElementById("statusToast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError ? "#b23c1c" : "#2c7da0";
+        toast.style.opacity = "1";
+        setTimeout(() => (toast.style.opacity = "0"), 3000);
+      }
+
+      // New email sender using Google Apps Script
+      async function sendResultsEmail(resultData, studentName = "Student") {
+        if (
+          !GOOGLE_SCRIPT_URL ||
+          GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"
+        ) {
+          console.warn("Google Script URL not configured. Email not sent.");
+          showToast("⚠️ Email not sent: Google Script URL not set", true);
+          return false;
+        }
+        try {
+          // Build the HTML email content (same as before)
+          let emailHtml = `<h2>Exam Results | ${EXAM_META.subtitle}</h2>
+      <p><strong>Student:</strong> ${studentName}</p>
+      <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+      <p><strong>Score:</strong> ${resultData.score} / ${resultData.totalMarks} (${resultData.percent.toFixed(1)}%)</p>
+      <p><strong>Grade:</strong> ${resultData.grade}</p>
+      <p><strong>Weak Topics:</strong> ${resultData.weakTopics.join(", ") || "None"}</p>
+      <h3>Detailed Question Feedback</h3>
+      <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead style="background:#2c7da0; color:white;"><tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr></thead>
+        <tbody>`;
+          for (let fb of resultData.details) {
+            emailHtml += `<tr>
+        <td>${fb.qNum}${fb.isGraphical ? " 📊" : ""}</td>
+        <td>${fb.topic}</td>
+        <td>${fb.questionText}</td>
+        <td>${fb.studentAnswer.substring(0, 200)}</td>
+        <td>${fb.earned}/${fb.max}</td>
+        <td>${fb.aiFeedback}</td>
+        <td>${fb.expectedAnswer ? fb.expectedAnswer.substring(0, 200) : "N/A"}</td>
+      </tr>`;
+          }
+          emailHtml += `</tbody><table><p><em>Graph/Diagram questions (📊) were self-assessed using mark schemes.</em></p>`;
+
+          // Prepare form-urlencoded parameters as expected by the Google Script
+          const params = new URLSearchParams();
+          params.append("recipient", RECIPIENT_EMAIL);
+          params.append("subject", `Exam Results: ${EXAM_META.title}`);
+          params.append("htmlBody", emailHtml);
+
+          // Send using form-urlencoded – a simple request, no CORS preflight
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", // avoids CORS errors; response is opaque but request goes through
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
+          });
+
+          // With no-cors we cannot read the response, but the request is sent.
+          // The script will receive the parameters correctly.
+          showToast("✅ Results sent via Google Script", false);
+          return true;
+        } catch (e) {
+          console.error("Google Script email error:", e);
+          showToast("⚠️ Email sending failed – check script URL", true);
+          return false;
+        }
+      }
+      // Timer & helpers
+      function formatTime(sec) {
+        let h = Math.floor(sec / 3600),
+          m = Math.floor((sec % 3600) / 60),
+          s = sec % 60;
+        return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+      function updateTimerDisplay() {
+        document.getElementById("timerDisplay").innerText =
+          formatTime(timeSeconds);
+        if (timeSeconds <= 0 && !examSubmitted) autoSubmitExam();
+      }
+      function autoSubmitExam() {
+        if (!examSubmitted) submitAndMarkExam();
+      }
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          if (!examSubmitted && timeSeconds > 0) {
+            timeSeconds--;
+            updateTimerDisplay();
+            if (timeSeconds % 30 === 0) autoSaveToLocal();
+          } else if (timeSeconds <= 0 && !examSubmitted) autoSubmitExam();
+        }, 1000);
+      }
+      function autoSaveToLocal() {
+        if (examSubmitted) return;
+        localStorage.setItem(
+          "igcse_bio_exam_autosave",
+          JSON.stringify({
+            answers: userAnswers,
+            manualMarks: userManualMarks,
+            timeRemaining: timeSeconds,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+      function loadAutoSave() {
+        const saved = localStorage.getItem("igcse_bio_exam_autosave");
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (data.answers && data.answers.length === userAnswers.length) {
+              userAnswers = data.answers;
+              if (data.manualMarks) userManualMarks = data.manualMarks;
+              if (
+                data.timeRemaining &&
+                data.timeRemaining > 0 &&
+                data.timeRemaining < DURATION_SECONDS
+              )
+                timeSeconds = data.timeRemaining;
+              updateTimerDisplay();
+              return true;
+            }
+          } catch (e) {}
+        }
+        return false;
+      }
+
+      function renderNavigation() {
+        const navDiv = document.getElementById("navContainer");
+        navDiv.innerHTML = "";
+        questionsData.forEach((_, idx) => {
+          const btn = document.createElement("button");
+          btn.innerText = idx + 1;
+          btn.classList.add("nav-btn");
+          if (userAnswers[idx] && userAnswers[idx].toString().trim() !== "")
+            btn.classList.add("answered");
+          if (idx === currentQIndex) btn.classList.add("active");
+          btn.onclick = () => {
+            if (!examSubmitted) goToQuestion(idx);
+          };
+          navDiv.appendChild(btn);
+        });
+        let answered = userAnswers.filter(
+          (a) => a && a.toString().trim() !== "",
+        ).length;
+        document.getElementById("answeredCounter").innerHTML =
+          `📋 Questions answered: ${answered} / ${questionsData.length}`;
+        document.getElementById("graphCounter").innerHTML =
+          `📊 Graph/Practical questions: ${graphQuestionCount} (self-assess)`;
+      }
+      function goToQuestion(idx) {
+        if (examSubmitted) return;
+        document
+          .querySelectorAll(".question-card")
+          .forEach((card) => card.classList.remove("active-question"));
+        currentQIndex = idx;
+        const target = document.getElementById(`qcard-${idx}`);
+        if (target) target.classList.add("active-question");
+        renderNavigation();
+      }
+      function saveAnswer(idx, value) {
+        if (examSubmitted) return;
+        userAnswers[idx] = value;
+        renderNavigation();
+        autoSaveToLocal();
+      }
+      function setManualMark(idx, markValue) {
+        if (examSubmitted) return;
+        let num = parseInt(markValue) || 0;
+        num = Math.min(Math.max(num, 0), questionsData[idx].marks);
+        userManualMarks[idx] = num;
+        autoSaveToLocal();
+      }
+      function toggleMarkScheme(idx) {
+        if (!questionsData[idx].isGraphical) return;
+        let panel = document.getElementById(`ms-panel-${idx}`);
+        if (panel) panel.classList.toggle("visible");
+      }
+      function handleTextareaInput(idx, value) {
+        saveAnswer(idx, value);
+      }
+
+      function buildQuestionsHTML() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        questionsData.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          if (idx === 0) card.classList.add("active-question");
+          card.id = `qcard-${idx}`;
+          let inner = `<div class="q-title">Q${idx + 1} (${q.topic}) <span class="marks">${q.marks} marks</span>`;
+          if (q.isGraphical)
+            inner += `<span class="graph-badge">📊 Graph/Diagram Question - Self-Assess</span>`;
+          inner += `</div><div>${q.text}</div>`;
+          if (q.type === "mcq") {
+            inner += `<div class="subquestion">`;
+            (q.options || []).forEach((opt) => {
+              let checked = userAnswers[idx] === opt ? "checked" : "";
+              inner += `<label class="mcq-option"><input type="radio" name="q${idx}" value="${opt}" ${checked} onchange="saveAnswer(${idx}, this.value)"> ${opt}</label><br>`;
+            });
+            inner += `</div>`;
+          } else if (q.type === "calc") {
+            let val = userAnswers[idx] || "";
+            inner += `<div class="subquestion"><input type="text" placeholder="Numeric answer..." value="${val.replace(/"/g, "&quot;")}" onchange="saveAnswer(${idx}, this.value)"></div>`;
+          } else {
+            let val = userAnswers[idx] || "";
+            inner += `<div class="subquestion"><textarea rows="3" placeholder="Write your answer..." data-idx="${idx}" oninput="handleTextareaInput(${idx}, this.value)" onchange="saveAnswer(${idx}, this.value)">${val}</textarea></div>`;
+          }
+          if (q.isGraphical === true) {
+            inner += `<div style="margin-top:12px;"><button type="button" class="small" onclick="toggleMarkScheme(${idx})">📖 Show Mark Scheme (for self-assessment)</button><div id="ms-panel-${idx}" class="ms-panel"><strong>📌 Mark Scheme:</strong><br>${q.msText || "No mark scheme provided"}</div><div class="marks-earned-row"><span>✍️ Self-assess marks earned (0-${q.marks}): </span><select onchange="setManualMark(${idx}, this.value)"><option value="">-- select --</option>`;
+            for (let m = 0; m <= q.marks; m++) {
+              let sel = userManualMarks[idx] === m ? "selected" : "";
+              inner += `<option value="${m}" ${sel}>${m} / ${q.marks}</option>`;
+            }
+            inner += `</select></div></div>`;
+          }
+          if (
+            q.isGraphical ||
+            q.text.toLowerCase().includes("graph") ||
+            q.text.toLowerCase().includes("diagram")
+          )
+            inner += `<div class="placeholder-img">📊 [Graph/Diagram placeholder - please plot/draw on paper or upload your drawing]</div>`;
+          card.innerHTML = inner;
+          container.appendChild(card);
+        });
+      }
+
+      async function callDEEPSEEKForMark(
+        question,
+        studentAnswer,
+        markScheme,
+        maxMarks,
+      ) {
+        if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === "YOUR_DEEPSEEK_API_KEY") {
+          if (!studentAnswer)
+            return { score: 0, feedback: "No answer provided" };
+          let keywords = question.correctKeywords || [];
+          if (keywords.length === 0)
+            return { score: 0, feedback: "No keywords defined" };
+          let ansLower = studentAnswer.toLowerCase();
+          let matched = keywords.filter((kw) =>
+            ansLower.includes(kw.toLowerCase()),
+          ).length;
+          let required = question.requiredKeywords || keywords.length;
+          let score = Math.min(matched, required, maxMarks);
+          return {
+            score,
+            feedback: `Matched ${matched}/${required} key terms. Expected: ${keywords.join(", ")}`,
+          };
+        }
+        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on mark scheme. Question: "${question.text}" Mark Scheme: "${markScheme}" Max marks: ${maxMarks} Student Answer: "${studentAnswer || "[no answer]"}" Return ONLY JSON: {"score": number (0-${maxMarks}), "feedback": "brief feedback"}`;
+        try {
+          const response = await fetch(
+            "https://api.DEEPSEEK.com/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+              },
+              body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.1,
+              }),
+            },
+          );
+          if (!response.ok) throw new Error(`API error ${response.status}`);
+          const data = await response.json();
+          const result = JSON.parse(data.choices[0].message.content);
+          return {
+            score: Math.min(Math.max(0, parseInt(result.score) || 0), maxMarks),
+            feedback: result.feedback || "Smart assessment complete.",
+          };
+        } catch (e) {
+          console.error("DEEPSEEK error:", e);
+          return {
+            score: 0,
+            feedback: "Smart marking error - please review manually",
+          };
+        }
+      }
+
+      async function submitAndMarkExam() {
+        if (examSubmitted) return;
+        clearInterval(timerInterval);
+        if (autoSaveTimer) clearInterval(autoSaveTimer);
+        examSubmitted = true;
+        showToast("🤖 Smart marking...", false);
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "loading-overlay";
+        loadingDiv.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p>Marking in progress...</div>`;
+        document.body.appendChild(loadingDiv);
+        let totalEarned = 0,
+          totalPossible = 0;
+        let questionFeedback = [];
+        for (let i = 0; i < questionsData.length; i++) {
+          let q = questionsData[i];
+          let answer = userAnswers[i] || "";
+          let earned = 0;
+          let aiFeedback = "";
+          if (q.isGraphical === true) {
+            earned =
+              userManualMarks[i] !== null && !isNaN(userManualMarks[i])
+                ? userManualMarks[i]
+                : 0;
+            earned = Math.min(Math.max(0, earned), q.marks);
+            aiFeedback =
+              "Self-assessed by student (graph/diagram - compared with mark scheme)";
+          } else if (q.type === "mcq") {
+            let studentLetter = (answer || "").trim().toLowerCase().charAt(0);
+            let correctOptionLetter = (q.correct || "").trim().toLowerCase();
+            if (studentLetter === correctOptionLetter) earned = q.marks;
+            else earned = 0;
+            let correctFullText = "";
+            if (q.options)
+              for (let opt of q.options)
+                if (opt.toLowerCase().startsWith(correctOptionLetter)) {
+                  correctFullText = opt;
+                  break;
+                }
+            aiFeedback =
+              earned === q.marks
+                ? `Correct answer: ${q.correct}`
+                : `Incorrect. Correct answer is ${q.correct}${correctFullText ? ": " + correctFullText : ""}. Your answer: ${answer || "none"}`;
+          } else {
+            const aiResult = await callDEEPSEEKForMark(
+              q,
+              answer,
+              q.msText,
+              q.marks,
+            );
+            earned = aiResult.score;
+            aiFeedback = aiResult.feedback;
+          }
+          totalEarned += earned;
+          totalPossible += q.marks;
+          let status =
+            earned === q.marks
+              ? "✓ Full marks"
+              : earned === 0
+                ? "✗ No marks"
+                : "⚠ Partial marks";
+          questionFeedback.push({
+            number: i + 1,
+            topic: q.topic,
+            questionText: q.text,
+            studentAnswer: answer || "(blank)",
+            marksEarned: earned,
+            marksTotal: q.marks,
+            status,
+            expectedAnswer: q.msText,
+            aiFeedback,
+            isGraphical: q.isGraphical,
+          });
+        }
+        let percent = (totalEarned / totalPossible) * 100;
+        let grade =
+          percent >= 85
+            ? "9"
+            : percent >= 78
+              ? "8"
+              : percent >= 70
+                ? "7"
+                : percent >= 62
+                  ? "6"
+                  : percent >= 54
+                    ? "5"
+                    : percent >= 45
+                      ? "4"
+                      : percent >= 35
+                        ? "3"
+                        : percent >= 25
+                          ? "2"
+                          : "1";
+        let weakTopics = [];
+        let topicAgg = {};
+        questionFeedback.forEach((fb) => {
+          if (!topicAgg[fb.topic]) topicAgg[fb.topic] = { earned: 0, total: 0 };
+          topicAgg[fb.topic].earned += fb.marksEarned;
+          topicAgg[fb.topic].total += fb.marksTotal;
+        });
+        for (let t in topicAgg)
+          if ((topicAgg[t].earned / topicAgg[t].total) * 100 < 55)
+            weakTopics.push(t);
+        const reviewDiv = document.getElementById("reviewPanel");
+        reviewDiv.classList.remove("hidden");
+        let html = `<h2>📊 Exam Results</h2><div class="score-badge">${totalEarned} / ${totalPossible} (${percent.toFixed(1)}%)</div><div class="grade-box"><strong>Grade: ${grade}</strong></div><div class="grade-box" style="background:#e9f0f5;"><strong>📊 Graph Questions:</strong> ${graphQuestionCount} question(s) were self-assessed using mark scheme</div>`;
+        if (weakTopics.length)
+          html += `<div class="weakness-box"><h3>⚠️ Weak areas (&lt;55%)</h3><ul>${weakTopics.map((w) => `<li>${w}</li>`).join("")}</ul></div>`;
+        else
+          html += `<div class="weakness-box" style="background:#e0f2e9;"><h3>✅ Strong performance overall!</h3></div>`;
+        html += `<details open><summary>📋 Detailed Feedback</summary><table class="feedback-table"><thead><tr><th>#</th><th>Topic</th><th>Question</th><th>Your Answer</th><th>Score</th><th>Feedback</th><th>Mark Scheme</th></tr></thead><tbody>`;
+        for (let fb of questionFeedback) {
+          let cls =
+            fb.marksEarned === fb.marksTotal
+              ? "correct-highlight"
+              : fb.marksEarned === 0
+                ? "incorrect-highlight"
+                : "";
+          html += `<tr class="${cls}"><td>${fb.number}${fb.isGraphical ? " 📊" : ""}</td><td>${fb.topic}</td><td>${fb.questionText}</td><td style="max-width:250px;">${fb.studentAnswer}</td><td style="text-align:center;">${fb.marksEarned}/${fb.marksTotal}<br>${fb.status}</td><td style="max-width:300px;">${fb.aiFeedback || "No feedback"}</td><td style="max-width:250px;">${fb.expectedAnswer || "N/A"}</td></tr>`;
+        }
+        html += `</tbody></table></details><p style="margin-top: 20px; padding: 12px; background: #f0f6fa; border-radius: 16px;">✅ <strong>How marking worked:</strong> Graph/drawing questions (${graphQuestionCount}) were self-assessed. All others marked automatically.</p>`;
+        reviewDiv.innerHTML = html;
+        document.body.removeChild(loadingDiv);
+        document
+          .querySelectorAll("input, textarea, button, select")
+          .forEach((el) => {
+            if (el.id !== "submitBtn") el.disabled = true;
+          });
+        document.getElementById("submitBtn").disabled = true;
+        showToast("Marking complete!", false);
+        localStorage.removeItem("igcse_bio_exam_autosave");
+        try {
+          const emailData = {
+            score: totalEarned,
+            totalMarks: totalPossible,
+            percent,
+            grade,
+            weakTopics,
+            details: questionFeedback.map((fb) => ({
+              qNum: fb.number,
+              topic: fb.topic,
+              questionText: fb.questionText,
+              studentAnswer: fb.studentAnswer,
+              earned: fb.marksEarned,
+              max: fb.marksTotal,
+              aiFeedback: fb.aiFeedback,
+              expectedAnswer: fb.expectedAnswer,
+              isGraphical: fb.isGraphical,
+            })),
+          };
+          await sendResultsEmail(emailData, "Exam Candidate");
+        } catch (e) {
+          console.error("Email sending failed:", e);
+        }
+      }
+
+      window.saveAnswer = saveAnswer;
+      window.setManualMark = setManualMark;
+      window.toggleMarkScheme = toggleMarkScheme;
+      window.goToQuestion = goToQuestion;
+      window.handleTextareaInput = handleTextareaInput;
+
+      window.onload = () => {
+        loadAutoSave();
+        buildQuestionsHTML();
+        renderNavigation();
+        startTimer();
+        autoSaveTimer = setInterval(() => {
+          if (!examSubmitted) autoSaveToLocal();
+        }, 30000);
+        document.getElementById("nextBtn").onclick = () => {
+          if (currentQIndex + 1 < questionsData.length && !examSubmitted)
+            goToQuestion(currentQIndex + 1);
+        };
+        document.getElementById("prevBtn").onclick = () => {
+          if (currentQIndex - 1 >= 0 && !examSubmitted)
+            goToQuestion(currentQIndex - 1);
+        };
+        document.getElementById("submitBtn").onclick = () => {
+          if (
+            confirm(
+              "Submit exam? Graph questions require self-assessment; other questions will be Smart-marked.",
+            )
+          )
+            submitAndMarkExam();
+        };
+      };
+    </script>
+  </body>
+</html>
