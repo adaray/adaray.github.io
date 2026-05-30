@@ -410,430 +410,370 @@
       // ⚡ ONLY MODIFY THE OBJECT BELOW FOR A NEW EXAM ⚡
       // ============================================================
       const questionDataRaw = {
-        examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
-        examSubtitle: "Paper 2B | June 2023",
-        durationMinutes: 75,
-        questions: [
-          {
-            id: "q1a",
-            type: "mcq",
-            text: "1(a) Which of these processes produces ATP?",
-            options: [
-              "A active transport",
-              "B diffusion",
-              "C respiration",
-              "D transpiration",
-            ],
-            correct: "C",
-            marks: 1,
-            topic: "Cell biology/Respiration",
-            msText: "The only correct answer is C (respiration)",
-          },
-          {
-            id: "q1bi",
-            type: "written",
-            text: "1(b)(i) Explain why intensive farming and deforestation would cause an increase in populations of dinoflagellates.",
-            correctKeywords: [
-              "soil erosion",
-              "fertiliser / organic material",
-              "run off / leaching / washed in",
-              "increased magnesium / nitrates / phosphate / minerals",
-              "magnesium for chlorophyll production",
-              "nitrates for amino acids / proteins",
-              "more carbon dioxide for photosynthesis",
-            ],
-            marks: 3,
-            topic: "Ecology/Eutrophication",
-            msText:
-              "soil erosion / soil erodes (1) fertiliser / organic material (1) run off / leaching / washed in / eq (1) (increased) magnesium / nitrates / phosphate / minerals (1) for correct matched function e.g. magnesium for chlorophyll production / nitrates for amino acids / nitrates for proteins (1) (more) carbon dioxide for photosynthesis (1)",
-          },
-          {
-            id: "q1bii",
-            type: "written",
-            text: "1(b)(ii) Explain why oxygen levels decrease after a series of glowing events.",
-            correctKeywords: [
-              "decomposition",
-              "decay",
-              "respiration",
-              "by bacteria/fungi",
-              "less photosynthesis",
-            ],
-            marks: 2,
-            topic: "Ecology/Decomposition",
-            msText:
-              "decomposition / decay / respiration / eq (1) (by) bacteria / fungi / microorganisms / microbes (1) less photosynthesis (1)",
-          },
-          {
-            id: "q1c",
-            type: "mcq",
-            text: "1(c) Which type of bacteria converts ammonia into nitrates?",
-            options: [
-              "A decomposer",
-              "B denitrifying",
-              "C nitrifying",
-              "D nitrogen fixing",
-            ],
-            correct: "C",
-            marks: 1,
-            topic: "Ecology/Nitrogen cycle",
-            msText: "The only correct answer is C (nitrifying)",
-          },
-          {
-            id: "q1di",
-            type: "calc",
-            text: "1(d)(i) Each of the 15 copepods ate glowing dinoflagellates at a mean rate of 40 dinoflagellates per hour. Calculate the mean rate at which each copepod ate dinoflagellates that were not glowing. (Glowing: 1200 in 2h, non-glowing: 2100 in 2h)",
-            correctValue: 70,
-            tolerance: 0,
-            marks: 2,
-            topic: "Maths/Rate calculation",
-            msText: "70 (2) One mark for ÷ 15 or ÷ 2 or ÷ 30 or 1050 or 140",
-          },
-          {
-            id: "q1dii",
-            type: "written",
-            text: "1(d)(ii) Explain how natural selection could have resulted in the evolution of dinoflagellates that glow.",
-            correctKeywords: [
-              "mutation produced glowing dinoflagellates",
-              "produces variation",
-              "glowing dinoflagellates survive / not eaten",
-              "reproduce / make offspring",
-              "pass allele / gene for glowing to offspring",
-            ],
-            marks: 4,
-            topic: "Evolution/Natural selection",
-            msText:
-              "mutation (produced glowing dinoflagellates) (1) (produces) variation (1) (glowing dinoflagellates) survive / not eaten / eq (1) reproduce / make offspring / eq (1) pass allele / gene (for glowing on to offspring) (1)",
-          },
-          {
-            id: "q1e",
-            type: "written",
-            text: "1(e) Suggest why the sustainable lamps could be carbon neutral and help to reduce pollution.",
-            correctKeywords: [
-              "photosynthesis",
-              "takes in carbon dioxide / less CO2 in atmosphere",
-              "less use of electricity",
-              "less fossil fuel use",
-              "less enhanced greenhouse effect / global warming",
-              "less sulfur dioxide / acid rain",
-            ],
-            marks: 3,
-            topic: "Environmental science/Sustainability",
-            msText:
-              "photosynthesis (1) takes in carbon dioxide / less carbon dioxide in atmosphere / less carbon dioxide released / eq (1) less / no use of electricity / eq (1) less fossil fuel use / oil / coal / gas / eq (1) less (enhanced) greenhouse effect / global warming (1) less sulfur dioxide / less acid rain (1)",
-          },
-          {
-            id: "q2a",
-            type: "written",
-            text: "2(a) State the reason for using the oil.",
-            correctKeywords: [
-              "prevent evaporation from surface of water",
-              "ensure water loss is from plant",
-            ],
-            marks: 1,
-            topic: "Scientific method/Experimental design",
-            msText: "prevent evaporation (from surface of water) / eq (1)",
-          },
-          {
-            id: "q2bi",
-            type: "calc",
-            text: "2(b)(i) Calculate the mean rate of water uptake by the plant shoot during the eight days in cm³ per day. (Start volume 100 cm³, day 8 volume 65 cm³)",
-            correctValue: 4.375,
-            tolerance: 0.01,
-            marks: 2,
-            topic: "Maths/Rate calculation",
-            msText: "4.4 or 4.38 or 4.375 (2) One mark 35 or ÷ 8",
-          },
-          {
-            id: "q2bii",
-            type: "written",
-            text: "2(b)(ii) Comment on the changes in total mass of the measuring cylinder and plant shoot, compared with the changes in volume of water in the measuring cylinder. [1 cm³ of water has a mass of 1 g]",
-            correctKeywords: [
-              "both volume and mass decrease",
-              "volume changes more than mass",
-              "more water is taken up than lost",
-              "water loss and uptake are same between 4 and 8 days",
-              "correct numerical manipulation",
-              "transpiration occurs / water evaporates from leaves",
-              "some water is retained / stored in cells / used for turgor",
-              "used in photosynthesis",
-            ],
-            marks: 4,
-            topic: "Plant biology/Transpiration",
-            msText:
-              "both / volume and mass, decrease / eq (1) volume changes more than mass / more water is taken up than lost (up to 4 or 8 days) / eq (1) water loss and uptake are same between 4 and 8 days / after 4 days / eq (1) correct numerical manipulation (1) transpiration occurs / water evaporates (from leaves) / water lost through stomata (1) (some) water is retained / stored in cells / (used for) turgor (1) used in photosynthesis (1)",
-          },
-          {
-            id: "q2c",
-            type: "written",
-            text: "2(c) Explain why the rate of water loss would be different if a working fan is placed in front of the plant shoot.",
-            correctKeywords: [
-              "more transpiration / more evaporation / higher water loss / faster water loss",
-              "wind blows / moves the water away / removes still air / removes humid air",
-              "increases / maintains / steeper diffusion gradient / concentration gradient",
-            ],
-            marks: 3,
-            topic: "Plant biology/Transpiration",
-            msText:
-              "more transpiration / more evaporation / higher (water loss) / faster (water loss) / eq (1) wind) blows / moves, the water away / removes still air / removes humid air / eq (1) increases / maintains / steeper diffusion gradient / concentration gradient / eq (1)",
-          },
-          {
-            id: "q3a",
-            type: "mcq",
-            text: "3(a) Which structure is the proximal convoluted tubule?",
-            options: ["A", "B", "C", "D"],
-            correct: "A",
-            marks: 1,
-            topic: "Human biology/Kidney",
-            msText: "The only correct answer is A (proximal convoluted tubule)",
-          },
-          {
-            id: "q3bi",
-            type: "calc",
-            text: "3(b)(i) Calculate the cross-sectional area, in mm², of the lumen of this blood vessel. Radius = 100 μm, π = 3.14. [1 mm = 1000 μm]",
-            correctValue: 0.03,
-            tolerance: 0.005,
-            marks: 2,
-            topic: "Maths/Area calculation",
-            msText: "0.03 (2) One mark for 0.1 or 100/1000 or 31400",
-          },
-          {
-            id: "q3bii",
-            type: "written",
-            text: "3(b)(ii) Explain why this difference in the width of the lumen of the two blood vessels is important for kidney function.",
-            correctKeywords: [
-              "increases the pressure / creates high pressure",
-              "for ultrafiltration",
-              "so that plasma / small molecules / filtrate leave glomerulus / enter Bowman's capsule",
-            ],
-            marks: 2,
-            topic: "Human biology/Kidney function",
-            msText:
-              "increases the pressure / creates high pressure / eq (1) (for) ultrafiltration (1) so that plasma / small molecules / fluid / filtrate, leave glomerulus / enter Bowman's capsule / eq (1)",
-          },
-          {
-            id: "q3c",
-            type: "written",
-            text: "3(c) Describe how urine could be tested for protein.",
-            correctKeywords: [
-              "biuret reagent",
-              "lilac / purple / pink / mauve",
-            ],
-            marks: 2,
-            topic: "Biochemistry/Food tests",
-            msText:
-              "biuret (reagent) (1) lilac / purple / pink / mauve / eq (1)",
-          },
-          {
-            id: "q4ai",
-            type: "mcq",
-            text: "4(a)(i) What is the name of the cell labelled P?",
-            options: ["A cuticle", "B guard", "C palisade", "D stoma"],
-            correct: "B",
-            marks: 1,
-            topic: "Plant biology/Leaf structure",
-            msText: "The only correct answer is B (guard)",
-          },
-          {
-            id: "q4aii",
-            type: "written",
-            text: "4(a)(ii) Explain how part Q is adapted for photosynthesis in the leaf.",
-            correctKeywords: [
-              "spongy mesophyll / spongy cells / spongy tissue",
-              "has air spaces / gaps between cells",
-              "for diffusion / gas exchange",
-              "carbon dioxide moves in to palisade cells / oxygen out",
-              "xylem to transport water",
-            ],
-            marks: 3,
-            topic: "Plant biology/Leaf structure",
-            msText:
-              "spongy mesophyll / spongy cells / spongy tissue / spongy layer (1) has air spaces / gaps between cells / spaces / eq (1) (for) diffusion / gas exchange (1) carbon dioxide moves in (to palisade cells) / oxygen out (from palisade cells) / eq (1) xylem to transport water (1)",
-          },
-          {
-            id: "q4bi",
-            type: "written",
-            text: "4(b)(i) State the independent variable.",
-            correctKeywords: ["temperature", "temperature of water bath"],
-            marks: 1,
-            topic: "Scientific method/Variables",
-            msText: "temperature (of water bath) (1)",
-          },
-          {
-            id: "q4bii",
-            type: "written",
-            text: "4(b)(ii) State the function of the tube with no leaf.",
-            correctKeywords: [
-              "control experiment",
-              "to compare",
-              "show effect of temperature on indicator",
-              "show that leaf is required to affect the colour",
-            ],
-            marks: 1,
-            topic: "Scientific method/Control",
-            msText:
-              "control (experiment) / to compare / show effect of temperature on indicator / show that leaf is required to affect the colour / eq (1)",
-          },
-          {
-            id: "q4ci",
-            type: "calc",
-            text: "4(c)(i) Calculate the mean time taken for the indicator to change from orange to red at 25°C. Give your answer to two significant figures.",
-            correctValue: 27,
-            tolerance: 0.5,
-            marks: 2,
-            topic: "Maths/Mean",
-            msText: "27 (2) One mark for 26.7 or 26.67 or 26.6667",
-          },
-          {
-            id: "q4cii",
-            type: "written",
-            text: "4(c)(ii) Explain the effect of increasing the temperature on the mean time taken for the indicator to change from orange to red.",
-            correctKeywords: [
-              "faster photosynthesis",
-              "more carbon dioxide is removed / taken in / absorbed",
-              "increased collisions / more kinetic energy / faster movement of molecules",
-              "levels off as another factor limits / light intensity limits the rate",
-            ],
-            marks: 3,
-            topic: "Plant biology/Photosynthesis",
-            msText:
-              "faster photosynthesis / eq (1) (more) carbon dioxide is removed / taken in / absorbed / eq (1) increased collisions / more (kinetic) energy / faster movement of molecules / eq (1) (levels off as) another factor limits / light intensity limits the rate / temp no longer limiting / eq (1)",
-          },
-          {
-            id: "q4d",
-            type: "written",
-            text: "4(d) Explain why the indicator solution changes from orange to yellow in the dark.",
-            correctKeywords: [
-              "respiration is faster than photosynthesis",
-              "more respiration than photosynthesis",
-              "carbon dioxide is released / increases",
-            ],
-            marks: 2,
-            topic: "Plant biology/Respiration vs photosynthesis",
-            msText:
-              "respiration is faster than photosynthesis / more respiration than photosynthesis / eq (1) so carbon dioxide is released / increases (in indicator / tube) / eq (1)",
-          },
-          {
-            id: "q5ai",
-            type: "written",
-            text: "5(a)(i) Name the gland that produces FSH.",
-            correctKeywords: ["pituitary", "pituitary gland"],
-            marks: 1,
-            topic: "Human biology/Hormones",
-            msText: "pituitary (gland) (1)",
-          },
-          {
-            id: "q5aii",
-            type: "mcq",
-            text: "5(a)(ii) Which line represents the hormone progesterone?",
-            options: ["A", "B", "C", "D"],
-            correct: "D",
-            marks: 1,
-            topic: "Human biology/Menstrual cycle",
-            msText: "The only correct answer is D",
-          },
-          {
-            id: "q5aiii",
-            type: "written",
-            text: "5(a)(iii) Describe the roles of FSH and LH in the menstrual cycle.",
-            correctKeywords: [
-              "FSH matures eggs / follicles",
-              "FSH stimulates oestrogen release",
-              "LH induces ovulation / egg release",
-              "LH stimulates progesterone / oestrogen release",
-              "LH stimulates corpus luteum development",
-            ],
-            marks: 4,
-            topic: "Human biology/Menstrual cycle",
-            msText:
-              "(FSH) matures eggs / follicles / eq (1) (FSH) stimulates oestrogen (release) / eq (1) (LH) induces ovulation / egg release / eq (1) (LH) stimulates progesterone / oestrogen (release) / stimulates corpus luteum (development) / eq (1)",
-          },
-          {
-            id: "q5b",
-            type: "written",
-            text: "5(b) Evaluate the three different methods of hormonal contraception (oral tablets, injection, implant).",
-            correctKeywords: [
-              "tablets less effective / tablets have wider range",
-              "no protection against HIV / may cause side effects",
-              "tablets: easy to use / easy to stop / easy to forget / need to take every day / may not be effective if vomiting",
-              "injection: long lasting / can't forget / need doctor / painful / longer for cycle to return",
-              "implant: longest lasting / can't be forgotten / need doctor / could cause infection / not easy to change mind",
-            ],
-            marks: 5,
-            topic: "Human biology/Contraception",
-            msText:
-              "Overall comments: tablets are less effective / tablets have a wider range of effectiveness / implants or injections are more effective / eq (1) no protection against HIV / (any method) may cause side effects / eq (1) Tablets: max one advantage: tablets are easy to use / no need for medical treatment / easy to stop, max one disadvantage: tablets easy to forget / need to take every day / may not be effective if vomiting. Injection: max one advantage: injections last long time / can't forget to take, max one disadvantage: need to be given by doctor / can be painful / longer for cycle to return. Implant: max one advantage: implant last longest time / can't be forgotten, max one disadvantage: need to be given by doctor / could cause infection / not easy to change mind (5)",
-          },
-          {
-            id: "q6ai",
-            type: "written",
-            text: "6(a)(i) Describe how selective breeding can produce snapdragon plants with brightly coloured flowers.",
-            correctKeywords: [
-              "select plants with bright flowers and pollinate / breed / cross",
-              "select offspring with bright flowers and pollinate / breed / cross / repeat with offspring",
-            ],
-            marks: 2,
-            topic: "Genetics/Selective breeding",
-            msText:
-              "select plants with bright flowers and pollinate / breed / cross / eq (1) select offspring (with bright flowers) and pollinate / breed / cross / repeat with offspring / eq (1)",
-          },
-          {
-            id: "q6aii",
-            type: "written",
-            text: "6(a)(ii) Describe the process of micropropagation.",
-            correctKeywords: [
-              "take small samples / small tissue / few cells / scrape cells off / remove growth tips",
-              "sterilise / wash with ethanol / alcohol / disinfectant",
-              "place into agar",
-              "provide minerals / glucose / carbohydrates / amino acids",
-              "plant growth substances / auxin / rooting powder",
-            ],
-            marks: 3,
-            topic: "Plant biology/Micropropagation",
-            msText:
-              "take small samples / small tissue / few cells / scrape cells off / remove growth tips / eq (1) sterilise / wash with ethanol / alcohol / disinfectant / antiseptic / eq (1) (place into) agar (1) provide minerals / glucose / carbohydrates / amino acids / eq (1) plant growth substances / auxin / rooting powder (1)",
-          },
-          {
-            id: "q6bi",
-            type: "written",
-            text: "6(b)(i) Give the reason why micropropagation is used to produce the plants to be tested.",
-            correctKeywords: [
-              "all plants will be genetically identical",
-              "have same DNA",
-              "clones",
-            ],
-            marks: 1,
-            topic: "Plant biology/Micropropagation",
-            msText:
-              "all plants will be genetically identical / have same DNA / same genetic material / same genes / same alleles / eq (1)",
-          },
-          {
-            id: "q6bii",
-            type: "mcq",
-            text: "6(b)(ii) What term is given to all the DNA in an organism?",
-            options: ["A gene", "B genome", "C genotype", "D nucleoid"],
-            correct: "B",
-            marks: 1,
-            topic: "Genetics/Genome",
-            msText: "The only correct answer is B (genome)",
-          },
-          {
-            id: "q6biii",
-            type: "written",
-            text: "6(b)(iii) Discuss the effects that increasing the amount of ionising radiation has on the snapdragons. Use the graph.",
-            correctKeywords: [
-              "more radiation increases number of changes in DNA / genotypes and number of different phenotypes",
-              "mutations have occurred in the DNA",
-              "mutations change amino acid sequences / different protein / different enzyme",
-              "some DNA changes have no effect / are silent / code for same amino acid",
-              "mutations may be recessive so do not affect phenotype",
-            ],
-            marks: 4,
-            topic: "Genetics/Mutation",
-            msText:
-              "more radiation increases the number of changes in DNA / genotypes and number of different phenotypes / eq (1) mutations (have occurred in the DNA) (1) (mutations) change amino acid sequences / different protein / different enzyme / eq (1) some DNA changes / mutations, have no effect / are silent / code for same amino acid / have similar amino acid / enzymes still work / proteins still work / eq (1) DNA changes / mutations, may be recessive (so do not affect phenotype) / eq (1)",
-          },
-        ],
-      };
+  examTitle: "Pearson Edexcel International GCSE Biology (4BI1)",
+  examSubtitle: "Paper 2B | June 2023",
+  durationMinutes: 75,
+  questions: [
+    {
+      id: "q1a",
+      type: "mcq",
+      text: "1(a) Which of these processes produces ATP?",
+      options: ["A active transport", "B diffusion", "C respiration", "D transpiration"],
+      correct: "C",
+      marks: 1,
+      topic: "Cell biology/Respiration",
+      msText: "The only correct answer is C (respiration)"
+    },
+    {
+      id: "q1bi",
+      type: "written",
+      text: "1(b)(i) Explain why intensive farming and deforestation would cause an increase in populations of dinoflagellates.",
+      correctKeywords: [
+        "soil erosion",
+        "fertiliser / organic material",
+        "run off / leaching / washed in",
+        "increased minerals (magnesium / nitrates / phosphate)",
+        "magnesium for chlorophyll / nitrates for amino acids/proteins",
+        "more carbon dioxide for photosynthesis"
+      ],
+      marks: 3,
+      topic: "Ecology/Eutrophication",
+      msText: "soil erosion / soil erodes (1) fertiliser / organic material (1) run off / leaching / washed in / eq (1) (increased) magnesium / nitrates / phosphate / minerals (1) for correct matched function e.g. magnesium for chlorophyll production / nitrates for amino acids / nitrates for proteins (1) (more) carbon dioxide for photosynthesis (1)"
+    },
+    {
+      id: "q1bii",
+      type: "written",
+      text: "1(b)(ii) Explain why oxygen levels decrease after a series of glowing events.",
+      correctKeywords: ["decomposition", "decay", "respiration", "by bacteria/fungi", "less photosynthesis"],
+      marks: 2,
+      topic: "Ecology/Decomposition",
+      msText: "decomposition / decay / respiration / eq (1) (by) bacteria / fungi / microorganisms / microbes (1) less photosynthesis (1)"
+    },
+    {
+      id: "q1c",
+      type: "mcq",
+      text: "1(c) Which type of bacteria converts ammonia into nitrates?",
+      options: ["A decomposer", "B denitrifying", "C nitrifying", "D nitrogen fixing"],
+      correct: "C",
+      marks: 1,
+      topic: "Ecology/Nitrogen cycle",
+      msText: "The only correct answer is C (nitrifying)"
+    },
+    {
+      id: "q1di",
+      type: "calc",
+      text: "1(d)(i) Each of the 15 copepods ate glowing dinoflagellates at a mean rate of 40 dinoflagellates per hour. Calculate the mean rate at which each copepod ate dinoflagellates that were not glowing. (Total non-glowing eaten = 2100 in 2 hours)",
+      correctValue: 70,
+      tolerance: 0,
+      marks: 2,
+      topic: "Maths/Rate calculation",
+      msText: "70 (2) One mark for ÷ 15 or ÷ 2 or ÷ 30 or 1050 or 140"
+    },
+    {
+      id: "q1dii",
+      type: "written",
+      text: "1(d)(ii) Explain how natural selection could have resulted in the evolution of dinoflagellates that glow.",
+      correctKeywords: ["mutation", "variation", "glowing survive / not eaten", "reproduce", "pass allele/gene to offspring"],
+      marks: 4,
+      topic: "Evolution/Natural selection",
+      msText: "mutation (produced glowing dinoflagellates) (1) (produces) variation (1) (glowing dinoflagellates) survive / not eaten / eq (1) reproduce / make offspring / eq (1) pass allele / gene (for glowing on to offspring) (1)"
+    },
+    {
+      id: "q1e",
+      type: "written",
+      text: "1(e) Suggest why the sustainable lamps could be carbon neutral and help to reduce pollution.",
+      correctKeywords: [
+        "photosynthesis",
+        "takes in carbon dioxide / less CO2 in atmosphere",
+        "less use of electricity",
+        "less fossil fuel use",
+        "less greenhouse effect / global warming",
+        "less sulfur dioxide / acid rain"
+      ],
+      marks: 3,
+      topic: "Environmental science/Sustainability",
+      msText: "photosynthesis (1) takes in carbon dioxide / less carbon dioxide in atmosphere / less carbon dioxide released / eq (1) less / no use of electricity / eq (1) less fossil fuel use / oil / coal / gas / eq (1) less (enhanced) greenhouse effect / global warming (1) less sulfur dioxide / less acid rain (1)"
+    },
+    {
+      id: "q2a",
+      type: "written",
+      text: "2(a) State the reason for using the oil (in the transpiration experiment).",
+      correctKeywords: ["prevent evaporation from surface of water", "ensure water loss is from plant"],
+      marks: 1,
+      topic: "Scientific method/Experimental design",
+      msText: "prevent evaporation (from surface of water) / eq (1)"
+    },
+    {
+      id: "q2bi",
+      type: "calc",
+      text: "2(b)(i) Calculate the mean rate of water uptake by the plant shoot during the eight days in cm³ per day. (Start volume 100 cm³, day 8 volume 65 cm³)",
+      correctValue: 4.375,
+      tolerance: 0.01,
+      marks: 2,
+      topic: "Maths/Rate calculation",
+      msText: "4.4 or 4.38 or 4.375 (2) One mark 35 or ÷ 8"
+    },
+    {
+      id: "q2bii",
+      type: "written",
+      text: "2(b)(ii) Comment on the changes in total mass of the measuring cylinder and plant shoot, compared with the changes in volume of water. [1 cm³ water = 1 g]",
+      correctKeywords: [
+        "both volume and mass decrease",
+        "volume changes more than mass",
+        "more water taken up than lost",
+        "water loss and uptake same between 4 and 8 days",
+        "transpiration / water lost through stomata",
+        "some water retained for turgor/photosynthesis"
+      ],
+      marks: 4,
+      topic: "Plant biology/Transpiration",
+      msText: "both / volume and mass, decrease / eq (1) volume changes more than mass / more water is taken up than lost (up to 4 or 8 days) / eq (1) water loss and uptake are same between 4 and 8 days / after 4 days / eq (1) correct numerical manipulation (1) transpiration occurs / water evaporates (from leaves) / water lost through stomata (1) (some) water is retained / stored in cells / (used for) turgor (1) used in photosynthesis (1)"
+    },
+    {
+      id: "q2c",
+      type: "written",
+      text: "2(c) Explain why the rate of water loss would be different if a working fan is placed in front of the plant shoot.",
+      correctKeywords: ["more transpiration / evaporation", "wind blows water away / removes humid air", "increases / maintains diffusion gradient"],
+      marks: 3,
+      topic: "Plant biology/Transpiration",
+      msText: "more transpiration / more evaporation / higher (water loss) / faster (water loss) / eq (1) wind) blows / moves, the water away / removes still air / removes humid air / eq (1) increases / maintains / steeper diffusion gradient / concentration gradient / eq (1)"
+    },
+    {
+      id: "q3a",
+      type: "mcq",
+      text: "3(a) Which structure is the proximal convoluted tubule?",
+      options: ["A", "B", "C", "D"],
+      correct: "A",
+      marks: 1,
+      topic: "Human biology/Kidney",
+      msText: "The only correct answer is A (proximal convoluted tubule)"
+    },
+    {
+      id: "q3bi",
+      type: "calc",
+      text: "3(b)(i) Calculate the cross-sectional area, in mm², of the lumen of blood vessel X. Radius = 100 μm, π = 3.14. [1 mm = 1000 μm]",
+      correctValue: 0.03,
+      tolerance: 0.005,
+      marks: 2,
+      topic: "Maths/Area calculation",
+      msText: "0.03 (2) One mark for 0.1 or 100/1000 or 31400"
+    },
+    {
+      id: "q3bii",
+      type: "written",
+      text: "3(b)(ii) Explain why the lumen of blood vessel X is wider than the lumen of blood vessel Y is important for kidney function.",
+      correctKeywords: ["increases pressure / creates high pressure", "for ultrafiltration", "plasma / filtrate leave glomerulus / enter Bowman's capsule"],
+      marks: 2,
+      topic: "Human biology/Kidney function",
+      msText: "increases the pressure / creates high pressure / eq (1) (for) ultrafiltration (1) so that plasma / small molecules / fluid / filtrate, leave glomerulus / enter Bowman's capsule / eq (1)"
+    },
+    {
+      id: "q3c",
+      type: "written",
+      text: "3(c) Describe how urine could be tested for protein.",
+      correctKeywords: ["biuret reagent", "lilac / purple / pink / mauve"],
+      marks: 2,
+      topic: "Biochemistry/Food tests",
+      msText: "biuret (reagent) (1) lilac / purple / pink / mauve / eq (1)"
+    },
+    {
+      id: "q4ai",
+      type: "mcq",
+      text: "4(a)(i) What is the name of the cell labelled P (guard cell)?",
+      options: ["A cuticle", "B guard", "C palisade", "D stoma"],
+      correct: "B",
+      marks: 1,
+      topic: "Plant biology/Leaf structure",
+      msText: "The only correct answer is B (guard)"
+    },
+    {
+      id: "q4aii",
+      type: "written",
+      text: "4(a)(ii) Explain how part Q (spongy mesophyll) is adapted for photosynthesis in the leaf.",
+      correctKeywords: [
+        "spongy mesophyll",
+        "has air spaces / gaps",
+        "for diffusion / gas exchange",
+        "carbon dioxide moves in / oxygen out",
+        "xylem to transport water"
+      ],
+      marks: 3,
+      topic: "Plant biology/Leaf structure",
+      msText: "spongy mesophyll / spongy cells / spongy tissue / spongy layer (1) has air spaces / gaps between cells / spaces / eq (1) (for) diffusion / gas exchange (1) carbon dioxide moves in (to palisade cells) / oxygen out (from palisade cells) / eq (1) xylem to transport water (1)"
+    },
+    {
+      id: "q4bi",
+      type: "written",
+      text: "4(b)(i) State the independent variable in the hydrogen-carbonate indicator experiment.",
+      correctKeywords: ["temperature", "temperature of water bath"],
+      marks: 1,
+      topic: "Scientific method/Variables",
+      msText: "temperature (of water bath) (1)"
+    },
+    {
+      id: "q4bii",
+      type: "written",
+      text: "4(b)(ii) The species and size of leaf were the same in each tube. Give a reason for controlling one other named factor.",
+      correctKeywords: [
+        "light intensity / prevents light being limiting factor",
+        "same volume/concentration of hydrogen-carbonate indicator / different volumes affect time",
+        "same starting colour of indicator",
+        "same CO2 concentration"
+      ],
+      marks: 2,
+      topic: "Scientific method/Control variables",
+      msText: "e.g. light intensity (1) to prevent light being a limiting factor (1); or same volume/concentration of indicator (1) different volumes would affect time to change colour (1); or same CO2 concentration (1) affects rate of colour change (1)"
+    },
+    {
+      id: "q4biii",
+      type: "written",
+      text: "4(b)(iii) State the function of the tube with no leaf.",
+      correctKeywords: ["control experiment", "to compare", "show effect of temperature on indicator", "show that leaf is required to affect colour"],
+      marks: 1,
+      topic: "Scientific method/Control",
+      msText: "control (experiment) / to compare / show effect of temperature on indicator / show that leaf is required to affect the colour / eq (1)"
+    },
+    {
+      id: "q4ci",
+      type: "calc",
+      text: "4(c)(i) Calculate the mean time taken for the indicator to change from orange to red at 25°C. Give answer to two significant figures.",
+      correctValue: 27,
+      tolerance: 0.5,
+      marks: 2,
+      topic: "Maths/Mean",
+      msText: "27 (2) One mark for 26.7 or 26.67 or 26.6667"
+    },
+    {
+      id: "q4cii",
+      type: "written",
+      text: "4(c)(ii) Explain the effect of increasing the temperature on the mean time taken for the indicator to change from orange to red.",
+      correctKeywords: [
+        "faster photosynthesis",
+        "more carbon dioxide removed / absorbed",
+        "increased collisions / kinetic energy / faster molecules",
+        "levels off as another factor limits"
+      ],
+      marks: 3,
+      topic: "Plant biology/Photosynthesis",
+      msText: "faster photosynthesis / eq (1) (more) carbon dioxide is removed / taken in / absorbed / eq (1) increased collisions / more (kinetic) energy / faster movement of molecules / eq (1) (levels off as) another factor limits / light intensity limits the rate / temp no longer limiting / eq (1)"
+    },
+    {
+      id: "q4d",
+      type: "written",
+      text: "4(d) Explain why the indicator solution changes from orange to yellow in the dark.",
+      correctKeywords: ["respiration faster than photosynthesis", "more respiration", "carbon dioxide released / increases"],
+      marks: 2,
+      topic: "Plant biology/Respiration vs photosynthesis",
+      msText: "respiration is faster than photosynthesis / more respiration than photosynthesis / eq (1) so carbon dioxide is released / increases (in indicator / tube) / eq (1)"
+    },
+    {
+      id: "q5ai",
+      type: "written",
+      text: "5(a)(i) Name the gland that produces FSH.",
+      correctKeywords: ["pituitary", "pituitary gland"],
+      marks: 1,
+      topic: "Human biology/Hormones",
+      msText: "pituitary (gland) (1)"
+    },
+    {
+      id: "q5aii",
+      type: "mcq",
+      text: "5(a)(ii) Which line represents the hormone progesterone?",
+      options: ["A", "B", "C", "D"],
+      correct: "D",
+      marks: 1,
+      topic: "Human biology/Menstrual cycle",
+      msText: "The only correct answer is D"
+    },
+    {
+      id: "q5aiii",
+      type: "written",
+      text: "5(a)(iii) Describe the roles of FSH and LH in the menstrual cycle.",
+      correctKeywords: [
+        "FSH matures eggs / follicles",
+        "FSH stimulates oestrogen release",
+        "LH induces ovulation / egg release",
+        "LH stimulates progesterone release / corpus luteum development"
+      ],
+      marks: 4,
+      topic: "Human biology/Menstrual cycle",
+      msText: "(FSH) matures eggs / follicles / eq (1) (FSH) stimulates oestrogen (release) / eq (1) (LH) induces ovulation / egg release / eq (1) (LH) stimulates progesterone / oestrogen (release) / stimulates corpus luteum (development) / eq (1)"
+    },
+    {
+      id: "q5b",
+      type: "written",
+      text: "5(b) Evaluate the three different methods of hormonal contraception (oral tablets, injection, implant).",
+      correctKeywords: [
+        "tablets less effective / wider range",
+        "no protection against HIV / side effects",
+        "tablets: easy to use / easy to stop / easy to forget",
+        "injection: long lasting / can't forget / need doctor / painful / longer cycle return",
+        "implant: longest lasting / can't forget / need doctor / infection risk / not easy to change mind"
+      ],
+      marks: 5,
+      topic: "Human biology/Contraception",
+      msText: "Overall comments: tablets are less effective / tablets have a wider range of effectiveness / implants or injections are more effective / eq (1) no protection against HIV / (any method) may cause side effects / eq (1) Tablets: max one advantage: easy to use / no need for medical treatment / easy to stop, max one disadvantage: easy to forget / need to take every day / may not be effective if vomiting. Injection: max one advantage: last long time / can't forget, max one disadvantage: need doctor / painful / longer cycle return. Implant: max one advantage: last longest / can't forget, max one disadvantage: need doctor / infection / not easy to change mind (5)"
+    },
+    {
+      id: "q6ai",
+      type: "written",
+      text: "6(a)(i) Describe how selective breeding can produce snapdragon plants with brightly coloured flowers.",
+      correctKeywords: ["select plants with bright flowers and breed", "select offspring with bright flowers and breed again", "repeat over generations"],
+      marks: 2,
+      topic: "Genetics/Selective breeding",
+      msText: "select plants with bright flowers and pollinate / breed / cross / eq (1) select offspring (with bright flowers) and pollinate / breed / cross / repeat with offspring / eq (1)"
+    },
+    {
+      id: "q6aii",
+      type: "written",
+      text: "6(a)(ii) Describe the process of micropropagation.",
+      correctKeywords: [
+        "take small samples / tissue / cells / growth tips",
+        "sterilise with ethanol/bleach",
+        "place into agar",
+        "provide minerals / glucose / amino acids",
+        "plant growth substances / auxin / rooting powder"
+      ],
+      marks: 3,
+      topic: "Plant biology/Micropropagation",
+      msText: "take small samples / small tissue / few cells / scrape cells off / remove growth tips / eq (1) sterilise / wash with ethanol / alcohol / disinfectant / antiseptic / eq (1) (place into) agar (1) provide minerals / glucose / carbohydrates / amino acids / eq (1) plant growth substances / auxin / rooting powder (1)"
+    },
+    {
+      id: "q6bi",
+      type: "written",
+      text: "6(b)(i) Give the reason why micropropagation is used to produce the plants to be tested (for ionising radiation).",
+      correctKeywords: ["all plants will be genetically identical", "have same DNA / clones"],
+      marks: 1,
+      topic: "Plant biology/Micropropagation",
+      msText: "all plants will be genetically identical / have same DNA / same genetic material / same genes / same alleles / eq (1)"
+    },
+    {
+      id: "q6bii",
+      type: "mcq",
+      text: "6(b)(ii) What term is given to all the DNA in an organism?",
+      options: ["A gene", "B genome", "C genotype", "D nucleoid"],
+      correct: "B",
+      marks: 1,
+      topic: "Genetics/Genome",
+      msText: "The only correct answer is B (genome)"
+    },
+    {
+      id: "q6biii",
+      type: "written",
+      text: "6(b)(iii) Discuss the effects that increasing the amount of ionising radiation has on the snapdragons. Use the graph.",
+      correctKeywords: [
+        "more radiation increases changes in DNA / phenotypes",
+        "mutations occur",
+        "mutations change amino acid sequences / proteins",
+        "some mutations have no effect / silent / code for same amino acid",
+        "mutations may be recessive so do not affect phenotype"
+      ],
+      marks: 4,
+      topic: "Genetics/Mutation",
+      msText: "more radiation increases the number of changes in DNA / genotypes and number of different phenotypes / eq (1) mutations (have occurred in the DNA) (1) (mutations) change amino acid sequences / different protein / different enzyme / eq (1) some DNA changes / mutations, have no effect / are silent / code for same amino acid / have similar amino acid / enzymes still work / proteins still work / eq (1) DNA changes / mutations, may be recessive (so do not affect phenotype) / eq (1)"
+    }
+  ]
+};
       // ============================================================
       // END OF MODIFIABLE SECTION – everything below is fully automatic
       // ============================================================
