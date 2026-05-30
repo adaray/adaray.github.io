@@ -979,32 +979,35 @@
         maxMarks,
         markSchemeRef,
       ) {
-        // 1. Validate API key and AI flag
+        // 1. Require AI marking – if key missing or AI disabled, throw an error (no silent fallback)
         const hasValidKey =
           DEEPSEEK_API_KEY &&
           DEEPSEEK_API_KEY !== "DEEPSEEK_API_KEY_PLACEHOLDER" &&
           DEEPSEEK_API_KEY !== "";
         if (!USE_AI_MARKING || !hasValidKey) {
-          return {
-            earned: 0,
-            feedback:
-              "🔑 DeepSeek API key not configured. Use mark scheme for self-assessment.",
-            tips: "Enable AI or compare with mark scheme manually.",
-          };
+          throw new Error(
+            "AI marking is required but DeepSeek API key is missing or invalid.",
+          );
         }
 
-        // 2. Define the model (make sure this variable exists globally)
-        const DEEPSEEK_MODEL = "deepseek-chat"; // or set externally
+        // 2. Define the model
+        const DEEPSEEK_MODEL = "deepseek-chat";
 
-        // 3. Build a strict prompt that forces JSON-only output
-        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on the mark scheme and provide constructive feedback.
+        // 3. Build a prompt that forces JSON output and requests detailed feedback
+        const prompt = `You are an Edexcel IGCSE Biology examiner. Award marks strictly based on the mark scheme and provide **detailed, specific feedback**.
 
     Question: "${questionText}"
     Mark Scheme: "${markSchemeRef}"
     Maximum marks: ${maxMarks}
     Student Answer: "${studentAnswer.substring(0, 3000) || "[no answer]"}"
 
-    Return ONLY a JSON object: {"earned": number (0-${maxMarks}), "feedback": "brief constructive feedback", "tips": "grade 9 improvement tips"}. Do not include any other text.`;
+    Return ONLY a valid JSON object with exactly these three fields:
+    {
+    "earned": number (0-${maxMarks}),
+    "feedback": "detailed feedback (3-5 sentences) explaining which mark scheme points were met, which were missed, and why the student lost or gained marks. Use concrete examples from the answer.",
+    "tips": "specific, actionable improvement tips for achieving full marks on this type of question (e.g., key terminology to include, common mistakes to avoid, how to structure the answer)."
+    }
+    Do not include any other text, explanations, or markdown formatting.`;
 
         try {
           const response = await fetch(
@@ -1018,36 +1021,38 @@
               body: JSON.stringify({
                 model: DEEPSEEK_MODEL,
                 messages: [{ role: "user", content: prompt }],
-                temperature: 0.1,
+                temperature: 0.1, // low temperature for consistent, deterministic marking
               }),
             },
           );
 
-          if (!response.ok) throw new Error(`API error ${response.status}`);
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API error ${response.status}: ${errorText}`);
+          }
 
           const data = await response.json();
+          // Parse the AI's JSON response
           const result = JSON.parse(data.choices[0].message.content);
 
-          // Validate and clamp the earned marks
-          let earned = Math.min(
-            maxMarks,
-            Math.max(0, Math.round(result.earned)),
-          );
+          // Validate and clamp earned marks
+          let earned =
+            typeof result.earned === "number"
+              ? Math.min(maxMarks, Math.max(0, Math.round(result.earned)))
+              : 0;
 
           return {
             earned: earned,
-            feedback: result.feedback || "AI assessment complete.",
+            feedback: result.feedback || "No detailed feedback provided by AI.",
             tips: result.tips || "Review the mark scheme above.",
           };
         } catch (e) {
           console.error("AI marking error:", e);
-          // Fallback: return 0 marks (do NOT give half marks automatically)
-          return {
-            earned: 0,
-            feedback:
-              "AI marking error – please review manually using the mark scheme.",
-            tips: "Check your answer against the mark scheme above.",
-          };
+          // No fallback marks – re-throw or return an explicit error object
+          // This ensures the calling code knows AI marking failed and can handle it
+          throw new Error(
+            `AI marking failed for Q${questionNum}: ${e.message}`,
+          );
         }
       }
       async function sendResultsViaGoogleScript(
@@ -1218,15 +1223,17 @@
           const q = actualQuestions[i];
           totalPossible += q.marks;
           const ans = userAnswers[i] || "";
-          let result =
-            ans.trim().length > 15
-              ? await getAIFeedback(i + 1, q.text, ans, q.marks, q.msText)
-              : {
-                  earned: 0,
-                  feedback:
-                    "Answer too short or missing. Refer to mark scheme.",
-                  tips: "Provide detailed biological explanation.",
-                };
+          let result;
+          try {
+            result = await getAIFeedback(i + 1, q.text, ans, q.marks, q.msText);
+          } catch (err) {
+            console.error(err);
+            result = {
+              earned: 0,
+              feedback: `⚠️ AI marking error: ${err.message}. Please review manually.`,
+              tips: "Compare your answer with the mark scheme above.",
+            };
+          }
           totalEarned += result.earned;
           feedbackItems.push({
             num: i + 1,
