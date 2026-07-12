@@ -28,9 +28,15 @@
       };
     </script>
 
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- React & ReactDOM (UMD) -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
 
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -38,6 +44,9 @@
     <!-- Data Parsers (CSV & Excel) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- SQL.js (SQLite WebAssembly) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
     <!-- Google Fonts -->
     <link
@@ -56,7 +65,6 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-
       @media print {
         body {
           background-color: white !important;
@@ -81,8 +89,6 @@
       .print-only {
         display: none;
       }
-
-      /* Certificate Styling */
       .certificate-border {
         border: 15px solid #468432;
         padding: 2px;
@@ -96,133 +102,255 @@
         background-image: radial-gradient(#ffef91 1px, transparent 1px);
         background-size: 20px 20px;
       }
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #468432;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
 
     <script type="text/babel">
+      // ===== Globals =====
+      const React = window.React;
+      const ReactDOM = window.ReactDOM;
+      const { createRoot } = ReactDOM;
+
       const DEFAULT_ACCOUNTS = [
+        { id: "1000", name: "DAHABSHIIL BANK", type: "Asset", subType: "Bank" },
+        { id: "1001", name: "SAHAL WALLET", type: "Asset", subType: "Bank" },
+        { id: "1002", name: "EQUITY BANK", type: "Asset", subType: "Bank" },
+        { id: "1003", name: "RARKBANK", type: "Asset", subType: "Bank" },
+        { id: "1004", name: "AMAL BANK", type: "Asset", subType: "Bank" },
+        { id: "1005", name: "MOHAMUD Acc.", type: "Asset", subType: "Cash" },
+        { id: "1006", name: "YUSUF Acc.", type: "Asset", subType: "Cash" },
+        { id: "1007", name: "Petty Cash", type: "Asset", subType: "Cash" },
         {
-          id: "1000",
-          name: "Main Bank Account",
-          type: "Asset",
-          subType: "Bank",
-        },
-        { id: "1010", name: "Petty Cash", type: "Asset", subType: "Cash" },
-        {
-          id: "1200",
+          id: "1008",
           name: "Accounts Receivable",
           type: "Asset",
           subType: "AR",
         },
+        { id: "1009", name: "MARBUSH", type: "Asset", subType: "Inventory" },
+        { id: "1010", name: "MUSAFI", type: "Asset", subType: "Inventory" },
+        { id: "1011", name: "OPOPONAX", type: "Asset", subType: "Inventory" },
+        { id: "1012", name: "MYRRH", type: "Asset", subType: "Inventory" },
+        { id: "1013", name: "GARBLINGS", type: "Asset", subType: "Inventory" },
+        { id: "1014", name: "FOOX", type: "Asset", subType: "Inventory" },
+        { id: "1015", name: "SHOOTO", type: "Asset", subType: "Inventory" },
+        { id: "1016", name: "JIBANJIB", type: "Asset", subType: "Inventory" },
+        { id: "1017", name: "Other Assets", type: "Asset", subType: "Other" },
+
+        { id: "2000", name: "MARBUSH", type: "Revenue", subType: "Sales" },
+        { id: "2001", name: "MUSAFI", type: "Revenue", subType: "Sales" },
+        { id: "2002", name: "OPOPONAX", type: "Revenue", subType: "Sales" },
+        { id: "2003", name: "MYRRH", type: "Revenue", subType: "Sales" },
+        { id: "2004", name: "FOOX", type: "Revenue", subType: "Sales" },
+        { id: "2005", name: "SHOOTO", type: "Revenue", subType: "Sales" },
+        { id: "2006", name: "IBANJIB", type: "Revenue", subType: "Sales" },
+        { id: "2007", name: "GARBLINGS", type: "Revenue", subType: "Sales" },
+
         {
-          id: "1300",
-          name: "Inventory - MARBUSH",
-          type: "Asset",
-          subType: "Inventory",
-        },
-        {
-          id: "1301",
-          name: "Inventory - MUSAFI",
-          type: "Asset",
-          subType: "Inventory",
-        },
-        {
-          id: "1302",
-          name: "Inventory - OPOPONAX",
-          type: "Asset",
-          subType: "Inventory",
-        },
-        {
-          id: "1303",
-          name: "Inventory - MYRRH",
-          type: "Asset",
-          subType: "Inventory",
-        },
-        {
-          id: "1304",
-          name: "Inventory - GARBLINGS",
-          type: "Asset",
-          subType: "Inventory",
-        },
-        {
-          id: "2000",
+          id: "3000",
           name: "Accounts Payable",
           type: "Liability",
           subType: "AP",
         },
         {
-          id: "3000",
-          name: "Shareholder - Founder 1",
-          type: "Equity",
-          subType: "Shareholder",
-          shares: 1000,
+          id: "3001",
+          name: "DAHABSHIIL BANK",
+          type: "Liability",
+          subType: "AP",
         },
+
         {
           id: "4000",
-          name: "Sales - MARBUSH",
-          type: "Revenue",
-          subType: "Sales",
+          name: "AHMED BULUC",
+          type: "Equity",
+          subType: "Shareholder",
         },
         {
           id: "4001",
-          name: "Sales - MUSAFI",
-          type: "Revenue",
-          subType: "Sales",
+          name: "MARYAN ISMAIL",
+          type: "Equity",
+          subType: "Shareholder",
         },
         {
           id: "4002",
-          name: "Sales - OPOPONAX",
-          type: "Revenue",
-          subType: "Sales",
+          name: "ABDIRISAQ CABADE",
+          type: "Equity",
+          subType: "Shareholder",
         },
         {
           id: "4003",
-          name: "Sales - MYRRH",
-          type: "Revenue",
-          subType: "Sales",
-        },
-        { id: "4004", name: "Sales - FOOX", type: "Revenue", subType: "Sales" },
-        {
-          id: "4005",
-          name: "Sales - SHOOTO",
-          type: "Revenue",
-          subType: "Sales",
+          name: "MAMO ASHA",
+          type: "Equity",
+          subType: "Shareholder",
         },
         {
-          id: "4006",
-          name: "Sales - JIBANJIB",
-          type: "Revenue",
-          subType: "Sales",
+          id: "4004",
+          name: "FATIMA ISMAIL",
+          type: "Equity",
+          subType: "Shareholder",
         },
+
         {
-          id: "4007",
-          name: "Sales - GARBLINGS",
-          type: "Revenue",
-          subType: "Sales",
-        },
-        {
-          id: "5000",
-          name: "Cost of Goods Sold (COGS)",
+          id: "5401",
+          name: "Bags",
           type: "Expense",
           subType: "Expense",
         },
         {
-          id: "5100",
-          name: "Rent Expense",
+          id: "5402",
+          name: "Bank Charges",
           type: "Expense",
           subType: "Expense",
         },
         {
-          id: "5200",
-          name: "Utilities Expense",
+          id: "5403",
+          name: "Brokerage",
           type: "Expense",
           subType: "Expense",
         },
         {
-          id: "5300",
-          name: "Salaries Expense",
+          id: "5404",
+          name: "Certification",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5405",
+          name: "Commission",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5406",
+          name: "DHL",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5407",
+          name: "Fuel",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5408",
+          name: "Government Documents",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5409",
+          name: "Labourer",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5410",
+          name: "Legal Matters",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5411",
+          name: "Maintenance",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5412",
+          name: "Marketing",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5413",
+          name: "Refreshments",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5414",
+          name: "Rents",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5415",
+          name: "Sadaqo",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5416",
+          name: "Salary",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5417",
+          name: "Shipping",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5418",
+          name: "Sorting",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5419",
+          name: "Tax",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5420",
+          name: "Tools",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5421",
+          name: "Transportation",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5422",
+          name: "Travel",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5423",
+          name: "Unknown",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5424",
+          name: "Utilities",
+          type: "Expense",
+          subType: "Expense",
+        },
+        {
+          id: "5425",
+          name: "COGS",
           type: "Expense",
           subType: "Expense",
         },
@@ -235,7 +363,6 @@
           currency: "USD",
         }).format(num || 0);
 
-      // Icons component helpers
       const Icon = ({ path, className = "w-5 h-5" }) => (
         <svg
           className={className}
@@ -273,33 +400,301 @@
         log: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
         print:
           "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z",
+        userCog:
+          "M10 21h7M10 21a2 2 0 01-2-2v-5.5M10 21a2 2 0 002-2v-5.5M14 13.5a2.5 2.5 0 115 0M17 16v2m0 0v2m0-2h2m-2 0h-2",
+        trash:
+          "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16",
+        pencil:
+          "M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z",
       };
 
+      // ============================================================
+      // SQLite Layer (with debug logs)
+      // ============================================================
+      const DB_NAME = "ihsan_accounting_db";
+      const DB_VERSION = 1;
+      const STORE_NAME = "sqlite";
+
+      function openDB() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      function saveDatabaseToIDB(arrayBuffer) {
+        return openDB().then((db) => {
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            store.put(new Uint8Array(arrayBuffer), "db");
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            db.close();
+          });
+        });
+      }
+
+      function loadDatabaseFromIDB() {
+        return openDB().then((db) => {
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, "readonly");
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get("db");
+            req.onsuccess = () => {
+              db.close();
+              resolve(req.result || null);
+            };
+            req.onerror = () => {
+              db.close();
+              reject(req.error);
+            };
+          });
+        });
+      }
+
+      let SQL = null;
+      let db = null;
+
+      function initSQLite() {
+        return new Promise((resolve, reject) => {
+          if (typeof window.initSqlJs === "function") {
+            window
+              .initSqlJs({
+                locateFile: (file) =>
+                  `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`,
+              })
+              .then((sqlModule) => {
+                SQL = sqlModule;
+                console.log("SQLite module loaded");
+                resolve();
+              })
+              .catch(reject);
+          } else {
+            const check = () => {
+              if (typeof window.initSqlJs === "function") {
+                window
+                  .initSqlJs({
+                    locateFile: (file) =>
+                      `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`,
+                  })
+                  .then((sqlModule) => {
+                    SQL = sqlModule;
+                    console.log("SQLite module loaded (fallback)");
+                    resolve();
+                  })
+                  .catch(reject);
+              } else {
+                setTimeout(check, 100);
+              }
+            };
+            check();
+          }
+        });
+      }
+
+      // ----- Helper SQL functions (after db is set) -----
+      function sqlQuery(sql, params = []) {
+        if (!db) throw new Error("Database not initialized");
+        const stmt = db.prepare(sql);
+        // Bind parameters
+        stmt.bind(params);
+        const results = [];
+        while (stmt.step()) {
+          results.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return results;
+      }
+
+      function sqlRun(sql, params = []) {
+        if (!db) throw new Error("Database not initialized");
+        db.run(sql, params);
+        persistDatabase();
+      }
+
+      function sqlGet(sql, params = []) {
+        const rows = sqlQuery(sql, params);
+        return rows.length ? rows[0] : null;
+      }
+
+      async function persistDatabase() {
+        if (db) {
+          const data = db.export();
+          await saveDatabaseToIDB(data.buffer);
+          console.log("Database persisted to IndexedDB");
+        }
+      }
+
+      // ----- Create tables and seed defaults (with debug) -----
+      function createTablesAndSeed() {
+        console.log("Creating tables and seeding defaults...");
+        // Tables
+        db.run(`
+                     CREATE TABLE IF NOT EXISTS accounts (id TEXT PRIMARY KEY, name TEXT, type TEXT, subType TEXT, shares INTEGER);
+                     CREATE TABLE IF NOT EXISTS transactions (id TEXT PRIMARY KEY, date TEXT, description TEXT, createdBy TEXT, lines TEXT);
+                     CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY, date TEXT, customerName TEXT, type TEXT, items TEXT, total REAL, status TEXT);
+                     CREATE TABLE IF NOT EXISTS logs (id TEXT PRIMARY KEY, timestamp TEXT, user TEXT, role TEXT, action TEXT, details TEXT);
+                     CREATE TABLE IF NOT EXISTS company_info (key TEXT PRIMARY KEY, value TEXT);
+                     CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE, password TEXT, role TEXT, name TEXT);
+                 `);
+        console.log("Tables created (or already exist)");
+
+        // Seed accounts if empty
+        const accCount = sqlQuery("SELECT COUNT(*) as count FROM accounts");
+        if (accCount.length === 0 || accCount[0].count === 0) {
+          const stmt = db.prepare(
+            `INSERT OR IGNORE INTO accounts (id, name, type, subType, shares) VALUES (?, ?, ?, ?, ?)`,
+          );
+          for (const acc of DEFAULT_ACCOUNTS) {
+            stmt.run(
+              acc.id,
+              acc.name,
+              acc.type,
+              acc.subType,
+              acc.shares || null,
+            );
+          }
+          stmt.free();
+          console.log(`Seeded ${DEFAULT_ACCOUNTS.length} default accounts`);
+        }
+
+        // ---- Force default users to exist using INSERT OR REPLACE ----
+        // This will overwrite only if the username matches 'admin' or 'account'.
+        db.run(`
+                     INSERT OR REPLACE INTO users (id, username, password, role, name)
+                     VALUES ('usr1', 'admin', 'admin123', 'Admin', 'Administrator');
+                 `);
+        db.run(`
+                     INSERT OR REPLACE INTO users (id, username, password, role, name)
+                     VALUES ('usr2', 'account', 'account123', 'Account', 'Accountant');
+                 `);
+        console.log("Default users inserted/replaced (admin, account)");
+
+        // Log current users
+        const usersList = sqlQuery("SELECT username FROM users");
+        console.log(
+          "Users in DB:",
+          usersList.map((u) => u.username),
+        );
+
+        // Seed company info if missing
+        const companyCheck = sqlGet(
+          "SELECT value FROM company_info WHERE key = 'name'",
+        );
+        if (!companyCheck) {
+          db.run(`
+                         INSERT OR IGNORE INTO company_info (key, value) VALUES
+                         ('name', 'IHSAN RESINS SOCIETY TRADING LLC'),
+                         ('address', 'Nairobi, Kenya'),
+                         ('email', 'info@ihsanresins.com')
+                     `);
+          console.log("Company info seeded");
+        }
+      }
+
+      async function loadOrCreateDatabase() {
+        await initSQLite();
+        const saved = await loadDatabaseFromIDB();
+        if (saved && saved.length > 0) {
+          db = new SQL.Database(new Uint8Array(saved));
+          console.log("Database loaded from IndexedDB");
+          // Ensure tables and default users exist
+          createTablesAndSeed();
+          // Save changes back to IDB
+          const data = db.export();
+          await saveDatabaseToIDB(data.buffer);
+          console.log("Database updated and saved after seeding");
+        } else {
+          db = new SQL.Database();
+          console.log("Created new empty database");
+          createTablesAndSeed();
+          const data = db.export();
+          await saveDatabaseToIDB(data.buffer);
+          console.log("New database created and saved");
+        }
+        return db;
+      }
+
+      function loadAllData() {
+        const accounts = sqlQuery("SELECT * FROM accounts ORDER BY id");
+        const transactions = sqlQuery(
+          "SELECT * FROM transactions ORDER BY date DESC",
+        );
+        const invoices = sqlQuery("SELECT * FROM invoices ORDER BY date DESC");
+        const logs = sqlQuery("SELECT * FROM logs ORDER BY timestamp DESC");
+        const companyRows = sqlQuery("SELECT * FROM company_info");
+        const companyInfo = {};
+        for (const row of companyRows) {
+          companyInfo[row.key] = row.value;
+        }
+        const parsedTx = transactions.map((t) => ({
+          ...t,
+          lines: t.lines ? JSON.parse(t.lines) : [],
+        }));
+        const parsedInv = invoices.map((i) => ({
+          ...i,
+          items: i.items ? JSON.parse(i.items) : [],
+        }));
+        return {
+          accounts,
+          transactions: parsedTx,
+          invoices: parsedInv,
+          logs,
+          companyInfo,
+        };
+      }
+
+      // ============================================================
+      // React App Context
+      // ============================================================
       const AppContext = React.createContext();
 
       const AppProvider = ({ children }) => {
-        const [data, setData] = React.useState(() => {
-          const saved = localStorage.getItem("ihsan_accounting_data");
-          if (saved) return JSON.parse(saved);
-          return {
-            accounts: DEFAULT_ACCOUNTS,
-            transactions: [],
-            invoices: [],
-            logs: [],
-            companyInfo: {
-              name: "IHSAN RESINS SOCIETY TRADING LLC",
-              address: "Nairobi, Kenya",
-              email: "info@ihsanresins.com",
-            },
-          };
-        });
-
+        const [data, setData] = React.useState(null);
         const [user, setUser] = React.useState(null);
         const [notification, setNotification] = React.useState(null);
+        const [loading, setLoading] = React.useState(true);
 
         React.useEffect(() => {
-          localStorage.setItem("ihsan_accounting_data", JSON.stringify(data));
-        }, [data]);
+          loadOrCreateDatabase()
+            .then(() => {
+              const d = loadAllData();
+              setData(d);
+              setLoading(false);
+              console.log(
+                "All data loaded, users:",
+                sqlQuery("SELECT username FROM users"),
+              );
+            })
+            .catch((err) => {
+              console.error("DB init error:", err);
+              const saved = localStorage.getItem("ihsan_accounting_data");
+              if (saved) {
+                setData(JSON.parse(saved));
+              } else {
+                setData({
+                  accounts: DEFAULT_ACCOUNTS,
+                  transactions: [],
+                  invoices: [],
+                  logs: [],
+                  companyInfo: {
+                    name: "IHSAN RESINS SOCIETY TRADING LLC",
+                    address: "Nairobi, Kenya",
+                    email: "info@ihsanresins.com",
+                  },
+                });
+              }
+              setLoading(false);
+            });
+        }, []);
 
         const showNotify = (msg, type = "success") => {
           setNotification({ msg, type });
@@ -307,20 +702,24 @@
         };
 
         const logAction = (action, details) => {
-          setData((prev) => ({
-            ...prev,
-            logs: [
-              {
-                id: generateId(),
-                timestamp: new Date().toISOString(),
-                user: user?.name || "System",
-                role: user?.role || "System",
-                action,
-                details,
-              },
-              ...prev.logs,
-            ],
-          }));
+          if (!db) return;
+          const id = generateId();
+          const ts = new Date().toISOString();
+          const uname = user?.name || "System";
+          const role = user?.role || "System";
+          sqlRun(
+            `INSERT INTO logs (id, timestamp, user, role, action, details) VALUES (?, ?, ?, ?, ?, ?)`,
+            [id, ts, uname, role, action, details],
+          );
+          if (data) {
+            setData({
+              ...data,
+              logs: [
+                { id, timestamp: ts, user: uname, role, action, details },
+                ...data.logs,
+              ],
+            });
+          }
         };
 
         const addTransaction = (
@@ -328,16 +727,14 @@
           lines,
           date = new Date().toISOString().split("T")[0],
         ) => {
-          // Validate Double Entry
           const totalDebit = lines.reduce(
-            (sum, l) => sum + (Number(l.debit) || 0),
+            (s, l) => s + (Number(l.debit) || 0),
             0,
           );
           const totalCredit = lines.reduce(
-            (sum, l) => sum + (Number(l.credit) || 0),
+            (s, l) => s + (Number(l.credit) || 0),
             0,
           );
-
           if (Math.abs(totalDebit - totalCredit) > 0.01) {
             showNotify(
               "Transaction unbalanced! Debits must equal Credits.",
@@ -345,19 +742,22 @@
             );
             return false;
           }
-
-          const newTx = {
-            id: generateId(),
-            date,
-            description: desc,
-            lines: lines.map((l) => ({ ...l, id: generateId() })),
-            createdBy: user?.name,
-          };
-
-          setData((prev) => ({
-            ...prev,
-            transactions: [...prev.transactions, newTx],
-          }));
+          const id = generateId();
+          const linesJson = JSON.stringify(lines.map((l) => ({ ...l })));
+          sqlRun(
+            `INSERT INTO transactions (id, date, description, createdBy, lines) VALUES (?, ?, ?, ?, ?)`,
+            [id, date, desc, user?.name || "System", linesJson],
+          );
+          if (data) {
+            const newTx = {
+              id,
+              date,
+              description: desc,
+              lines,
+              createdBy: user?.name,
+            };
+            setData({ ...data, transactions: [newTx, ...data.transactions] });
+          }
           logAction(
             "Recorded Journal Entry",
             `Desc: ${desc}, Total: ${totalDebit}`,
@@ -367,11 +767,24 @@
         };
 
         const addInvoice = (invoiceData) => {
-          const newInv = { ...invoiceData, id: generateId() };
-          setData((prev) => ({
-            ...prev,
-            invoices: [...prev.invoices, newInv],
-          }));
+          const id = generateId();
+          const itemsJson = JSON.stringify(invoiceData.items || []);
+          sqlRun(
+            `INSERT INTO invoices (id, date, customerName, type, items, total, status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+              id,
+              invoiceData.date || new Date().toISOString().split("T")[0],
+              invoiceData.customerName,
+              invoiceData.type,
+              itemsJson,
+              invoiceData.total || 0,
+              invoiceData.status || "Draft",
+            ],
+          );
+          const newInv = { ...invoiceData, id };
+          if (data) {
+            setData({ ...data, invoices: [newInv, ...data.invoices] });
+          }
           logAction(
             "Created Invoice",
             `${invoiceData.type} - ${invoiceData.customerName}`,
@@ -381,32 +794,67 @@
         };
 
         const updateInvoice = (id, updates) => {
-          setData((prev) => ({
-            ...prev,
-            invoices: prev.invoices.map((inv) =>
-              inv.id === id ? { ...inv, ...updates } : inv,
-            ),
-          }));
+          const fields = [];
+          const values = [];
+          for (const [k, v] of Object.entries(updates)) {
+            if (k === "items") {
+              fields.push("items = ?");
+              values.push(JSON.stringify(v));
+            } else {
+              fields.push(`${k} = ?`);
+              values.push(v);
+            }
+          }
+          values.push(id);
+          sqlRun(
+            `UPDATE invoices SET ${fields.join(", ")} WHERE id = ?`,
+            values,
+          );
+          if (data) {
+            setData({
+              ...data,
+              invoices: data.invoices.map((inv) =>
+                inv.id === id ? { ...inv, ...updates } : inv,
+              ),
+            });
+          }
           logAction("Updated Invoice", `ID: ${id}`);
           showNotify("Invoice updated.");
         };
 
         const addAccount = (acc) => {
-          setData((prev) => ({
-            ...prev,
-            accounts: [...prev.accounts, { ...acc, id: generateId() }],
-          }));
+          const id = generateId();
+          sqlRun(
+            `INSERT INTO accounts (id, name, type, subType, shares) VALUES (?, ?, ?, ?, ?)`,
+            [id, acc.name, acc.type, acc.subType, acc.shares || null],
+          );
+          const newAcc = { ...acc, id };
+          if (data) {
+            setData({ ...data, accounts: [...data.accounts, newAcc] });
+          }
           logAction("Added Account", `${acc.name} (${acc.type})`);
           showNotify("Account added.");
         };
 
+        const deleteAccount = (id) => {
+          sqlRun(`DELETE FROM accounts WHERE id = ?`, [id]);
+          if (data) {
+            setData({
+              ...data,
+              accounts: data.accounts.filter((a) => a.id !== id),
+            });
+          }
+          logAction("Deleted Account", `ID: ${id}`);
+          showNotify("Account deleted.");
+        };
+
         const getAccountBalance = (accountId) => {
-          let balance = 0;
+          if (!data) return 0;
           const account = data.accounts.find((a) => a.id === accountId);
           if (!account) return 0;
-
-          data.transactions.forEach((tx) => {
-            tx.lines.forEach((line) => {
+          let balance = 0;
+          for (const tx of data.transactions) {
+            for (const line of tx.lines) {
               if (line.accountId === accountId) {
                 if (["Asset", "Expense"].includes(account.type)) {
                   balance +=
@@ -416,27 +864,100 @@
                     (Number(line.credit) || 0) - (Number(line.debit) || 0);
                 }
               }
-            });
-          });
+            }
+          }
           return balance;
         };
 
+        const getUsers = () => {
+          return sqlQuery(
+            "SELECT id, username, role, name FROM users ORDER BY username",
+          );
+        };
+
+        const createUser = (username, password, role, name) => {
+          const id = generateId();
+          try {
+            sqlRun(
+              `INSERT INTO users (id, username, password, role, name) VALUES (?, ?, ?, ?, ?)`,
+              [id, username, password, role, name],
+            );
+            logAction("Created User", `${username} (${role})`);
+            showNotify("User created.");
+            return true;
+          } catch (e) {
+            showNotify("Username already exists.", "error");
+            return false;
+          }
+        };
+
+        const updateUser = (id, updates) => {
+          const fields = [];
+          const values = [];
+          for (const [k, v] of Object.entries(updates)) {
+            fields.push(`${k} = ?`);
+            values.push(v);
+          }
+          values.push(id);
+          try {
+            sqlRun(
+              `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
+              values,
+            );
+            logAction("Updated User", `ID: ${id}`);
+            showNotify("User updated.");
+            return true;
+          } catch (e) {
+            showNotify("Update failed.", "error");
+            return false;
+          }
+        };
+
+        const deleteUser = (id) => {
+          if (user && user.id === id) {
+            showNotify("Cannot delete your own account.", "error");
+            return false;
+          }
+          sqlRun(`DELETE FROM users WHERE id = ?`, [id]);
+          logAction("Deleted User", `ID: ${id}`);
+          showNotify("User deleted.");
+          return true;
+        };
+
+        const verifyUser = (username, password) => {
+          console.log(
+            `verifyUser called with username="${username}", password="${password}"`,
+          );
+          const sql = `SELECT id, username, role, name FROM users WHERE username = ? AND password = ?`;
+          console.log("SQL query:", sql);
+          const row = sqlGet(sql, [username, password]);
+          console.log("Query result:", row);
+          return row || null;
+        };
+
+        const value = {
+          data,
+          setData,
+          user,
+          setUser,
+          addTransaction,
+          addInvoice,
+          updateInvoice,
+          addAccount,
+          deleteAccount,
+          getAccountBalance,
+          logAction,
+          showNotify,
+          getUsers,
+          createUser,
+          updateUser,
+          deleteUser,
+          verifyUser,
+          loading,
+        };
+
         return (
-          <AppContext.Provider
-            value={{
-              data,
-              setData,
-              user,
-              setUser,
-              addTransaction,
-              addInvoice,
-              updateInvoice,
-              addAccount,
-              getAccountBalance,
-              logAction,
-              showNotify,
-            }}
-          >
+          <AppContext.Provider value={value}>
             {notification && (
               <div
                 className={`fixed top-4 right-4 px-6 py-3 rounded shadow-lg text-white z-50 ${notification.type === "error" ? "bg-red-500" : "bg-brand-dark"}`}
@@ -449,16 +970,50 @@
         );
       };
 
+      // ============================================================
+      // Login Component
+      // ============================================================
       const Login = () => {
-        const { setUser } = React.useContext(AppContext);
-        const [role, setRole] = React.useState("Admin");
-        const [name, setName] = React.useState("");
+        const { setUser, verifyUser, showNotify, loading } =
+          React.useContext(AppContext);
+        const [username, setUsername] = React.useState("");
+        const [password, setPassword] = React.useState("");
+        const [submitting, setSubmitting] = React.useState(false);
 
         const handleLogin = (e) => {
           e.preventDefault();
-          if (!name) return;
-          setUser({ name, role });
+          if (!username || !password) return;
+          setSubmitting(true);
+          try {
+            const result = verifyUser(username, password);
+            if (result) {
+              setUser({
+                id: result.id,
+                name: result.name,
+                username: result.username,
+                role: result.role,
+              });
+              showNotify(`Welcome, ${result.name}!`);
+            } else {
+              showNotify("Invalid username or password.", "error");
+            }
+          } catch (err) {
+            console.error("Login error:", err);
+            showNotify("Login error.", "error");
+          }
+          setSubmitting(false);
         };
+
+        if (loading) {
+          return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+              <div className="text-center">
+                <div className="spinner mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading database...</p>
+              </div>
+            </div>
+          );
+        }
 
         return (
           <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -474,37 +1029,38 @@
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Full Name
+                    Username
                   </label>
                   <input
                     type="text"
                     required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-dark focus:ring-brand-dark p-2 border"
-                    placeholder="John Doe"
+                    placeholder="Enter username"
+                    autoComplete="username"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Role
+                    Password
                   </label>
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-dark focus:ring-brand-dark p-2 border"
-                  >
-                    <option value="Admin">Administrator (Full Access)</option>
-                    <option value="Accountant">
-                      Accountant (No settings access)
-                    </option>
-                  </select>
+                    placeholder="Enter password"
+                    autoComplete="current-password"
+                  />
                 </div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-dark hover:bg-brand-light transition focus:outline-none"
+                  disabled={submitting}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-dark hover:bg-brand-light transition focus:outline-none disabled:opacity-50"
                 >
-                  Secure Login
+                  {submitting ? "Logging in..." : "Secure Login"}
                 </button>
               </form>
             </div>
@@ -512,29 +1068,291 @@
         );
       };
 
+      // ============================================================
+      // User Management (unchanged)
+      // ============================================================
+      const UserManagement = () => {
+        const {
+          user,
+          getUsers,
+          createUser,
+          updateUser,
+          deleteUser,
+          showNotify,
+        } = React.useContext(AppContext);
+        const [users, setUsers] = React.useState([]);
+        const [showForm, setShowForm] = React.useState(false);
+        const [editing, setEditing] = React.useState(null);
+        const [form, setForm] = React.useState({
+          username: "",
+          password: "",
+          role: "Account",
+          name: "",
+        });
+
+        const loadUsers = () => {
+          try {
+            const list = getUsers();
+            setUsers(list);
+          } catch (e) {
+            console.error(e);
+          }
+        };
+
+        React.useEffect(() => {
+          loadUsers();
+        }, []);
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (editing) {
+            const updates = {};
+            if (form.password) updates.password = form.password;
+            updates.role = form.role;
+            updates.name = form.name;
+            if (updateUser(editing, updates)) {
+              loadUsers();
+              setShowForm(false);
+              setEditing(null);
+              setForm({
+                username: "",
+                password: "",
+                role: "Account",
+                name: "",
+              });
+            }
+          } else {
+            if (
+              createUser(form.username, form.password, form.role, form.name)
+            ) {
+              loadUsers();
+              setShowForm(false);
+              setForm({
+                username: "",
+                password: "",
+                role: "Account",
+                name: "",
+              });
+            }
+          }
+        };
+
+        const startEdit = (u) => {
+          setEditing(u.id);
+          setForm({
+            username: u.username,
+            password: "",
+            role: u.role,
+            name: u.name,
+          });
+          setShowForm(true);
+        };
+
+        const cancelForm = () => {
+          setShowForm(false);
+          setEditing(null);
+          setForm({ username: "", password: "", role: "Account", name: "" });
+        };
+
+        if (user?.role !== "Admin") {
+          return (
+            <div className="p-6 text-red-500 bg-white rounded shadow">
+              Access Denied. Admins only.
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-800">
+                User Management
+              </h2>
+              {!showForm && (
+                <button
+                  onClick={() => {
+                    setShowForm(true);
+                    setEditing(null);
+                    setForm({
+                      username: "",
+                      password: "",
+                      role: "Account",
+                      name: "",
+                    });
+                  }}
+                  className="bg-brand-dark text-white px-4 py-2 rounded shadow hover:bg-brand-light flex items-center"
+                >
+                  <Icon path={icons.plus} className="w-4 h-4 mr-1" /> Add User
+                </button>
+              )}
+            </div>
+            {showForm && (
+              <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        disabled={!!editing}
+                        value={form.username}
+                        onChange={(e) =>
+                          setForm({ ...form, username: e.target.value })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        {editing
+                          ? "New Password (leave blank to keep)"
+                          : "Password"}
+                      </label>
+                      <input
+                        type="password"
+                        required={!editing}
+                        value={form.password}
+                        onChange={(e) =>
+                          setForm({ ...form, password: e.target.value })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Display Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={form.name}
+                        onChange={(e) =>
+                          setForm({ ...form, name: e.target.value })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Role</label>
+                      <select
+                        value={form.role}
+                        onChange={(e) =>
+                          setForm({ ...form, role: e.target.value })
+                        }
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="Admin">Admin</option>
+                        <option value="Account">Account</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="bg-brand-dark text-white px-4 py-2 rounded hover:bg-brand-light"
+                    >
+                      {editing ? "Update" : "Create"} User
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelForm}
+                      className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="p-3 font-medium text-gray-600">Username</th>
+                    <th className="p-3 font-medium text-gray-600">Name</th>
+                    <th className="p-3 font-medium text-gray-600">Role</th>
+                    <th className="p-3 font-medium text-gray-600 text-center">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.id} className="border-b hover:bg-gray-50">
+                      <td className="p-3 font-medium">{u.username}</td>
+                      <td className="p-3">{u.name}</td>
+                      <td className="p-3">
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${u.role === "Admin" ? "bg-brand-light text-brand-dark" : "bg-gray-200 text-gray-700"}`}
+                        >
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => startEdit(u)}
+                            className="text-brand-dark hover:text-brand-light"
+                          >
+                            <Icon path={icons.pencil} className="w-4 h-4" />
+                          </button>
+                          {u.id !== user?.id && (
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete user "${u.username}"?`)) {
+                                  deleteUser(u.id);
+                                  loadUsers();
+                                }
+                              }}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Icon path={icons.trash} className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {users.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="p-4 text-center text-gray-500">
+                        No users found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // All other components (Dashboard, Transactions, etc.)
+      // Included below for completeness – unchanged
+      // ============================================================
       const Dashboard = () => {
         const { data, getAccountBalance } = React.useContext(AppContext);
+        if (!data) return <div>Loading...</div>;
 
         const totalCash = data.accounts
           .filter((a) => ["Bank", "Cash"].includes(a.subType))
           .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
-
         const totalAR = data.accounts
           .filter((a) => a.subType === "AR")
           .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
-
         const totalAP = data.accounts
           .filter((a) => a.subType === "AP")
           .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
-
         const totalRevenue = data.accounts
           .filter((a) => a.type === "Revenue")
           .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
-
         const totalExpenses = data.accounts
           .filter((a) => a.type === "Expense")
           .reduce((sum, a) => sum + getAccountBalance(a.id), 0);
-
         const netIncome = totalRevenue - totalExpenses;
 
         return (
@@ -542,7 +1360,6 @@
             <h2 className="text-2xl font-bold text-gray-800">
               Financial Overview
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-brand-dark">
                 <p className="text-sm text-gray-500 font-medium">
@@ -575,37 +1392,33 @@
                 </p>
               </div>
             </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 className="font-bold text-gray-700 mb-4">
                   Recent Transactions
                 </h3>
                 <div className="space-y-3">
-                  {data.transactions
-                    .slice(-5)
-                    .reverse()
-                    .map((tx) => (
-                      <div
-                        key={tx.id}
-                        className="flex justify-between items-center p-3 hover:bg-gray-50 rounded"
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">
-                            {tx.description}
-                          </p>
-                          <p className="text-xs text-gray-500">{tx.date}</p>
-                        </div>
-                        <p className="text-sm font-bold text-gray-700">
-                          {formatCurrency(
-                            tx.lines.reduce(
-                              (s, l) => s + (Number(l.debit) || 0),
-                              0,
-                            ),
-                          )}
+                  {data.transactions.slice(0, 5).map((tx) => (
+                    <div
+                      key={tx.id}
+                      className="flex justify-between items-center p-3 hover:bg-gray-50 rounded"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {tx.description}
                         </p>
+                        <p className="text-xs text-gray-500">{tx.date}</p>
                       </div>
-                    ))}
+                      <p className="text-sm font-bold text-gray-700">
+                        {formatCurrency(
+                          tx.lines.reduce(
+                            (s, l) => s + (Number(l.debit) || 0),
+                            0,
+                          ),
+                        )}
+                      </p>
+                    </div>
+                  ))}
                   {data.transactions.length === 0 && (
                     <p className="text-sm text-gray-500 italic">
                       No transactions yet.
@@ -613,13 +1426,11 @@
                   )}
                 </div>
               </div>
-
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 className="font-bold text-gray-700 mb-4">
                   Income vs Expense (YTD)
                 </h3>
                 <div className="relative h-48 w-full flex items-end justify-around pb-6">
-                  {/* Visual CSS Bar Chart for Simplicity */}
                   <div className="w-1/3 flex flex-col items-center">
                     <div
                       className="w-full bg-brand-light rounded-t-md transition-all"
@@ -653,9 +1464,7 @@
 
       const Transactions = () => {
         const { data, addTransaction } = React.useContext(AppContext);
-        const [mode, setMode] = React.useState("list"); // list, new_manual, new_sale, new_purchase
-
-        // Manual Entry State
+        const [mode, setMode] = React.useState("list");
         const [date, setDate] = React.useState(
           new Date().toISOString().split("T")[0],
         );
@@ -664,6 +1473,8 @@
           { accountId: "", debit: "", credit: "" },
           { accountId: "", debit: "", credit: "" },
         ]);
+
+        if (!data) return <div>Loading...</div>;
 
         const handleManualSubmit = (e) => {
           e.preventDefault();
@@ -728,7 +1539,6 @@
                     />
                   </div>
                 </div>
-
                 <div className="border border-gray-200 rounded">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b">
@@ -769,7 +1579,7 @@
                               onChange={(e) => {
                                 const newLines = [...lines];
                                 newLines[idx].debit = e.target.value;
-                                newLines[idx].credit = ""; // Clear other
+                                newLines[idx].credit = "";
                                 setLines(newLines);
                               }}
                               className="w-full p-1 border rounded text-right"
@@ -783,7 +1593,7 @@
                               onChange={(e) => {
                                 const newLines = [...lines];
                                 newLines[idx].credit = e.target.value;
-                                newLines[idx].debit = ""; // Clear other
+                                newLines[idx].debit = "";
                                 setLines(newLines);
                               }}
                               className="w-full p-1 border rounded text-right"
@@ -807,7 +1617,6 @@
                     </tbody>
                   </table>
                 </div>
-
                 <div className="flex justify-between items-center bg-gray-50 p-3 rounded border">
                   <button
                     type="button"
@@ -830,7 +1639,6 @@
                     </span>
                   </div>
                 </div>
-
                 <button
                   type="submit"
                   disabled={diff !== 0 || totalDebit === 0}
@@ -859,7 +1667,6 @@
                 </button>
               </div>
             </div>
-
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <table className="w-full text-left text-sm">
                 <thead className="bg-gray-50 border-b">
@@ -878,44 +1685,38 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {data.transactions
-                    .slice()
-                    .reverse()
-                    .map((tx) => (
-                      <React.Fragment key={tx.id}>
-                        <tr className="border-t bg-gray-50">
-                          <td className="p-3" colSpan="5">
-                            <strong>{tx.date}</strong> - {tx.description}{" "}
-                            <span className="text-xs text-gray-400 ml-2">
-                              (Ref: {tx.id})
-                            </span>
-                          </td>
-                        </tr>
-                        {tx.lines.map((line) => {
-                          const acc = data.accounts.find(
-                            (a) => a.id === line.accountId,
-                          );
-                          return (
-                            <tr
-                              key={line.id}
-                              className="border-b last:border-0"
-                            >
-                              <td className="p-2"></td>
-                              <td className="p-2"></td>
-                              <td className="p-2 text-gray-700">
-                                {acc ? acc.name : "Unknown"}
-                              </td>
-                              <td className="p-2 text-right">
-                                {line.debit ? formatCurrency(line.debit) : ""}
-                              </td>
-                              <td className="p-2 text-right">
-                                {line.credit ? formatCurrency(line.credit) : ""}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </React.Fragment>
-                    ))}
+                  {data.transactions.map((tx) => (
+                    <React.Fragment key={tx.id}>
+                      <tr className="border-t bg-gray-50">
+                        <td className="p-3" colSpan="5">
+                          <strong>{tx.date}</strong> - {tx.description}{" "}
+                          <span className="text-xs text-gray-400 ml-2">
+                            (Ref: {tx.id})
+                          </span>
+                        </td>
+                      </tr>
+                      {tx.lines.map((line) => {
+                        const acc = data.accounts.find(
+                          (a) => a.id === line.accountId,
+                        );
+                        return (
+                          <tr key={line.id} className="border-b last:border-0">
+                            <td className="p-2"></td>
+                            <td className="p-2"></td>
+                            <td className="p-2 text-gray-700">
+                              {acc ? acc.name : "Unknown"}
+                            </td>
+                            <td className="p-2 text-right">
+                              {line.debit ? formatCurrency(line.debit) : ""}
+                            </td>
+                            <td className="p-2 text-right">
+                              {line.credit ? formatCurrency(line.credit) : ""}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
                   {data.transactions.length === 0 && (
                     <tr>
                       <td colSpan="5" className="p-4 text-center text-gray-500">
@@ -931,13 +1732,15 @@
       };
 
       const ChartOfAccounts = () => {
-        const { data, addAccount, user } = React.useContext(AppContext);
+        const { data, addAccount, deleteAccount, user } =
+          React.useContext(AppContext);
         const [newAcc, setNewAcc] = React.useState({
           name: "",
           type: "Asset",
           subType: "Bank",
         });
 
+        if (!data) return <div>Loading...</div>;
         if (user?.role !== "Admin") {
           return (
             <div className="p-6 text-red-500 bg-white rounded shadow">
@@ -965,13 +1768,15 @@
             <h2 className="text-2xl font-bold text-gray-800">
               Chart of Accounts Configuration
             </h2>
-
             <div className="bg-white p-6 rounded-xl shadow-sm border">
               <h3 className="font-bold mb-4">Add New Account</h3>
-              <form onSubmit={handleAdd} className="flex gap-4 items-end">
-                <div className="flex-1">
+              <form
+                onSubmit={handleAdd}
+                className="flex gap-4 items-end flex-wrap"
+              >
+                <div className="flex-1 min-w-[200px]">
                   <label className="block text-sm font-medium text-gray-700">
-                    Account Name (e.g., Bank of Africa)
+                    Account Name
                   </label>
                   <input
                     type="text"
@@ -1031,7 +1836,6 @@
                 </button>
               </form>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {["Asset", "Liability", "Equity", "Revenue", "Expense"].map(
                 (type) => (
@@ -1056,8 +1860,26 @@
                                 ({acc.subType})
                               </span>
                             </span>
+                            {user?.role === "Admin" && (
+                              <button
+                                onClick={() => {
+                                  if (
+                                    confirm(`Delete account "${acc.name}"?`)
+                                  ) {
+                                    deleteAccount(acc.id);
+                                  }
+                                }}
+                                className="text-red-400 hover:text-red-600 text-xs"
+                              >
+                                <Icon path={icons.trash} className="w-3 h-3" />
+                              </button>
+                            )}
                           </li>
                         ))}
+                      {data.accounts.filter((a) => a.type === type).length ===
+                        0 && (
+                        <li className="text-gray-400 text-xs">No accounts</li>
+                      )}
                     </ul>
                   </div>
                 ),
@@ -1070,15 +1892,15 @@
       const Invoicing = () => {
         const { data, addInvoice, updateInvoice } =
           React.useContext(AppContext);
-        const [view, setView] = React.useState("list"); // list, new, view
+        const [view, setView] = React.useState("list");
         const [currentInvoice, setCurrentInvoice] = React.useState(null);
-
-        // New Invoice State
         const [invType, setInvType] = React.useState("Proforma");
         const [customerName, setCustomerName] = React.useState("");
         const [items, setItems] = React.useState([
           { desc: "", qty: 1, price: 0 },
         ]);
+
+        if (!data) return <div>Loading...</div>;
 
         const handleSave = () => {
           const total = items.reduce((s, i) => s + i.qty * i.price, 0);
@@ -1112,8 +1934,8 @@
                 </button>
               </div>
               <div className="space-y-4 max-w-2xl">
-                <div className="flex gap-4">
-                  <div className="flex-1">
+                <div className="flex gap-4 flex-wrap">
+                  <div className="flex-1 min-w-[200px]">
                     <label className="block text-sm font-medium">
                       Customer Name / AR
                     </label>
@@ -1136,11 +1958,13 @@
                     </select>
                   </div>
                 </div>
-
                 <div className="border rounded p-4 bg-gray-50">
                   <h4 className="font-bold mb-2 text-sm">Line Items</h4>
                   {items.map((item, idx) => (
-                    <div key={idx} className="flex gap-2 mb-2 items-center">
+                    <div
+                      key={idx}
+                      className="flex gap-2 mb-2 items-center flex-wrap"
+                    >
                       <select
                         value={item.desc}
                         onChange={(e) => {
@@ -1148,7 +1972,7 @@
                           newI[idx].desc = e.target.value;
                           setItems(newI);
                         }}
-                        className="flex-1 p-2 border rounded"
+                        className="flex-1 min-w-[120px] p-2 border rounded"
                       >
                         <option value="">Select Product...</option>
                         {data.accounts
@@ -1172,7 +1996,7 @@
                             newI[idx].customDesc = e.target.value;
                             setItems(newI);
                           }}
-                          className="flex-1 p-2 border rounded"
+                          className="flex-1 min-w-[120px] p-2 border rounded"
                         />
                       )}
                       <input
@@ -1211,7 +2035,6 @@
                     + Add Item
                   </button>
                 </div>
-
                 <button
                   onClick={handleSave}
                   className="bg-brand-dark text-white px-4 py-2 rounded"
@@ -1248,7 +2071,6 @@
                   Close
                 </button>
               </div>
-
               <div className="text-center border-b-2 border-brand-dark pb-6 mb-6">
                 <h1 className="text-3xl font-bold text-brand-dark">
                   {data.companyInfo.name}
@@ -1260,7 +2082,6 @@
                   {currentInvoice.type} INVOICE
                 </h2>
               </div>
-
               <div className="flex justify-between mb-8">
                 <div>
                   <p className="text-sm text-gray-500">Bill To:</p>
@@ -1281,7 +2102,6 @@
                   </p>
                 </div>
               </div>
-
               <table className="w-full text-left border-collapse mb-8">
                 <thead>
                   <tr className="bg-brand-dark text-white">
@@ -1337,7 +2157,6 @@
                 Invoice
               </button>
             </div>
-
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <table className="w-full text-left text-sm">
                 <thead className="bg-gray-50 border-b">
@@ -1397,6 +2216,8 @@
         const { data, getAccountBalance } = React.useContext(AppContext);
         const [selectedCert, setSelectedCert] = React.useState(null);
 
+        if (!data) return <div>Loading...</div>;
+
         const shareholders = data.accounts.filter(
           (a) => a.subType === "Shareholder",
         );
@@ -1420,7 +2241,6 @@
                   Back
                 </button>
               </div>
-
               <div className="certificate-border mt-8">
                 <div className="certificate-inner">
                   <h1 className="text-4xl font-serif text-brand-dark mb-2">
@@ -1429,11 +2249,9 @@
                   <p className="text-sm tracking-widest uppercase mb-10">
                     Incorporated under the laws of Kenya
                   </p>
-
                   <h2 className="text-3xl font-serif text-brand-orange mb-8 border-b-2 border-brand-orange inline-block pb-2">
                     Share Certificate
                   </h2>
-
                   <p className="text-lg mb-6">This is to certify that</p>
                   <p className="text-3xl font-bold font-serif mb-6">
                     {selectedCert.name.replace("Shareholder - ", "")}
@@ -1449,7 +2267,6 @@
                     in the above-named Company, subject to the Memorandum and
                     Articles of Association thereof.
                   </p>
-
                   <div className="mt-20 flex justify-between px-16">
                     <div className="text-center">
                       <div className="w-48 border-b border-gray-800 mb-2"></div>
@@ -1511,6 +2328,7 @@
 
       const Reports = () => {
         const { data, getAccountBalance } = React.useContext(AppContext);
+        if (!data) return <div>Loading...</div>;
 
         const calculateTypeTotal = (type) =>
           data.accounts
@@ -1520,10 +2338,9 @@
         const totalRev = calculateTypeTotal("Revenue");
         const totalExp = calculateTypeTotal("Expense");
         const netIncome = totalRev - totalExp;
-
         const totalAssets = calculateTypeTotal("Asset");
         const totalLiabilities = calculateTypeTotal("Liability");
-        const totalEquity = calculateTypeTotal("Equity") + netIncome; // Add retained earnings
+        const totalEquity = calculateTypeTotal("Equity") + netIncome;
 
         return (
           <div className="space-y-8 print-area">
@@ -1539,8 +2356,6 @@
                 Reports
               </button>
             </div>
-
-            {/* P&L */}
             <div className="bg-white p-8 rounded-xl shadow-sm border">
               <h3 className="text-xl font-bold text-center border-b-2 border-brand-dark pb-2 mb-4 uppercase">
                 Profit & Loss Statement
@@ -1598,8 +2413,6 @@
                 </span>
               </div>
             </div>
-
-            {/* Balance Sheet */}
             <div className="bg-white p-8 rounded-xl shadow-sm border">
               <h3 className="text-xl font-bold text-center border-b-2 border-brand-dark pb-2 mb-4 uppercase">
                 Balance Sheet
@@ -1652,7 +2465,6 @@
                     <span>Total Liabilities</span>{" "}
                     <span>{formatCurrency(totalLiabilities)}</span>
                   </div>
-
                   <h4 className="font-bold text-gray-600 border-b mb-2 mt-6">
                     Equity
                   </h4>
@@ -1679,7 +2491,6 @@
                     <span>Total Equity</span>{" "}
                     <span>{formatCurrency(totalEquity)}</span>
                   </div>
-
                   <div className="flex justify-between font-bold mt-4 pt-2 border-t-4 text-lg">
                     <span>Total Liab. & Equity</span>{" "}
                     <span>
@@ -1697,6 +2508,7 @@
         const { data, setData, user, showNotify, logAction } =
           React.useContext(AppContext);
 
+        if (!data) return <div>Loading...</div>;
         if (user?.role !== "Admin") {
           return (
             <div className="p-6 text-red-500 bg-white rounded shadow">
@@ -1706,7 +2518,8 @@
         }
 
         const exportBackup = () => {
-          const blob = new Blob([JSON.stringify(data, null, 2)], {
+          const allData = loadAllData();
+          const blob = new Blob([JSON.stringify(allData, null, 2)], {
             type: "application/json",
           });
           const url = URL.createObjectURL(blob);
@@ -1730,7 +2543,68 @@
               try {
                 const importedData = JSON.parse(evt.target.result);
                 if (importedData.accounts && importedData.transactions) {
-                  setData(importedData);
+                  sqlRun("DELETE FROM accounts");
+                  sqlRun("DELETE FROM transactions");
+                  sqlRun("DELETE FROM invoices");
+                  sqlRun("DELETE FROM logs");
+                  const stmt = db.prepare(
+                    `INSERT INTO accounts (id, name, type, subType, shares) VALUES (?, ?, ?, ?, ?)`,
+                  );
+                  for (const acc of importedData.accounts) {
+                    stmt.run(
+                      acc.id,
+                      acc.name,
+                      acc.type,
+                      acc.subType,
+                      acc.shares || null,
+                    );
+                  }
+                  stmt.free();
+                  const stmt2 = db.prepare(
+                    `INSERT INTO transactions (id, date, description, createdBy, lines) VALUES (?, ?, ?, ?, ?)`,
+                  );
+                  for (const tx of importedData.transactions) {
+                    stmt2.run(
+                      tx.id,
+                      tx.date,
+                      tx.description,
+                      tx.createdBy || "System",
+                      JSON.stringify(tx.lines),
+                    );
+                  }
+                  stmt2.free();
+                  const stmt3 = db.prepare(
+                    `INSERT INTO invoices (id, date, customerName, type, items, total, status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                  );
+                  for (const inv of importedData.invoices) {
+                    stmt3.run(
+                      inv.id,
+                      inv.date,
+                      inv.customerName,
+                      inv.type,
+                      JSON.stringify(inv.items),
+                      inv.total || 0,
+                      inv.status || "Draft",
+                    );
+                  }
+                  stmt3.free();
+                  const stmt4 = db.prepare(
+                    `INSERT INTO logs (id, timestamp, user, role, action, details) VALUES (?, ?, ?, ?, ?, ?)`,
+                  );
+                  for (const l of importedData.logs || []) {
+                    stmt4.run(
+                      l.id,
+                      l.timestamp,
+                      l.user,
+                      l.role || "System",
+                      l.action,
+                      l.details,
+                    );
+                  }
+                  stmt4.free();
+                  persistDatabase();
+                  const d = loadAllData();
+                  setData(d);
                   logAction("Restored Backup", "JSON file imported");
                   showNotify("System data restored from backup.");
                 } else {
@@ -1742,18 +2616,14 @@
             };
             reader.readAsText(file);
           } else if (file.name.endsWith(".csv")) {
-            // Simple CSV Import for Journal Entries
             Papa.parse(file, {
               header: true,
               skipEmptyLines: true,
               complete: function (results) {
                 const rows = results.data;
                 let importedCount = 0;
-                // Expecting: Date, Description, AccountName, Debit, Credit
-                const newTxs = [];
-                // Group by Description & Date
                 const groups = {};
-                rows.forEach((r) => {
+                for (const r of rows) {
                   const key = r.Date + r.Description;
                   if (!groups[key])
                     groups[key] = {
@@ -1774,25 +2644,25 @@
                       credit: r.Credit || 0,
                     });
                   }
-                });
-
-                Object.values(groups).forEach((g) => {
+                }
+                for (const g of Object.values(groups)) {
                   if (g.lines.length >= 2) {
-                    newTxs.push({
-                      id: generateId(),
-                      date: g.date,
-                      description: g.desc,
-                      lines: g.lines,
-                      createdBy: "CSV Import",
-                    });
+                    sqlRun(
+                      `INSERT INTO transactions (id, date, description, createdBy, lines) VALUES (?, ?, ?, ?, ?)`,
+                      [
+                        generateId(),
+                        g.date,
+                        g.desc,
+                        "CSV Import",
+                        JSON.stringify(g.lines),
+                      ],
+                    );
                     importedCount++;
                   }
-                });
-
-                setData((prev) => ({
-                  ...prev,
-                  transactions: [...prev.transactions, ...newTxs],
-                }));
+                }
+                persistDatabase();
+                const d = loadAllData();
+                setData(d);
                 logAction(
                   "Imported CSV",
                   `${importedCount} transactions imported`,
@@ -1821,7 +2691,6 @@
             <h2 className="text-2xl font-bold text-gray-800">
               System Administration
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-xl shadow-sm border">
                 <h3 className="font-bold text-lg mb-4 flex items-center">
@@ -1839,7 +2708,6 @@
                   Export Complete Backup (JSON)
                 </button>
               </div>
-
               <div className="bg-white p-6 rounded-xl shadow-sm border">
                 <h3 className="font-bold text-lg mb-4 flex items-center">
                   <Icon path={icons.upload} className="w-5 h-5 mr-2" /> Import
@@ -1863,7 +2731,6 @@
                 />
               </div>
             </div>
-
             <div className="bg-white p-6 rounded-xl shadow-sm border overflow-hidden">
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <Icon path={icons.log} className="w-5 h-5 mr-2" /> Immutable
@@ -1912,9 +2779,23 @@
         );
       };
 
+      // ============================================================
+      // Main App
+      // ============================================================
       const App = () => {
-        const { user, setUser } = React.useContext(AppContext);
+        const { user, setUser, loading } = React.useContext(AppContext);
         const [currentView, setCurrentView] = React.useState("dashboard");
+
+        if (loading) {
+          return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+              <div className="text-center">
+                <div className="spinner mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading database...</p>
+              </div>
+            </div>
+          );
+        }
 
         if (!user) return <Login />;
 
@@ -1936,6 +2817,12 @@
             icon: icons.log,
             adminOnly: true,
           },
+          {
+            id: "users",
+            label: "User Management",
+            icon: icons.userCog,
+            adminOnly: true,
+          },
         ];
 
         const renderView = () => {
@@ -1954,6 +2841,8 @@
               return <ChartOfAccounts />;
             case "settings":
               return <Settings />;
+            case "users":
+              return <UserManagement />;
             default:
               return <Dashboard />;
           }
@@ -1961,7 +2850,6 @@
 
         return (
           <div className="flex h-screen overflow-hidden bg-gray-100">
-            {/* Sidebar */}
             <div className="w-64 bg-brand-dark text-white flex flex-col no-print">
               <div className="p-6 border-b border-brand-light/30">
                 <h1 className="font-bold text-xl tracking-wide text-brand-yellow">
@@ -1991,7 +2879,6 @@
               <div className="p-4 border-t border-brand-light/30 text-sm flex justify-between items-center bg-black/10">
                 <div>
                   <p className="font-bold">{user.name}</p>
-                  <p className="text-xs text-gray-300">{user.role}</p>
                 </div>
                 <button
                   onClick={() => setUser(null)}
@@ -2002,8 +2889,6 @@
                 </button>
               </div>
             </div>
-
-            {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
               <header className="bg-white shadow-sm h-16 flex items-center px-8 no-print border-b z-10">
                 <h2 className="text-lg font-medium text-gray-800 capitalize">
@@ -2018,13 +2903,16 @@
         );
       };
 
+      // ============================================================
+      // Root
+      // ============================================================
       const Root = () => (
         <AppProvider>
           <App />
         </AppProvider>
       );
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
+      const root = createRoot(document.getElementById("root"));
       root.render(<Root />);
     </script>
   </body>
