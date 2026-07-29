@@ -1,0 +1,2142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML & CSS Adventure Book – For Teen Coders</title>
+    <style>
+      /* ── Reset & Base ── */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Segoe UI",
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f8fc;
+        color: #1e293b;
+        line-height: 1.7;
+        padding: 2rem 1rem;
+      }
+
+      .book {
+        max-width: 1100px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+        padding: 3rem 3.5rem;
+        position: relative;
+      }
+
+      @media (max-width: 700px) {
+        .book {
+          padding: 1.5rem;
+          border-radius: 20px;
+        }
+        body {
+          padding: 1rem 0.5rem;
+        }
+      }
+
+      /* ── Print optimizations ── */
+      @media print {
+        body {
+          background: white;
+          padding: 0.2in;
+        }
+        .book {
+          box-shadow: none;
+          border-radius: 0;
+          padding: 0.2in;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .session {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+        h2 {
+          break-after: avoid;
+        }
+      }
+
+      /* ── Typography ── */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        background: linear-gradient(145deg, #0f2b5c, #2563eb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.25rem;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: #475569;
+        font-weight: 400;
+        border-bottom: 3px solid #e2e8f0;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+        color: #0f2b5c;
+        margin-top: 2.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.3rem;
+        border-bottom: 4px solid #dbeafe;
+      }
+
+      h3 {
+        font-size: 1.4rem;
+        color: #1e40af;
+        margin-top: 1.8rem;
+        margin-bottom: 0.6rem;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+        color: #2563eb;
+        margin-top: 1.4rem;
+        margin-bottom: 0.3rem;
+      }
+
+      p {
+        margin-bottom: 0.8rem;
+      }
+
+      /* ── Code & pre ── */
+      code {
+        background: #eef2ff;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        font-family: "JetBrains Mono", "Fira Code", monospace;
+        font-size: 0.9rem;
+        color: #1e40af;
+      }
+
+      pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 1.2rem 1.6rem;
+        border-radius: 16px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", "Fira Code", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 1.2rem 0;
+        border: 1px solid #1e293b;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+      }
+
+      /* syntax-highlight-ish */
+      .hljs-tag {
+        color: #7dd3fc;
+      }
+      .hljs-attr {
+        color: #fcd34d;
+      }
+      .hljs-string {
+        color: #a7f3d0;
+      }
+      .hljs-comment {
+        color: #94a3b8;
+        font-style: italic;
+      }
+
+      /* ── Lists ── */
+      ul,
+      ol {
+        padding-left: 1.6rem;
+        margin-bottom: 1rem;
+      }
+      li {
+        margin-bottom: 0.3rem;
+      }
+
+      /* ── Callouts / Tips ── */
+      .tip {
+        background: #eff6ff;
+        border-left: 6px solid #2563eb;
+        padding: 1rem 1.6rem;
+        border-radius: 12px;
+        margin: 1.4rem 0;
+      }
+      .tip strong {
+        color: #1e40af;
+      }
+
+      .warning {
+        background: #fffbeb;
+        border-left: 6px solid #f59e0b;
+        padding: 1rem 1.6rem;
+        border-radius: 12px;
+        margin: 1.4rem 0;
+      }
+      .warning strong {
+        color: #b45309;
+      }
+
+      .fun-fact {
+        background: #f0fdf4;
+        border-left: 6px solid #22c55e;
+        padding: 1rem 1.6rem;
+        border-radius: 12px;
+        margin: 1.4rem 0;
+      }
+      .fun-fact strong {
+        color: #15803d;
+      }
+
+      /* ── Session cards ── */
+      .session {
+        background: #fafbff;
+        border: 1px solid #e9edf5;
+        border-radius: 20px;
+        padding: 1.6rem 2rem;
+        margin: 2rem 0;
+        transition: border-color 0.2s;
+      }
+      .session:hover {
+        border-color: #b9c8f0;
+      }
+
+      .session-header {
+        display: flex;
+        align-items: baseline;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+      }
+      .session-number {
+        background: #2563eb;
+        color: white;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.9rem;
+        border-radius: 40px;
+        letter-spacing: 0.3px;
+      }
+      .session-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f2b5c;
+      }
+      .session-duration {
+        font-size: 0.85rem;
+        color: #64748b;
+        background: #e9edf5;
+        padding: 0.15rem 0.9rem;
+        border-radius: 40px;
+        margin-left: auto;
+      }
+
+      .session-goals {
+        background: white;
+        border-radius: 12px;
+        padding: 0.8rem 1.4rem;
+        margin: 0.8rem 0 1rem 0;
+        border: 1px dashed #cbd5e1;
+      }
+      .session-goals strong {
+        color: #1e40af;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.1rem 0.7rem;
+        border-radius: 40px;
+        letter-spacing: 0.2px;
+        margin-right: 0.3rem;
+      }
+
+      /* ── Table of contents ── */
+      .toc {
+        background: #f8fafc;
+        border-radius: 20px;
+        padding: 1.6rem 2rem;
+        margin: 1.8rem 0;
+        border: 1px solid #e2e8f0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.2rem 1.5rem;
+      }
+      .toc a {
+        color: #1e40af;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: block;
+        padding: 0.2rem 0;
+        border-bottom: 1px solid transparent;
+      }
+      .toc a:hover {
+        border-bottom-color: #2563eb;
+      }
+      .toc .toc-week {
+        font-weight: 700;
+        color: #0f2b5c;
+        grid-column: 1 / -1;
+        margin-top: 0.6rem;
+        font-size: 1.05rem;
+        border-bottom: 2px solid #dbeafe;
+        padding-bottom: 0.2rem;
+      }
+      .toc .toc-week:first-of-type {
+        margin-top: 0;
+      }
+
+      /* ── Tools section ── */
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .tool-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        text-align: center;
+        transition: box-shadow 0.2s;
+      }
+      .tool-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      }
+      .tool-card .tool-icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+      .tool-card .tool-name {
+        font-weight: 700;
+        color: #0f2b5c;
+      }
+      .tool-card .tool-desc {
+        font-size: 0.85rem;
+        color: #475569;
+      }
+
+      /* ── Project boxes ── */
+      .project-box {
+        background: linear-gradient(145deg, #f0f4ff, #ffffff);
+        border: 2px solid #b9c8f0;
+        border-radius: 16px;
+        padding: 1.2rem 1.8rem;
+        margin: 1.2rem 0;
+      }
+      .project-box h4 {
+        margin-top: 0;
+      }
+
+      /* ── Glossary ── */
+      .glossary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 0.8rem 1.6rem;
+        margin: 1.2rem 0;
+      }
+      .glossary-item {
+        border-bottom: 1px solid #e9edf5;
+        padding: 0.4rem 0;
+      }
+      .glossary-item .term {
+        font-weight: 700;
+        color: #0f2b5c;
+      }
+      .glossary-item .def {
+        color: #475569;
+        font-size: 0.95rem;
+      }
+
+      /* ── Responsive tweaks ── */
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 2rem;
+        }
+        .session-title {
+          font-size: 1.2rem;
+        }
+        .session {
+          padding: 1rem 1.2rem;
+        }
+        .toc {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+        }
+        .book {
+          padding: 1rem;
+        }
+        pre {
+          padding: 0.8rem 1rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* print page breaks */
+      .page-break {
+        border: 0;
+        height: 0;
+        margin: 2.5rem 0;
+        page-break-after: always;
+        break-after: page;
+      }
+      .page-break--after {
+        page-break-after: always;
+        break-after: page;
+      }
+
+      /* misc */
+      .small {
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .mt-2 {
+        margin-top: 1.5rem;
+      }
+      .mb-1 {
+        margin-bottom: 0.8rem;
+      }
+      .emoji-lg {
+        font-size: 1.6rem;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="book">
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  COVER & TITLE                                     -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <div style="text-align: center; padding: 0.8rem 0 1.6rem 0">
+        <div style="font-size: 3.2rem; line-height: 1.2">🚀</div>
+        <h1 style="font-size: 3.4rem; margin-bottom: 0.2rem">
+          HTML &amp; CSS<br />Adventure
+        </h1>
+        <p
+          style="
+            font-size: 1.4rem;
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+          "
+        >
+          A 30‑Day Hands‑On Coding Quest
+        </p>
+        <p
+          style="
+            font-size: 1rem;
+            color: #475569;
+            max-width: 500px;
+            margin: 0.4rem auto;
+          "
+        >
+          For Teenagers 12–15 · Build real websites · Learn by doing
+        </p>
+        <div
+          style="
+            margin: 1.6rem 0 0.4rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+          "
+        >
+          <span
+            style="
+              background: #e9edf5;
+              padding: 0.2rem 1.2rem;
+              border-radius: 40px;
+            "
+            >📘 30 sessions</span
+          >
+          <span
+            style="
+              background: #e9edf5;
+              padding: 0.2rem 1.2rem;
+              border-radius: 40px;
+            "
+            >⏱ 1–2 hrs each</span
+          >
+          <span
+            style="
+              background: #e9edf5;
+              padding: 0.2rem 1.2rem;
+              border-radius: 40px;
+            "
+            >💻 VS Code</span
+          >
+        </div>
+      </div>
+
+      <hr
+        style="
+          border: 0;
+          border-top: 2px solid #e2e8f0;
+          margin: 0.8rem 0 1.6rem 0;
+        "
+      />
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  INTRODUCTION                                      -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <section>
+        <h2>👋 Welcome, Future Web Creator!</h2>
+        <p>
+          <strong>This book is your personal guide</strong> to learning HTML and
+          CSS — the two core languages that power every website you see. You
+          don't need any previous coding experience. Just bring your curiosity,
+          a computer, and a willingness to experiment.
+        </p>
+        <p>
+          Every day for the next <strong>30 sessions</strong> (about 1–2 hours
+          each), you'll learn something new and immediately
+          <strong>build something real</strong>. By the end, you'll be able to
+          create beautiful, responsive websites from scratch — and you'll have a
+          portfolio of projects to show off.
+        </p>
+
+        <div class="tip">
+          <strong>🌟 Pro tip for teens:</strong> Code is like learning a new
+          language — you get better by <em>speaking</em> it every day. Type
+          every example yourself. Break things on purpose. That's how you learn!
+        </div>
+
+        <h3>📖 How to Use This Book</h3>
+        <ul>
+          <li><strong>Read the lesson</strong> – understand the concept.</li>
+          <li>
+            <strong>Type the code</strong> – never copy-paste. Typing builds
+            muscle memory.
+          </li>
+          <li>
+            <strong>Do the exercises</strong> – each session has a
+            mini-challenge.
+          </li>
+          <li>
+            <strong>Save your work</strong> – create a folder called
+            <code>my-web-journey</code> and save each day's file.
+          </li>
+          <li>
+            <strong>Experiment</strong> – change colors, tweak layouts, make it
+            yours.
+          </li>
+        </ul>
+
+        <div class="fun-fact">
+          <strong>🎯 Did you know?</strong> The first website ever made is still
+          online! It was created by Tim Berners‑Lee in 1991. You can visit it at
+          <code>info.cern.ch</code>. It's just text and links — no CSS!
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  TOOLS                                             -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <section>
+        <h2>🛠️ Your Toolkit</h2>
+        <p>
+          Here's everything you need to get started. All tools are
+          <strong>free</strong>.
+        </p>
+
+        <div class="tools-grid">
+          <div class="tool-card">
+            <span class="tool-icon">💻</span>
+            <div class="tool-name">VS Code</div>
+            <div class="tool-desc">Code editor · our main tool</div>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon">🌐</span>
+            <div class="tool-name">Chrome / Firefox</div>
+            <div class="tool-desc">Browser with DevTools</div>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon">🎨</span>
+            <div class="tool-name">CodePen</div>
+            <div class="tool-desc">Quick prototyping online</div>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon">📁</span>
+            <div class="tool-name">GitHub</div>
+            <div class="tool-desc">Save &amp; share your code</div>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon">🖼️</span>
+            <div class="tool-name">Unsplash</div>
+            <div class="tool-desc">Free beautiful images</div>
+          </div>
+          <div class="tool-card">
+            <span class="tool-icon">🎯</span>
+            <div class="tool-name">Coolors</div>
+            <div class="tool-desc">Color palette generator</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>⚡ VS Code extensions to install:</strong>
+          <code>Live Server</code> (see changes instantly),
+          <code>Prettier</code> (auto-format your code),
+          <code>HTML CSS Support</code> (smart autocomplete).
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  TABLE OF CONTENTS                                 -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <section>
+        <h2>📚 The 30‑Day Roadmap</h2>
+        <p>
+          Each session builds on the previous one. Stick with it — you've got
+          this!
+        </p>
+
+        <div class="toc">
+          <div class="toc-week">🌱 Week 1 · HTML Foundations</div>
+          <a href="#s1">1. Hello, World! – Your First Page</a>
+          <a href="#s2">2. Structure – Head &amp; Body</a>
+          <a href="#s3">3. Text &amp; Lists</a>
+          <a href="#s4">4. Links &amp; Images</a>
+          <a href="#s5">5. Tables &amp; Forms</a>
+
+          <div class="toc-week">🎨 Week 2 · CSS Basics</div>
+          <a href="#s6">6. Colors, Fonts &amp; Text</a>
+          <a href="#s7">7. The Box Model</a>
+          <a href="#s8">8. Flexbox – One‑Dimensional Layout</a>
+          <a href="#s9">9. Grid – Two‑Dimensional Layout</a>
+          <a href="#s10">10. Positioning &amp; Z‑Index</a>
+
+          <div class="toc-week">⚡ Week 3 · Intermediate CSS</div>
+          <a href="#s11">11. Responsive Design &amp; Media Queries</a>
+          <a href="#s12">12. Transitions &amp; Animations</a>
+          <a href="#s13">13. CSS Variables (Custom Properties)</a>
+          <a href="#s14">14. Pseudo‑classes &amp; Pseudo‑elements</a>
+          <a href="#s15">15. Advanced Selectors</a>
+
+          <div class="toc-week">🏗️ Week 4 · Build Projects</div>
+          <a href="#s16">16. Personal Portfolio Page</a>
+          <a href="#s17">17. Landing Page</a>
+          <a href="#s18">18. Blog Layout</a>
+          <a href="#s19">19. Gallery / Photo Display</a>
+          <a href="#s20">20. Multi‑Page Website</a>
+
+          <div class="toc-week">🚀 Week 5 · Advanced &amp; Best Practices</div>
+          <a href="#s21">21. CSS Frameworks (Bootstrap / Tailwind)</a>
+          <a href="#s22">22. Forms &amp; Input Validation</a>
+          <a href="#s23">23. Accessibility &amp; Semantic HTML</a>
+          <a href="#s24">24. Performance &amp; Optimization</a>
+          <a href="#s25">25. Debugging with DevTools</a>
+
+          <div class="toc-week">🏁 Week 6 · Capstone &amp; Review</div>
+          <a href="#s26">26. Capstone Kickoff – Plan Your Site</a>
+          <a href="#s27">27. Build the Homepage</a>
+          <a href="#s28">28. Build Inner Pages</a>
+          <a href="#s29">29. Polish &amp; Responsive</a>
+          <a href="#s30">30. Final Review &amp; Showcase</a>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 1 – SESSIONS 1–5                            -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">🌱 Week 1 · HTML Foundations</h2>
+
+      <!-- Session 1 -->
+      <div class="session" id="s1">
+        <div class="session-header">
+          <span class="session-number">Day 1</span>
+          <span class="session-title">Hello, World! – Your First Page</span>
+          <span class="session-duration">⏱ 1 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Set up VS Code · Create an HTML file ·
+          Understand tags · See your page in a browser.
+        </div>
+
+        <h4>📌 What is HTML?</h4>
+        <p>
+          <strong>HTML</strong> (HyperText Markup Language) is the skeleton of
+          every webpage. It uses <strong>tags</strong> like
+          <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code> to structure
+          content. Think of it like building with Lego blocks — each tag is a
+          block with a specific purpose.
+        </p>
+
+        <h4>🔧 Setup</h4>
+        <ol>
+          <li>
+            Open VS Code. Create a new folder called
+            <code>my-web-journey</code>.
+          </li>
+          <li>Inside it, create a file called <code>index.html</code>.</li>
+          <li>Type the following exactly (don't copy-paste — type it!):</li>
+        </ol>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+                &lt;html&gt;
+                &lt;head&gt;
+                &lt;title&gt;My First Page&lt;/title&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                &lt;h1&gt;🚀 Hello, World!&lt;/h1&gt;
+                &lt;p&gt;This is my first webpage. I'm learning HTML!&lt;/p&gt;
+                &lt;/body&gt;
+                &lt;/html&gt;</code></pre>
+
+        <h4>👀 View it!</h4>
+        <p>
+          Right‑click the file in VS Code and select
+          <strong>"Open with Live Server"</strong>
+          (if you have the extension). Or just double‑click the file to open it
+          in your browser. You should see your page!
+        </p>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Change the <code>&lt;h1&gt;</code> text
+          to your name. Add a second <code>&lt;p&gt;</code> paragraph about your
+          favorite hobby. Save and refresh the browser to see your changes.
+        </div>
+
+        <div class="fun-fact">
+          💡 The <code>&lt;!DOCTYPE html&gt;</code> tells the browser "this is
+          HTML5" — the latest version of HTML.
+        </div>
+      </div>
+
+      <!-- Session 2 -->
+      <div class="session" id="s2">
+        <div class="session-header">
+          <span class="session-number">Day 2</span>
+          <span class="session-title">Structure – Head &amp; Body</span>
+          <span class="session-duration">⏱ 1 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Understand the <code>&lt;head&gt;</code> vs
+          <code>&lt;body&gt;</code> · Meta tags · Title · Basic structure.
+        </div>
+
+        <h4>🧩 The Two Main Parts</h4>
+        <ul>
+          <li>
+            <strong><code>&lt;head&gt;</code></strong> – contains
+            <em>metadata</em>
+            (information about the page). Things like the title, character set,
+            and links to CSS files. Not visible on the page.
+          </li>
+          <li>
+            <strong><code>&lt;body&gt;</code></strong> – contains everything
+            that <em>is</em> visible on the page: text, images, buttons, etc.
+          </li>
+        </ul>
+
+        <h4>📝 Try This</h4>
+        <p>Update your <code>index.html</code> to include these meta tags:</p>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+                &lt;html lang="en"&gt;
+                &lt;head&gt;
+                &lt;meta charset="UTF-8" /&gt;
+                &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+                &lt;title&gt;My Awesome Site&lt;/title&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                &lt;h1&gt;Welcome to My Site&lt;/h1&gt;
+                &lt;p&gt;This page is optimized for all devices!&lt;/p&gt;
+                &lt;/body&gt;
+                &lt;/html&gt;</code></pre>
+
+        <div class="tip">
+          <strong>🔍 The <code>viewport</code> meta tag</strong> makes your page
+          look good on phones and tablets. Always include it!
+        </div>
+
+        <div class="warning">
+          <strong>⚠️ Common mistake:</strong> Forgetting the closing
+          <code>&lt;/head&gt;</code> or <code>&lt;/body&gt;</code> tags. Always
+          double‑check your nesting!
+        </div>
+      </div>
+
+      <!-- Session 3 -->
+      <div class="session" id="s3">
+        <div class="session-header">
+          <span class="session-number">Day 3</span>
+          <span class="session-title">Text &amp; Lists</span>
+          <span class="session-duration">⏱ 1–1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Headings · Paragraphs · Bold/Italic ·
+          Ordered &amp; Unordered lists.
+        </div>
+
+        <h4>📝 Text Tags</h4>
+        <ul>
+          <li>
+            <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> – headings (h1 is
+            biggest)
+          </li>
+          <li><code>&lt;p&gt;</code> – paragraph</li>
+          <li><code>&lt;strong&gt;</code> – bold text</li>
+          <li><code>&lt;em&gt;</code> – italic (emphasis)</li>
+          <li><code>&lt;br&gt;</code> – line break (self‑closing)</li>
+          <li><code>&lt;hr&gt;</code> – horizontal rule (separator)</li>
+        </ul>
+
+        <h4>📋 Lists</h4>
+        <ul>
+          <li><code>&lt;ul&gt;</code> – unordered list (bullets)</li>
+          <li><code>&lt;ol&gt;</code> – ordered list (numbers)</li>
+          <li><code>&lt;li&gt;</code> – list item (inside a list)</li>
+        </ul>
+
+        <h4>💻 Code Example</h4>
+        <pre><code>&lt;h1&gt;My Favorite Things&lt;/h1&gt;
+                &lt;p&gt;Here are some of my &lt;strong&gt;favorite&lt;/strong&gt; hobbies:&lt;/p&gt;
+                &lt;ul&gt;
+                &lt;li&gt;🎮 Gaming&lt;/li&gt;
+                &lt;li&gt;📚 Reading&lt;/li&gt;
+                &lt;li&gt;💻 Coding&lt;/li&gt;
+                &lt;/ul&gt;
+                &lt;h2&gt;Top 3 Games&lt;/h2&gt;
+                &lt;ol&gt;
+                &lt;li&gt;Minecraft&lt;/li&gt;
+                &lt;li&gt;Roblox&lt;/li&gt;
+                &lt;li&gt;Fortnite&lt;/li&gt;
+                &lt;/ol&gt;</code></pre>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Create a page about your "Top 5 Movies"
+          or "My Dream Vacation". Use headings, paragraphs, bold, italic, and
+          both types of lists. Make it look organized!
+        </div>
+      </div>
+
+      <!-- Session 4 -->
+      <div class="session" id="s4">
+        <div class="session-header">
+          <span class="session-number">Day 4</span>
+          <span class="session-title">Links &amp; Images</span>
+          <span class="session-duration">⏱ 1–1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Create hyperlinks with
+          <code>&lt;a&gt;</code> · Add images with <code>&lt;img&gt;</code> ·
+          Use <code>alt</code> text.
+        </div>
+
+        <h4>🔗 Links</h4>
+        <p>
+          The <code>&lt;a&gt;</code> (anchor) tag creates a link. The
+          <code>href</code> attribute specifies the destination.
+        </p>
+        <pre><code>&lt;a href="https://www.google.com"&gt;Go to Google&lt;/a&gt;
+                &lt;a href="#section2"&gt;Jump to Section 2&lt;/a&gt; &lt;!-- internal link --&gt;
+                &lt;a href="mailto:me@example.com"&gt;Email Me&lt;/a&gt;</code></pre>
+
+        <h4>🖼️ Images</h4>
+        <p>
+          The <code>&lt;img&gt;</code> tag is self‑closing. It needs
+          <code>src</code> (source) and <code>alt</code> (alternative text for
+          accessibility).
+        </p>
+        <pre><code>&lt;img src="https://picsum.photos/400/300" alt="A random image" /&gt;
+                &lt;img src="my-photo.jpg" alt="A picture of me" width="300" /&gt;</code></pre>
+
+        <div class="warning">
+          <strong>⚠️ Always use <code>alt</code>!</strong> It helps screen
+          readers and shows text if the image doesn't load.
+        </div>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Create a "My Favorite Places" page. Add
+          3–4 images (use <code>https://picsum.photos/200/150</code> for random
+          pics). Link each image to a website about that place. Use
+          <code>target="_blank"</code> to open links in a new tab.
+        </div>
+      </div>
+
+      <!-- Session 5 -->
+      <div class="session" id="s5">
+        <div class="session-header">
+          <span class="session-number">Day 5</span>
+          <span class="session-title">Tables &amp; Forms</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build tables with
+          <code>&lt;table&gt;</code> · Create a simple form with
+          <code>&lt;input&gt;</code> and <code>&lt;button&gt;</code>.
+        </div>
+
+        <h4>📊 Tables</h4>
+        <p>
+          Tables use <code>&lt;tr&gt;</code> (row),
+          <code>&lt;th&gt;</code> (header cell), and
+          <code>&lt;td&gt;</code> (data cell).
+        </p>
+        <pre><code>&lt;table border="1"&gt;
+                &lt;tr&gt;
+                &lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Age&lt;/th&gt;&lt;th&gt;City&lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                &lt;td&gt;Alice&lt;/td&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;NYC&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                &lt;td&gt;Bob&lt;/td&gt;&lt;td&gt;13&lt;/td&gt;&lt;td&gt;LA&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;/table&gt;</code></pre>
+
+        <h4>📝 Forms</h4>
+        <pre><code>&lt;form action="/submit" method="post"&gt;
+                &lt;label for="name"&gt;Your Name:&lt;/label&gt;
+                &lt;input type="text" id="name" name="name" /&gt;
+                &lt;label for="email"&gt;Email:&lt;/label&gt;
+                &lt;input type="email" id="email" name="email" /&gt;
+                &lt;button type="submit"&gt;Send!&lt;/button&gt;
+                &lt;/form&gt;</code></pre>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Make a "Class Schedule" table (Mon–Fri,
+          3–4 subjects). Then add a "Contact Me" form with name, email, and a
+          message box (<code>&lt;textarea&gt;</code>).
+        </div>
+
+        <div class="fun-fact">
+          💡 The <code>action</code> attribute in a form tells the browser where
+          to send the data. For now, we'll keep it as <code>#</code> (same
+          page).
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 2 – SESSIONS 6–10                           -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">🎨 Week 2 · CSS Basics</h2>
+
+      <!-- Session 6 -->
+      <div class="session" id="s6">
+        <div class="session-header">
+          <span class="session-number">Day 6</span>
+          <span class="session-title">Colors, Fonts &amp; Text</span>
+          <span class="session-duration">⏱ 1–1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Understand CSS syntax · Change colors ·
+          Font families · Text alignment &amp; decoration.
+        </div>
+
+        <h4>🎨 What is CSS?</h4>
+        <p>
+          <strong>CSS</strong> (Cascading Style Sheets) is the style layer of
+          the web. It controls colors, fonts, layout, animations — everything
+          visual. CSS works by <strong>selecting</strong> HTML elements and
+          applying <strong>properties</strong> with <strong>values</strong>.
+        </p>
+
+        <h4>🔤 Syntax</h4>
+        <pre><code>selector {
+                property: value;
+                property: value;
+                }</code></pre>
+
+        <h4>💻 Try It</h4>
+        <p>
+          Add a <code>&lt;style&gt;</code> tag inside <code>&lt;head&gt;</code>:
+        </p>
+        <pre><code>&lt;style&gt;
+                body {
+                background-color: #f0f4ff;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                }
+                h1 {
+                color: #1e40af;
+                font-size: 2.5rem;
+                text-align: center;
+                }
+                p {
+                color: #334155;
+                line-height: 1.8;
+                }
+                &lt;/style&gt;</code></pre>
+
+        <div class="tip">
+          <strong>🎯 Color tip:</strong> Use <code>color</code> for text color,
+          <code>background-color</code> for backgrounds. Try hex codes like
+          <code>#ff6b6b</code> or named colors like <code>tomato</code>.
+        </div>
+
+        <div class="warning">
+          <strong>⚠️ Don't forget the semicolon!</strong> Every CSS declaration
+          must end with a <code>;</code>.
+        </div>
+      </div>
+
+      <!-- Session 7 -->
+      <div class="session" id="s7">
+        <div class="session-header">
+          <span class="session-number">Day 7</span>
+          <span class="session-title">The Box Model</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Understand margin, border, padding, content
+          · Use <code>width</code>, <code>height</code>,
+          <code>box-sizing</code>.
+        </div>
+
+        <h4>📦 Every Element Is a Box</h4>
+        <p>In CSS, every HTML element is a rectangular box made of:</p>
+        <ul>
+          <li><strong>Content</strong> – the text or image inside.</li>
+          <li><strong>Padding</strong> – space <em>inside</em> the border.</li>
+          <li><strong>Border</strong> – the edge around the padding.</li>
+          <li><strong>Margin</strong> – space <em>outside</em> the border.</li>
+        </ul>
+
+        <pre><code>.card {
+                width: 300px;
+                padding: 20px;
+                border: 3px solid #2563eb;
+                margin: 30px auto;
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+                }</code></pre>
+
+        <div class="tip">
+          <strong>💡 <code>box-sizing: border-box;</code></strong> makes padding
+          and border included in the width/height. It's a game‑changer! Add it
+          to everything with <code>* { box-sizing: border-box; }</code>.
+        </div>
+
+        <div class="fun-fact">
+          📐 The total width of an element = width + padding + border + margin
+          (when <code>box-sizing: content-box</code>).
+        </div>
+      </div>
+
+      <!-- Session 8 -->
+      <div class="session" id="s8">
+        <div class="session-header">
+          <span class="session-number">Day 8</span>
+          <span class="session-title">Flexbox – One‑Dimensional Layout</span>
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Use <code>display: flex</code> ·
+          <code>justify-content</code> · <code>align-items</code> ·
+          <code>flex-direction</code> · <code>gap</code>.
+        </div>
+
+        <h4>⚡ Flexbox = Powerful Alignment</h4>
+        <p>
+          Flexbox is a layout mode that makes it easy to align and distribute
+          items in a row or column.
+        </p>
+
+        <pre><code>.container {
+                display: flex;
+                flex-direction: row;        /* row | column */
+                justify-content: center;    /* horizontal alignment */
+                align-items: center;        /* vertical alignment */
+                gap: 16px;                  /* space between items */
+                }
+
+                .item {
+                padding: 20px;
+                background: #dbeafe;
+                border-radius: 12px;
+                }</code></pre>
+
+        <h4>🧪 Experiment</h4>
+        <p>
+          Create a container with 3 boxes inside. Try:
+          <code>justify-content: space-between</code>,
+          <code>space-around</code>, <code>flex-end</code>.
+        </p>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Build a "Navigation Bar" with
+          <code>flex</code>. Put a logo on the left and 3 links on the right.
+          Use <code>justify-content: space-between</code>.
+        </div>
+      </div>
+
+      <!-- Session 9 -->
+      <div class="session" id="s9">
+        <div class="session-header">
+          <span class="session-number">Day 9</span>
+          <span class="session-title">Grid – Two‑Dimensional Layout</span>
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Use <code>display: grid</code> ·
+          <code>grid-template-columns</code> · <code>grid-template-rows</code> ·
+          <code>gap</code> · <code>grid-column</code> / <code>grid-row</code>.
+        </div>
+
+        <h4>🧩 CSS Grid = 2D Power</h4>
+        <p>
+          Grid is perfect for laying out entire pages. You define columns and
+          rows, then place items inside.
+        </p>
+
+        <pre><code>.grid-container {
+                display: grid;
+                grid-template-columns: 1fr 2fr 1fr;  /* 3 columns */
+                grid-template-rows: 100px 200px;
+                gap: 20px;
+                }
+
+                .item-1 {
+                grid-column: 1 / 3;  /* span from column 1 to 3 */
+                }</code></pre>
+
+        <div class="tip">
+          <strong>📐 The <code>fr</code> unit</strong> means "fraction" — it
+          distributes available space. <code>1fr 2fr</code> means the second
+          column is twice as wide as the first.
+        </div>
+
+        <div class="fun-fact">
+          💡 Grid and Flexbox work great together! Use Grid for page‑level
+          layout and Flexbox for components inside.
+        </div>
+      </div>
+
+      <!-- Session 10 -->
+      <div class="session" id="s10">
+        <div class="session-header">
+          <span class="session-number">Day 10</span>
+          <span class="session-title">Positioning &amp; Z‑Index</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> <code>position: static</code> ·
+          <code>relative</code> · <code>absolute</code> · <code>fixed</code> ·
+          <code>sticky</code> · <code>z-index</code>.
+        </div>
+
+        <h4>📍 Positioning Types</h4>
+        <ul>
+          <li><strong>static</strong> – default. Stays in the normal flow.</li>
+          <li>
+            <strong>relative</strong> – moves relative to its normal position.
+          </li>
+          <li>
+            <strong>absolute</strong> – removed from flow; positioned relative
+            to nearest positioned ancestor.
+          </li>
+          <li>
+            <strong>fixed</strong> – positioned relative to the viewport (stays
+            in place on scroll).
+          </li>
+          <li>
+            <strong>sticky</strong> – hybrid: relative until scroll threshold,
+            then fixed.
+          </li>
+        </ul>
+
+        <pre><code>.parent {
+                position: relative;
+                height: 300px;
+                background: #e9edf5;
+                }
+
+                .child {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                }
+
+                .sticky-nav {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 100;
+                }</code></pre>
+
+        <div class="warning">
+          <strong>⚠️ <code>z-index</code> only works</strong> on positioned
+          elements (relative, absolute, fixed, sticky). It controls stacking
+          order.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 3 – SESSIONS 11–15                          -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">⚡ Week 3 · Intermediate CSS</h2>
+
+      <!-- Session 11 -->
+      <div class="session" id="s11">
+        <div class="session-header">
+          <span class="session-number">Day 11</span>
+          <span class="session-title"
+            >Responsive Design &amp; Media Queries</span
+          >
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Make sites work on all screen sizes ·
+          <code>@media</code> queries · Breakpoints · Mobile‑first design.
+        </div>
+
+        <h4>📱 What is Responsive Design?</h4>
+        <p>
+          A responsive website adapts to the screen size — phone, tablet,
+          desktop. We use <strong>media queries</strong> to apply different
+          styles at different widths.
+        </p>
+
+        <pre><code>/* Mobile first — styles for all screens */
+                .container {
+                display: grid;
+                grid-template-columns: 1fr;
+                }
+
+                /* Tablet and up */
+                @media (min-width: 600px) {
+                .container {
+                grid-template-columns: 1fr 1fr;
+                }
+                }
+
+                /* Desktop and up */
+                @media (min-width: 900px) {
+                .container {
+                grid-template-columns: 1fr 1fr 1fr;
+                }
+                }</code></pre>
+
+        <div class="tip">
+          <strong>📐 Common breakpoints:</strong>
+          600px (tablet), 900px (desktop), 1200px (large desktop). Start with
+          mobile styles, then add layers with <code>min-width</code>.
+        </div>
+
+        <div class="fun-fact">
+          📱 Over 60% of web traffic comes from mobile devices. Responsive
+          design isn't optional — it's essential!
+        </div>
+      </div>
+
+      <!-- Session 12 -->
+      <div class="session" id="s12">
+        <div class="session-header">
+          <span class="session-number">Day 12</span>
+          <span class="session-title">Transitions &amp; Animations</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Use <code>transition</code> for smooth
+          changes · <code>@keyframes</code> for animations ·
+          <code>animation</code> properties.
+        </div>
+
+        <h4>✨ Transitions</h4>
+        <p>Transitions make property changes <em>smooth</em> over time.</p>
+        <pre><code>.btn {
+                background: #2563eb;
+                padding: 12px 24px;
+                transition: background 0.3s ease, transform 0.2s ease;
+                }
+
+                .btn:hover {
+                background: #1e40af;
+                transform: scale(1.05);
+                }</code></pre>
+
+        <h4>🎬 Keyframe Animations</h4>
+        <pre><code>@keyframes bounce {
+                0% { transform: translateY(0); }
+                50% { transform: translateY(-20px); }
+                100% { transform: translateY(0); }
+                }
+
+                .bouncy {
+                animation: bounce 1s ease-in-out infinite;
+                }</code></pre>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Create a button that changes color and
+          grows on hover. Then add a spinning or bouncing element using
+          <code>@keyframes</code>.
+        </div>
+      </div>
+
+      <!-- Session 13 -->
+      <div class="session" id="s13">
+        <div class="session-header">
+          <span class="session-number">Day 13</span>
+          <span class="session-title">CSS Variables (Custom Properties)</span>
+          <span class="session-duration">⏱ 1 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Declare variables with
+          <code>--name</code> · Use <code>var(--name)</code> · Theming &amp;
+          maintainability.
+        </div>
+
+        <h4>🎨 What Are CSS Variables?</h4>
+        <p>
+          They let you store values (colors, sizes, etc.) and reuse them
+          everywhere. Change the variable once, and it updates everywhere.
+        </p>
+
+        <pre><code>:root {
+                --primary: #2563eb;
+                --secondary: #f59e0b;
+                --spacing: 16px;
+                --radius: 12px;
+                }
+
+                .card {
+                background: var(--primary);
+                padding: var(--spacing);
+                border-radius: var(--radius);
+                color: white;
+                }
+
+                .warning {
+                background: var(--secondary);
+                }</code></pre>
+
+        <div class="tip">
+          <strong>💡 <code>:root</code></strong> is a pseudo‑class that matches
+          the <code>&lt;html&gt;</code> element. It's perfect for global
+          variables.
+        </div>
+
+        <div class="fun-fact">
+          🎯 CSS variables are supported in all modern browsers and make theming
+          super easy — dark mode is just a few variable swaps!
+        </div>
+      </div>
+
+      <!-- Session 14 -->
+      <div class="session" id="s14">
+        <div class="session-header">
+          <span class="session-number">Day 14</span>
+          <span class="session-title"
+            >Pseudo‑classes &amp; Pseudo‑elements</span
+          >
+          <span class="session-duration">⏱ 1–1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> <code>:hover</code> · <code>:focus</code> ·
+          <code>:nth-child()</code> · <code>::before</code> ·
+          <code>::after</code>.
+        </div>
+
+        <h4>🪄 Pseudo‑classes</h4>
+        <p>Target elements in a <em>specific state</em>.</p>
+        <pre><code>a:hover { color: red; }
+                input:focus { border-color: blue; }
+                li:nth-child(2) { background: #f0f4ff; }
+                .card:first-child { margin-top: 0; }</code></pre>
+
+        <h4>✨ Pseudo‑elements</h4>
+        <p>Style <em>parts</em> of an element.</p>
+        <pre><code>h1::before {
+                content: "⭐ ";
+                font-size: 1.8rem;
+                }
+                p::first-letter {
+                font-size: 3rem;
+                font-weight: bold;
+                color: #2563eb;
+                }</code></pre>
+
+        <div class="tip">
+          <strong>✏️ Challenge:</strong> Style every odd‑numbered list item with
+          a different background. Add a star icon before each heading using
+          <code>::before</code>.
+        </div>
+      </div>
+
+      <!-- Session 15 -->
+      <div class="session" id="s15">
+        <div class="session-header">
+          <span class="session-number">Day 15</span>
+          <span class="session-title">Advanced Selectors</span>
+          <span class="session-duration">⏱ 1–1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Attribute selectors · Child combinators ·
+          Sibling selectors · Specificity.
+        </div>
+
+        <h4>🎯 Powerful Selectors</h4>
+        <ul>
+          <li><code>input[type="text"]</code> – attribute selector</li>
+          <li><code>.parent &gt; .child</code> – direct child</li>
+          <li><code>.sibling + .next</code> – adjacent sibling</li>
+          <li><code>.sibling ~ .all</code> – general sibling</li>
+        </ul>
+
+        <pre><code>/* All text inputs */
+                input[type="text"] {
+                border: 2px solid #d1d5db;
+                }
+
+                /* Direct children of .nav */
+                .nav &gt; li {
+                display: inline-block;
+                }
+
+                /* Paragraph after a heading */
+                h2 + p {
+                font-weight: bold;
+                }</code></pre>
+
+        <div class="tip">
+          <strong>⚡ Specificity hierarchy:</strong>
+          Inline styles &gt; IDs &gt; Classes &gt; Elements. Try to use classes
+          most of the time — they're the sweet spot.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 4 – SESSIONS 16–20                          -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">🏗️ Week 4 · Build Projects</h2>
+
+      <!-- Session 16 -->
+      <div class="session" id="s16">
+        <div class="session-header">
+          <span class="session-number">Day 16</span>
+          <span class="session-title">Personal Portfolio Page</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build a one‑page portfolio with: Header ·
+          About · Skills · Projects · Contact.
+        </div>
+        <div class="project-box">
+          <h4>📁 Project: "My Portfolio"</h4>
+          <p><strong>Requirements:</strong></p>
+          <ul>
+            <li>Navigation bar with smooth scrolling links</li>
+            <li>A hero section with your name and a tagline</li>
+            <li>An "About Me" section with a photo and bio</li>
+            <li>Skills section with icons or progress bars</li>
+            <li>Projects section with 3–4 project cards</li>
+            <li>A contact section with a form</li>
+            <li>Responsive: looks good on phone and desktop</li>
+          </ul>
+          <p style="margin-top: 0.6rem">
+            <strong>💡 Tip:</strong> Use a color palette from Coolors. Make it
+            <em>you</em> — choose colors and fonts that represent your style!
+          </p>
+        </div>
+      </div>
+
+      <!-- Session 17 -->
+      <div class="session" id="s17">
+        <div class="session-header">
+          <span class="session-number">Day 17</span>
+          <span class="session-title">Landing Page</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build a product or service landing page.
+        </div>
+        <div class="project-box">
+          <h4>📁 Project: "App Launch Landing Page"</h4>
+          <ul>
+            <li>Hero with large headline, subtitle, and CTA button</li>
+            <li>Features section (3 columns with icons)</li>
+            <li>Testimonials or reviews section</li>
+            <li>A "Pricing" or "Sign Up" section</li>
+            <li>Footer with links and social media</li>
+            <li>Use <code>flexbox</code> or <code>grid</code> for layout</li>
+            <li>Hover effects on buttons and cards</li>
+          </ul>
+          <p style="margin-top: 0.6rem">
+            <strong>🎨 Pick a theme:</strong> Fitness app, Study planner, Game
+            tracker, Pet adoption — whatever excites you!
+          </p>
+        </div>
+      </div>
+
+      <!-- Session 18 -->
+      <div class="session" id="s18">
+        <div class="session-header">
+          <span class="session-number">Day 18</span>
+          <span class="session-title">Blog Layout</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build a blog homepage with articles.
+        </div>
+        <div class="project-box">
+          <h4>📁 Project: "My Blog"</h4>
+          <ul>
+            <li>Header with blog name and navigation</li>
+            <li>Featured article (large, with image)</li>
+            <li>Grid of article cards (4–6 posts)</li>
+            <li>Sidebar with categories and recent posts</li>
+            <li>Footer with copyright and social links</li>
+            <li>Each card has: image, title, excerpt, date, read‑more link</li>
+            <li>Responsive: 1 column on mobile, 2 on tablet, 3 on desktop</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Session 19 -->
+      <div class="session" id="s19">
+        <div class="session-header">
+          <span class="session-number">Day 19</span>
+          <span class="session-title">Gallery / Photo Display</span>
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build an image gallery with CSS Grid.
+        </div>
+        <div class="project-box">
+          <h4>📁 Project: "Photo Gallery"</h4>
+          <ul>
+            <li>
+              Use CSS Grid with
+              <code
+                >grid-template-columns: repeat(auto-fit, minmax(200px,
+                1fr))</code
+              >
+            </li>
+            <li>Images with captions</li>
+            <li>Hover effects: zoom, overlay, or color shift</li>
+            <li>A lightbox effect (click to enlarge) using CSS</li>
+            <li>Categories or filter buttons (optional)</li>
+            <li>Use images from Unsplash or your own photos</li>
+          </ul>
+          <div class="tip">
+            <strong>🖼️ Pro tip:</strong> Use <code>object-fit: cover</code>
+            on images to make them fill their containers perfectly without
+            distortion.
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 20 -->
+      <div class="session" id="s20">
+        <div class="session-header">
+          <span class="session-number">Day 20</span>
+          <span class="session-title">Multi‑Page Website</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Connect multiple HTML pages with a shared
+          CSS file.
+        </div>
+        <div class="project-box">
+          <h4>📁 Project: "Mini Website"</h4>
+          <ul>
+            <li>Create 4–5 pages: Home, About, Services, Blog, Contact</li>
+            <li>
+              Use a single <code>style.css</code> file linked to all pages
+            </li>
+            <li>Shared navigation and footer across all pages</li>
+            <li>Each page has unique content</li>
+            <li>Active link styling in the navigation</li>
+            <li>Responsive and consistent design</li>
+          </ul>
+          <p style="margin-top: 0.6rem">
+            <strong>📁 Folder structure:</strong>
+          </p>
+          <pre><code>my-website/
+                    ├── index.html
+                    ├── about.html
+                    ├── services.html
+                    ├── blog.html
+                    ├── contact.html
+                    ├── style.css
+                    └── images/</code></pre>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 5 – SESSIONS 21–25                          -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">
+        🚀 Week 5 · Advanced &amp; Best Practices
+      </h2>
+
+      <!-- Session 21 -->
+      <div class="session" id="s21">
+        <div class="session-header">
+          <span class="session-number">Day 21</span>
+          <span class="session-title"
+            >CSS Frameworks (Bootstrap / Tailwind)</span
+          >
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Learn what frameworks are · Try Bootstrap
+          or Tailwind · Build a component.
+        </div>
+
+        <h4>⚡ What is a CSS Framework?</h4>
+        <p>
+          A framework is a library of pre‑written CSS classes that speed up
+          development. Two popular ones:
+        </p>
+        <ul>
+          <li>
+            <strong>Bootstrap</strong> – has ready‑made components (navbars,
+            cards, modals, etc.). Good for quick prototypes.
+          </li>
+          <li>
+            <strong>Tailwind CSS</strong> – "utility‑first" — you compose styles
+            directly in your HTML using classes like <code>bg-blue-500</code>,
+            <code>text-white</code>, <code>p-4</code>.
+          </li>
+        </ul>
+
+        <h4>🔧 Try Bootstrap</h4>
+        <p>Add this to your <code>&lt;head&gt;</code>:</p>
+        <pre><code>&lt;link
+                href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+                rel="stylesheet"
+                /&gt;</code></pre>
+        <p>
+          Now use classes like <code>btn btn-primary</code>,
+          <code>container</code>, <code>row</code>, <code>col-4</code>.
+        </p>
+
+        <div class="tip">
+          <strong>💡 Frameworks are tools, not crutches.</strong> Learn vanilla
+          CSS first, then use frameworks to save time. You'll be a better
+          developer because you understand what's happening under the hood.
+        </div>
+      </div>
+
+      <!-- Session 22 -->
+      <div class="session" id="s22">
+        <div class="session-header">
+          <span class="session-number">Day 22</span>
+          <span class="session-title">Forms &amp; Input Validation</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Build accessible forms · HTML5 validation ·
+          Styling inputs · <code>:valid</code> / <code>:invalid</code>.
+        </div>
+
+        <h4>📝 Better Forms</h4>
+        <pre><code>&lt;form&gt;
+                &lt;label for="email"&gt;Email&lt;/label&gt;
+                &lt;input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                required
+                /&gt;
+                &lt;label for="password"&gt;Password (min 8 chars)&lt;/label&gt;
+                &lt;input
+                type="password"
+                id="password"
+                name="password"
+                minlength="8"
+                required
+                /&gt;
+                &lt;button type="submit"&gt;Sign Up&lt;/button&gt;
+                &lt;/form&gt;</code></pre>
+
+        <h4>🎨 Style validation states</h4>
+        <pre><code>input:valid {
+                border-color: #22c55e;
+                }
+                input:invalid {
+                border-color: #ef4444;
+                }
+                input:focus {
+                outline: 3px solid #93c5fd;
+                }</code></pre>
+
+        <div class="warning">
+          <strong>⚠️ Client‑side validation is for UX, not security!</strong>
+          Always validate on the server too (but that's for later).
+        </div>
+      </div>
+
+      <!-- Session 23 -->
+      <div class="session" id="s23">
+        <div class="session-header">
+          <span class="session-number">Day 23</span>
+          <span class="session-title">Accessibility &amp; Semantic HTML</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Write inclusive code · Use semantic tags ·
+          ARIA basics · Keyboard navigation.
+        </div>
+
+        <h4>♿ Why Accessibility Matters</h4>
+        <p>
+          The web is for everyone. People use screen readers, keyboard
+          navigation, and other assistive technologies. We can build sites that
+          work for all.
+        </p>
+
+        <h4>🧱 Semantic HTML</h4>
+        <p>Use these instead of generic <code>&lt;div&gt;</code>:</p>
+        <ul>
+          <li><code>&lt;header&gt;</code> – page header</li>
+          <li><code>&lt;nav&gt;</code> – navigation</li>
+          <li><code>&lt;main&gt;</code> – primary content</li>
+          <li><code>&lt;section&gt;</code> – thematic grouping</li>
+          <li><code>&lt;article&gt;</code> – self‑contained content</li>
+          <li><code>&lt;aside&gt;</code> – sidebar or complementary content</li>
+          <li><code>&lt;footer&gt;</code> – page footer</li>
+        </ul>
+
+        <div class="tip">
+          <strong>🔑 Always use <code>alt</code> text</strong> on images. Use
+          <code>aria-label</code> on interactive elements when needed. And make
+          sure your site is fully keyboard‑navigable.
+        </div>
+
+        <div class="fun-fact">
+          🌍 The web is used by over 1 billion people with disabilities.
+          Accessible design is better design for everyone.
+        </div>
+      </div>
+
+      <!-- Session 24 -->
+      <div class="session" id="s24">
+        <div class="session-header">
+          <span class="session-number">Day 24</span>
+          <span class="session-title">Performance &amp; Optimization</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Optimize images · Minify code · Use
+          <code>loading="lazy"</code> · Reduce HTTP requests.
+        </div>
+
+        <h4>⚡ Make Your Site Fast</h4>
+        <ul>
+          <li>
+            <strong>Image optimization:</strong> Use WebP format, compress
+            images, set <code>width</code> and <code>height</code>.
+          </li>
+          <li>
+            <strong>Lazy loading:</strong>
+            <code>&lt;img loading="lazy" ... /&gt;</code>
+            loads images only when they're about to appear on screen.
+          </li>
+          <li>
+            <strong>Minify CSS:</strong> Remove unnecessary spaces and comments.
+            VS Code extensions can do this.
+          </li>
+          <li>
+            <strong>Combine files:</strong> Use one CSS file instead of many.
+          </li>
+          <li>
+            <strong>Use CDN:</strong> Load libraries from a CDN for faster
+            delivery.
+          </li>
+        </ul>
+
+        <div class="tip">
+          <strong>📊 Check performance</strong> with Chrome DevTools →
+          Lighthouse tab. It gives you a score and suggestions to improve.
+        </div>
+      </div>
+
+      <!-- Session 25 -->
+      <div class="session" id="s25">
+        <div class="session-header">
+          <span class="session-number">Day 25</span>
+          <span class="session-title">Debugging with DevTools</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Use Chrome DevTools · Inspect elements ·
+          Edit CSS live · Debug layout issues · Console.
+        </div>
+
+        <h4>🔧 Your Best Friend: DevTools</h4>
+        <p>
+          Open DevTools with <kbd>F12</kbd> or <kbd>Ctrl+Shift+I</kbd> (or
+          <kbd>Cmd+Option+I</kbd> on Mac).
+        </p>
+        <ul>
+          <li>
+            <strong>Elements panel:</strong> Inspect the HTML and CSS of any
+            element. You can edit styles <em>live</em> and see changes
+            instantly.
+          </li>
+          <li>
+            <strong>Styles pane:</strong> See all CSS rules applied to an
+            element, including inherited styles. Toggle properties on/off.
+          </li>
+          <li>
+            <strong>Computed pane:</strong> See the final computed values
+            (including box model dimensions).
+          </li>
+          <li>
+            <strong>Console:</strong> Type JavaScript to test things (we'll use
+            this later).
+          </li>
+          <li>
+            <strong>Lighthouse:</strong> Audit performance, accessibility, SEO.
+          </li>
+        </ul>
+
+        <div class="tip">
+          <strong>💡 Pro debugging tip:</strong> When something doesn't look
+          right, inspect it. Check if the selector is actually matching. Look
+          for overridden styles. Use <code>!important</code> sparingly (almost
+          never).
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  WEEK 6 – SESSIONS 26–30                          -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <h2 style="margin-top: 3rem">🏁 Week 6 · Capstone &amp; Review</h2>
+
+      <!-- Session 26 -->
+      <div class="session" id="s26">
+        <div class="session-header">
+          <span class="session-number">Day 26</span>
+          <span class="session-title">Capstone Kickoff – Plan Your Site</span>
+          <span class="session-duration">⏱ 1.5 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Plan your final project · Wireframing ·
+          Color palette · Content strategy.
+        </div>
+
+        <div class="project-box">
+          <h4>🌟 Capstone Project: "My Dream Website"</h4>
+          <p>
+            Choose a topic you're passionate about: a fan site for your favorite
+            game, a personal blog, a portfolio, a community hub, a travel guide
+            — anything!
+          </p>
+          <p><strong>Today's tasks:</strong></p>
+          <ul>
+            <li>Sketch a wireframe on paper (or use Figma / Excalidraw)</li>
+            <li>Pick a color palette (Coolors)</li>
+            <li>Choose 2–3 fonts (Google Fonts)</li>
+            <li>Plan your pages: Home, About, Blog/Projects, Contact</li>
+            <li>Gather images and content</li>
+          </ul>
+          <div class="tip">
+            <strong>📝 Wireframe tip:</strong> Don't worry about design details
+            yet — just sketch the layout: header, main content, sidebar, footer.
+            Think about where each element goes.
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 27 -->
+      <div class="session" id="s27">
+        <div class="session-header">
+          <span class="session-number">Day 27</span>
+          <span class="session-title">Build the Homepage</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Code the homepage based on your wireframe.
+        </div>
+        <div class="project-box">
+          <h4>🏠 Homepage</h4>
+          <ul>
+            <li>Header with logo and navigation</li>
+            <li>Hero section with a strong headline</li>
+            <li>Key features or highlights</li>
+            <li>A call‑to‑action section</li>
+            <li>Footer with social links and copyright</li>
+            <li>Use <code>flexbox</code> and/or <code>grid</code></li>
+            <li>Responsive: test on different screen sizes</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Session 28 -->
+      <div class="session" id="s28">
+        <div class="session-header">
+          <span class="session-number">Day 28</span>
+          <span class="session-title">Build Inner Pages</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Code 2–3 inner pages with consistent
+          styling.
+        </div>
+        <div class="project-box">
+          <h4>📄 Inner Pages</h4>
+          <ul>
+            <li><strong>About:</strong> Bio, photo, skills</li>
+            <li>
+              <strong>Blog / Projects:</strong> Grid of cards with images and
+              text
+            </li>
+            <li><strong>Contact:</strong> Form with name, email, message</li>
+            <li>All pages share the same header, footer, and CSS</li>
+            <li>Add active link styling in the navigation</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Session 29 -->
+      <div class="session" id="s29">
+        <div class="session-header">
+          <span class="session-number">Day 29</span>
+          <span class="session-title">Polish &amp; Responsive</span>
+          <span class="session-duration">⏱ 2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Review and refine · Make it responsive ·
+          Add animations and transitions.
+        </div>
+        <div class="project-box">
+          <h4>✨ Polish Time</h4>
+          <ul>
+            <li>Check all breakpoints (phone, tablet, desktop)</li>
+            <li>Add subtle hover effects to buttons and cards</li>
+            <li>Use <code>transition</code> for smooth interactions</li>
+            <li>Validate your HTML (validator.w3.org)</li>
+            <li>Optimize images with <code>loading="lazy"</code></li>
+            <li>Check accessibility: alt text, semantic tags, contrast</li>
+            <li>Run Lighthouse and try to get a high score</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Session 30 -->
+      <div class="session" id="s30">
+        <div class="session-header">
+          <span class="session-number">Day 30</span>
+          <span class="session-title">Final Review &amp; Showcase</span>
+          <span class="session-duration">⏱ 1.5–2 hr</span>
+        </div>
+        <div class="session-goals">
+          <strong>🎯 Goals:</strong> Celebrate! · Review your journey · Share
+          your work · Plan next steps.
+        </div>
+
+        <div
+          style="
+            background: #f0fdf4;
+            border-radius: 16px;
+            padding: 1.6rem 2rem;
+            border: 2px solid #86efac;
+          "
+        >
+          <h4 style="color: #15803d; margin-top: 0">🎉 Congratulations!</h4>
+          <p>
+            You've completed the 30‑day HTML &amp; CSS adventure! You now have a
+            solid foundation in web development. You can:
+          </p>
+          <ul>
+            <li>✅ Build complete, responsive websites</li>
+            <li>✅ Use Flexbox and Grid for layout</li>
+            <li>✅ Style with colors, fonts, and animations</li>
+            <li>✅ Debug with DevTools</li>
+            <li>✅ Write semantic, accessible HTML</li>
+          </ul>
+          <p><strong>What's next?</strong></p>
+          <ul>
+            <li>Learn JavaScript to make your sites interactive</li>
+            <li>Explore frameworks like React or Vue (in a few months)</li>
+            <li>Build more projects — practice is everything!</li>
+            <li>Share your work on GitHub</li>
+            <li>Join a coding community (like freeCodeCamp or CodeNewbie)</li>
+          </ul>
+          <div class="tip" style="margin-top: 1rem">
+            <strong>🌟 Remember:</strong> Every expert was once a beginner. Keep
+            coding, keep breaking things, keep learning. The web is yours to
+            build!
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  GLOSSARY                                         -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <hr
+        style="
+          border: 0;
+          border-top: 2px solid #e2e8f0;
+          margin: 2.8rem 0 1.8rem 0;
+        "
+      />
+
+      <h2>📖 Glossary</h2>
+
+      <div class="glossary-grid">
+        <div class="glossary-item">
+          <span class="term">HTML</span>
+          <span class="def"
+            >HyperText Markup Language — the structure of web pages.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">CSS</span>
+          <span class="def"
+            >Cascading Style Sheets — the style and layout layer.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Tag</span>
+          <span class="def"
+            >An HTML element marker, e.g. <code>&lt;p&gt;</code>.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Attribute</span>
+          <span class="def"
+            >Extra information in a tag, e.g. <code>src="..."</code>.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Selector</span>
+          <span class="def"
+            >CSS pattern that targets elements, e.g. <code>.class</code>.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Property</span>
+          <span class="def"
+            >CSS styling attribute, e.g. <code>color</code>.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Flexbox</span>
+          <span class="def"
+            >CSS layout model for one‑dimensional alignment.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Grid</span>
+          <span class="def">CSS layout model for two‑dimensional layouts.</span>
+        </div>
+        <div class="glossary-item">
+          <span class="term">Media Query</span>
+          <span class="def"
+            >CSS rule that applies styles based on screen size.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Responsive</span>
+          <span class="def">Design that adapts to different screen sizes.</span>
+        </div>
+        <div class="glossary-item">
+          <span class="term">Semantic</span>
+          <span class="def"
+            >HTML elements that convey meaning, e.g.
+            <code>&lt;article&gt;</code>.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Accessibility</span>
+          <span class="def">Designing for people with disabilities.</span>
+        </div>
+        <div class="glossary-item">
+          <span class="term">DevTools</span>
+          <span class="def"
+            >Browser tools for debugging and inspecting code.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="term">Framework</span>
+          <span class="def"
+            >Pre‑built CSS library like Bootstrap or Tailwind.</span
+          >
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!--  FINAL FOOTER                                     -->
+      <!-- ═══════════════════════════════════════════════════ -->
+
+      <hr
+        style="
+          border: 0;
+          border-top: 2px solid #e2e8f0;
+          margin: 2.8rem 0 1.2rem 0;
+        "
+      />
+
+      <div
+        style="
+          text-align: center;
+          color: #64748b;
+          font-size: 0.9rem;
+          padding: 0.8rem 0;
+        "
+      >
+        <p style="font-size: 1.2rem; font-weight: 600; color: #0f2b5c">
+          🚀 Keep Building, Keep Learning!
+        </p>
+        <p>
+          Made with 💙 for teen coders everywhere.<br />
+          You're now part of the global community of web creators.
+        </p>
+        <p class="small" style="margin-top: 0.8rem">
+          This book is yours to keep, print, and share with fellow learners.
+        </p>
+        <p class="small" style="margin-top: 0.2rem; font-size: 0.8rem">
+          <span class="badge">HTML5</span>
+          <span class="badge">CSS3</span>
+          <span class="badge">Flexbox</span>
+          <span class="badge">Grid</span>
+          <span class="badge">Responsive</span>
+          <span class="badge">Accessibility</span>
+        </p>
+      </div>
+    </div>
+    <!-- end .book -->
+  </body>
+</html>
